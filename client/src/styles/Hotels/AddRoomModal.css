@@ -1,0 +1,46 @@
+.add-room-modal {
+  max-width: 680px;
+}
+
+.amenity-category {
+  margin-bottom: 16px;
+}
+
+.amenity-category-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.amenity-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.amenity-chip-sm {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg-soft);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.amenity-chip-sm svg {
+  font-size: 10px;
+  color: #2e8b57;
+}
+
+.amenity-chip-sm.active {
+  border-color: var(--navy-deep);
+  background: var(--paper);
+}

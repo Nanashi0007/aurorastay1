@@ -1,0 +1,916 @@
+.mb-page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px 20px 64px;
+}
+
+.mb-page h1 {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--ink);
+  margin-bottom: 20px;
+}
+
+.mb-loading,
+.mb-error {
+  max-width: 960px;
+  margin: 60px auto;
+  text-align: center;
+  color: var(--ink-soft);
+  font-size: 15px;
+}
+
+.mb-error {
+  color: #d64545;
+}
+
+/* --- Tabs --- */
+.mb-tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 20px;
+}
+
+.mb-tab {
+  border: none;
+  background: none;
+  padding: 10px 4px;
+  margin-right: 20px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  cursor: pointer;
+  position: relative;
+}
+
+.mb-tab.active {
+  color: var(--navy-deep);
+}
+
+.mb-tab.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--navy-deep);
+  border-radius: 2px;
+}
+
+/* --- Empty state --- */
+.mb-empty {
+  width: 100%;
+  min-height: 50vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
+  color: #6b7280;
+}
+
+.mb-empty-icon {
+  font-size: 32px;
+  opacity: 0.4;
+}
+
+/* --- List / cards --- */
+.mb-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.mb-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 18px 20px;
+}
+
+.mb-card-main h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+
+.mb-listing-title,
+.mb-dates,
+.mb-guests {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin-bottom: 4px;
+}
+
+.mb-card-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  justify-content: center;
+  flex-shrink: 0;
+  gap: 4px;
+}
+
+.mb-price {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.mb-deposit {
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
+/* --- Status pill --- */
+.mb-status {
+  display: inline-block;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-bottom: 4px;
+}
+
+.mb-status-pending {
+  background: #fff4e0;
+  color: #8a6508;
+}
+
+.mb-status-confirmed {
+  background: #e3f6e8;
+  color: #1e7d3c;
+}
+
+.mb-status-declined {
+  background: #fdeaea;
+  color: #b3261e;
+}
+
+.mb-status-cancelled {
+  background: var(--bg-soft);
+  color: var(--ink-soft);
+}
+
+@media (max-width: 600px) {
+  .mb-page {
+    padding: 20px 16px 48px;
+  }
+
+  .mb-card {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .mb-card-side {
+    align-items: flex-start;
+    text-align: left;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+  }
+}
+
+/* --- Two-column layout with left sidebar --- */
+.mb-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 20px 64px;
+}
+
+.mb-layout .mb-page {
+  flex: 1;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.mb-sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 24px;
+}
+
+.mb-sidebar-group {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.mb-sidebar-parent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+
+.mb-sidebar-sublist {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mb-sidebar-sublink {
+  border: none;
+  background: none;
+  text-align: left;
+  padding: 8px 10px 8px 26px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+
+.mb-sidebar-sublink:hover {
+  background: var(--bg-soft);
+}
+
+.mb-sidebar-sublink.active {
+  background: var(--navy-deep);
+  color: #fff;
+  font-weight: 700;
+}
+
+@media (max-width: 800px) {
+  .mb-layout {
+    flex-direction: column;
+    padding: 20px 16px 48px;
+  }
+
+  .mb-sidebar {
+    width: 100%;
+    position: static;
+  }
+
+  .mb-sidebar-sublist {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .mb-sidebar-sublink {
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: var(--bg-soft);
+  }
+}
+
+/* --- Top-level sidebar links (Saved, Recently Viewed) --- */
+.mb-sidebar-toplink {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px 16px;
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.mb-sidebar-toplink:hover {
+  background: var(--bg-soft);
+}
+
+@media (max-width: 800px) {
+  .mb-sidebar-toplink {
+    margin-top: 8px;
+  }
+}
+
+/* --- Card photo + extra detail --- */
+.mb-card {
+  align-items: stretch;
+}
+
+.mb-card-photo {
+  position: relative;
+  width: 140px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--bg-soft);
+}
+
+.mb-card-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.mb-card-photo-placeholder {
+  width: 100%;
+  height: 100%;
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-soft);
+  font-size: 12px;
+}
+
+.mb-card-type-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--ink);
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+
+.mb-card-main {
+  flex: 1;
+}
+
+.mb-nights {
+  color: var(--ink-soft);
+}
+
+@media (max-width: 600px) {
+  .mb-card {
+    flex-wrap: wrap;
+  }
+
+  .mb-card-photo {
+    width: 100%;
+    height: 160px;
+  }
+
+  .mb-card-main {
+    width: 100%;
+  }
+}
+
+.mb-card {
+  display: grid;
+  grid-template-columns: 140px 1fr auto;
+  gap: 16px;
+  padding: 14px;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  transition:
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+
+.mb-card:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.mb-card-photo {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.mb-card-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mb-card-type-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.65);
+  color: #fff;
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.mb-location {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+/* --- Responsive: tablet and below --- */
+@media (max-width: 900px) {
+  .mb-layout {
+    grid-template-columns: 1fr; /* if it's currently sidebar + content grid */
+  }
+
+  .mb-sidebar {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 12px 16px;
+    border-right: none;
+    border-bottom: 1px solid #eee;
+    overflow-x: auto;
+  }
+
+  .mb-sidebar-group {
+    flex: 1 1 auto;
+  }
+
+  .mb-sidebar-sublist {
+    display: flex;
+    gap: 8px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+  .mb-sidebar-toplink {
+    white-space: nowrap;
+  }
+}
+
+/* --- Responsive: mobile --- */
+@media (max-width: 600px) {
+  .mb-page {
+    padding: 12px;
+  }
+
+  .mb-page h1 {
+    font-size: 20px;
+  }
+
+  .mb-tabs {
+    display: flex;
+    gap: 6px;
+    overflow-x: visible; /* remove the scroll */
+    width: 100%;
+  }
+
+  .mb-tab {
+    flex: 1 1 0; /* both tabs share width equally, no overflow */
+    min-width: 0; /* lets flex actually shrink below content size */
+    text-align: center;
+    padding: 8px 6px; /* smaller than desktop */
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Stack each card: photo on top, then details, then price/status */
+  .mb-card {
+    grid-template-columns: 1fr; /* was e.g. 140px 1fr auto on desktop */
+    grid-template-rows: auto auto auto;
+  }
+
+  .mb-card-photo {
+    width: 100%;
+    height: 180px; /* give it real height since width is no longer fixed */
+  }
+
+  .mb-card-main {
+    padding-top: 8px;
+  }
+
+  .mb-card-side {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 8px;
+    border-top: 1px solid #f0f0f0;
+  }
+
+  .mb-status {
+    order: 1;
+  }
+
+  .mb-price,
+  .mb-deposit {
+    text-align: right;
+    font-size: 13px;
+  }
+
+  .mb-listing-title,
+  .mb-location,
+  .mb-dates,
+  .mb-guests {
+    font-size: 13px;
+  }
+
+  .mb-empty {
+    width: 100%;
+    min-height: 50vh; /* fills most of the viewport instead of collapsing */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 24px 16px;
+    color: #6b7280;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .mb-tab {
+    font-size: 12px;
+    padding: 8px 4px;
+  }
+}
+
+/* Add this block to MyBookings.css.
+   Styles the Recently Viewed rows to match the reference design:
+   image left, details middle, light-blue price/CTA box right. */
+
+.rv-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rv-row {
+  display: grid;
+  grid-template-columns: 220px 1fr auto;
+  align-items: stretch;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  height: 200px;
+  transition:
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+
+.rv-row:hover {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  transform: translateY(-1px);
+}
+
+.rv-row-photo {
+  width: 220px;
+  min-height: 160px;
+}
+
+.rv-row-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.rv-row-photo-placeholder {
+  width: 100%;
+  height: 100%;
+  min-height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1f1f1;
+  color: #999;
+  font-size: 0.85rem;
+}
+
+.rv-row-main {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  justify-content: center;
+}
+
+.rv-row-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.rv-row-stars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  color: #f0a500;
+  font-size: 0.8rem;
+}
+
+.rv-row-type {
+  margin-left: 6px;
+  color: #444;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.rv-row-location {
+  margin: 0;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.rv-row-rating {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.rv-row-score {
+  background: #1a8917;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.rv-row-score-label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #1a1a1a;
+}
+
+.rv-row-review-count {
+  color: #777;
+  font-size: 0.85rem;
+}
+
+.rv-row-side {
+  background: #ebf3fb;
+  padding: 20px 24px;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 12px;
+  text-align: right;
+}
+
+.rv-row-price {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.rv-row-price-unit {
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: #666;
+}
+
+.rv-row-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #0071c2;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 10px 16px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.rv-row:hover .rv-row-cta {
+  background: #005999;
+}
+
+/* Mobile: stack the row into a single column */
+@media (max-width: 640px) {
+  .rv-row {
+    grid-template-columns: 1fr;
+  }
+
+  .rv-row-photo {
+    width: 100%;
+    height: 180px;
+  }
+
+  .rv-row-side {
+    align-items: flex-start;
+    text-align: left;
+  }
+}
+
+/* Add this block to MyBookings.css.
+   Styles the Recently Viewed rows to match the reference design:
+   image left, details middle, light-blue price/CTA box right. */
+
+.rv-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rv-row {
+  display: grid;
+  grid-template-columns: 220px 1fr auto;
+  align-items: stretch;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition:
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+
+.rv-row:hover {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  transform: translateY(-1px);
+}
+
+.rv-row-photo {
+  width: 220px;
+  min-height: 160px;
+  position: relative;
+}
+
+.rv-row-type-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(0, 0, 0, 0.65);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 9px;
+  border-radius: 5px;
+}
+
+.rv-row-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.rv-row-photo-placeholder {
+  width: 100%;
+  height: 100%;
+  min-height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1f1f1;
+  color: #999;
+  font-size: 0.85rem;
+}
+
+.rv-row-main {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  justify-content: center;
+}
+
+.rv-row-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.rv-row-stars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  color: #f0a500;
+  font-size: 0.8rem;
+}
+
+.rv-row-type {
+  margin-left: 6px;
+  color: #444;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.rv-row-location {
+  margin: 0;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.rv-row-rating {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.rv-row-score {
+  background: #1a8917;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.rv-row-score-label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #1a1a1a;
+}
+
+.rv-row-review-count {
+  color: #777;
+  font-size: 0.85rem;
+}
+
+.rv-row-side {
+  background: #ebf3fb;
+  padding: 20px 24px;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 12px;
+  text-align: right;
+}
+
+.rv-row-price {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.rv-row-price-unit {
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: #666;
+}
+
+.rv-row-price-unavailable {
+  color: #999;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.rv-row-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #0071c2;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 10px 16px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.rv-row:hover .rv-row-cta {
+  background: #005999;
+}
+
+/* Mobile: stack the row into a single column */
+@media (max-width: 640px) {
+  .rv-row {
+    grid-template-columns: 1fr;
+  }
+
+  .rv-row-photo {
+    width: 100%;
+    height: 180px;
+  }
+
+  .rv-row-side {
+    align-items: flex-start;
+    text-align: left;
+  }
+}

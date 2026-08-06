@@ -1,0 +1,9 @@
+.edit-room-footer {
+  justify-content: space-between;
+}
+
+.edit-room-footer-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}

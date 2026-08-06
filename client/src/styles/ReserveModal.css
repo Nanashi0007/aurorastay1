@@ -1,0 +1,140 @@
+.rm-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 41, 66, 0.55);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 600;
+  padding: 20px;
+}
+
+.rm-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 32px;
+  width: 100%;
+  max-width: 440px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+.rm-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #6b7280;
+  line-height: 1;
+}
+
+.rm-close:hover {
+  color: #1a1a2e;
+}
+
+.rm-card h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  color: #1a1a2e;
+  padding-right: 24px;
+}
+
+.rm-sub {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0 0 20px 0;
+}
+
+.rm-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.rm-row {
+  display: flex;
+  gap: 12px;
+}
+
+.rm-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.rm-field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.rm-field input,
+.rm-field textarea {
+  border: 1px solid #e8e8ec;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #1a1a2e;
+}
+
+.rm-field input:focus,
+.rm-field textarea:focus {
+  outline: none;
+  border-color: #b8860b;
+}
+
+.rm-error {
+  font-size: 12.5px;
+  color: #d64545;
+}
+
+.rm-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  background: #f7f7fa;
+  border-radius: 10px;
+  font-size: 14px;
+  color: #1a1a2e;
+}
+
+.rm-submit {
+  width: 100%;
+  padding: 13px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 15px;
+  margin-top: 4px;
+}
+
+.rm-success {
+  text-align: center;
+  padding: 20px 0 4px;
+}
+
+.rm-success h2 {
+  margin-bottom: 10px;
+}
+
+.rm-success p {
+  font-size: 14.5px;
+  color: #6b7280;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.rm-success .btn {
+  width: 100%;
+  padding: 13px;
+  border-radius: 999px;
+}

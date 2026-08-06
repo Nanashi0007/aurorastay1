@@ -1,0 +1,75 @@
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.browse-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  text-decoration: none;
+
+  color: var(--navy-mid);
+  font-weight: 600;
+  font-size: 15px;
+
+  transition: 0.25s;
+}
+
+.browse-link:hover {
+  color: var(--navy-deep);
+  gap: 12px;
+}
+
+.browse-link svg {
+  font-size: 13px;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
+.carousel-arrow {
+  background: white;
+  color: black;
+  border: none;
+  outline: none;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.carousel-arrow.left {
+  left: -22px;
+}
+
+.carousel-arrow.right {
+  right: -22px;
+}
+
+/* Hover */
+.carousel-arrow:hover:not(:disabled) {
+  background: black;
+  color: white;
+}
+
+/* While mouse button is pressed */
+.carousel-arrow:active:not(:disabled) {
+  background: #444;
+  color: white;
+}
+
+/* Remove blue focus highlight */
+.carousel-arrow:focus,
+.carousel-arrow:focus-visible {
+  outline: none;
+  box-shadow: none;
+}

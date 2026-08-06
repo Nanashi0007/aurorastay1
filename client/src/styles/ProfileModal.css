@@ -1,0 +1,84 @@
+.cp-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+}
+
+.cp-card {
+  position: relative;
+  background: #fff;
+  border-radius: 12px;
+  padding: 32px 28px;
+  width: 100%;
+  max-width: 360px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+}
+
+.cp-head {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.cp-logo {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #2b6cb0;
+  margin-bottom: 8px;
+}
+
+.cp-head h1 {
+  font-size: 20px;
+  margin: 0 0 8px;
+}
+
+.cp-subtitle {
+  font-size: 13px;
+  color: #667;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.cp-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cp-form input {
+  padding: 12px 14px;
+  border: 1px solid #dde3ea;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+}
+
+.cp-form input:focus {
+  border-color: #2b6cb0;
+}
+
+.cp-submit {
+  margin-top: 4px;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #2b6cb0;
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.cp-submit:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.cp-error {
+  font-size: 13px;
+  color: #c0392b;
+  margin: 0;
+}

@@ -1,0 +1,475 @@
+/* ========== SEARCH FIELDS ========== */
+.search-item-dates,
+.search-item-guests {
+  position: relative;
+}
+
+.search-field-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+  width: 100%;
+  min-width: 0; /* lets text truncate instead of overflow */
+  color: inherit;
+  font: inherit;
+}
+
+.search-field-value {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* instead of blowing out the layout */
+}
+
+/* ========== SEARCH CARD ========== */
+.search-card {
+  position: relative;
+  z-index: 10;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap; /* key: allows graceful stacking */
+  gap: 0;
+  max-width: 1080px;
+  width: 100%;
+  box-sizing: border-box;
+  box-shadow: var(--shadow-md);
+}
+
+.search-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1 1 180px; /* grow, shrink, sane basis */
+  min-width: 0;
+  padding: 0 14px;
+}
+
+.search-item svg {
+  color: var(--navy-mid);
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.search-item small {
+  display: block;
+  font-size: 11px;
+  color: var(--ink-soft);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.search-item input,
+.search-item select {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--ink);
+  width: 100%;
+  min-width: 0;
+  padding: 2px 0 0;
+}
+
+.divider {
+  width: 1px;
+  height: 34px;
+  background: var(--line);
+  flex-shrink: 0;
+}
+
+/* single, non-conflicting definition */
+.search-btn {
+  height: 48px;
+  padding: 0 22px;
+  margin: 0 0 0 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  cursor: pointer;
+  width: 80px;
+}
+
+/* ========== DROPDOWN SHELL ========== */
+.dropdown-modal {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 0;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  z-index: 999999;
+  isolation: isolate;
+  box-sizing: border-box;
+  max-width: calc(100vw - 32px);
+}
+
+/* right-align the guests panel so it can't leave the viewport */
+.search-item-guests .dropdown-modal {
+  left: auto;
+  right: 0;
+}
+
+.dropdown-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--ink-soft);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.btn-apply {
+  padding: 8px 20px;
+  border-radius: 999px;
+  font-size: 13px;
+}
+.btn-apply:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ========== DATE MODAL ========== */
+.date-modal {
+  width: 360px;
+  padding: 18px;
+}
+
+.date-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+.date-modal-header span {
+  font-size: clamp(15px, 4vw, 18px);
+  font-weight: 700;
+}
+.date-modal-header button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+}
+.date-modal-header button:hover {
+  background: #f5f5f5;
+}
+
+.date-modal-weekdays,
+.date-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+.date-modal-weekdays {
+  margin-bottom: 12px;
+}
+.date-modal-weekdays span {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #6b7280;
+}
+.date-modal-grid {
+  justify-items: center;
+}
+
+/* fluid cells — never overflow the 7-column grid */
+.date-cell {
+  width: 100%;
+  max-width: 42px;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  border-radius: 50%;
+  font-size: clamp(12px, 3.2vw, 14px);
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s ease;
+  color: #000;
+}
+.date-cell.empty {
+  cursor: default;
+}
+.date-cell:disabled {
+  color: var(--line);
+  cursor: not-allowed;
+}
+.date-cell:hover:not(:disabled):not(.selected) {
+  background: var(--bg-soft);
+}
+.date-cell.selected {
+  background: #0d3b66;
+  color: #fff;
+  font-weight: 700;
+}
+.date-cell.in-range {
+  background: #eaf2ff;
+  color: #0d3b66;
+  border-radius: 8px;
+}
+
+/* ========== GUEST MODAL ========== */
+.guest-modal {
+  width: 280px;
+  padding: 16px;
+}
+.guest-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.guest-row + .guest-row {
+  margin-top: 14px;
+}
+.guest-row strong {
+  display: block;
+  font-size: 14px;
+  color: var(--ink);
+}
+.guest-row small {
+  display: block;
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
+.guest-counter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.guest-counter button {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--ink);
+  font-size: 11px;
+  flex-shrink: 0;
+}
+.guest-counter button:hover:not(:disabled) {
+  border-color: var(--navy-mid);
+  background: var(--bg-soft);
+}
+.guest-counter button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.guest-counter input {
+  width: 34px;
+  text-align: center;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+.guest-counter input::-webkit-outer-spin-button,
+.guest-counter input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.guest-limit-note {
+  display: block;
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--ink-soft);
+}
+
+/* ========== HERO ========== */
+.hero {
+  background: var(--paper);
+  padding-bottom: 40px;
+  overflow-x: clip; /* kills the glow-induced h-scroll */
+}
+
+.hero-overlay {
+  position: relative;
+  padding: clamp(32px, 6vw, 56px) clamp(16px, 4vw, 24px) 34px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: visible;
+}
+
+.hero-overlay::before {
+  content: "";
+  position: absolute;
+  top: -120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(900px, 140%); /* was a hard 900px */
+  height: 320px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(217, 166, 43, 0.12) 0%,
+    rgba(60, 122, 70, 0.05) 45%,
+    transparent 75%
+  );
+  pointer-events: none;
+}
+
+.hero-content {
+  position: relative;
+  text-align: center;
+  margin-bottom: 26px;
+  max-width: 640px;
+}
+.hero-tag {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--navy-deep);
+  border: 1px solid var(--line);
+  background: var(--bg-soft);
+  padding: 6px 14px;
+  border-radius: 999px;
+  margin-bottom: 14px;
+}
+.hero-content h1 {
+  font-size: clamp(24px, 5.5vw, 34px);
+  line-height: 1.2;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+.hero-sub {
+  font-size: clamp(14px, 3.6vw, 15px);
+  color: var(--ink-soft);
+  margin: 0;
+}
+
+/* ================= BREAKPOINTS ================= */
+
+/* Tablet: 2 fields per row, full-width button */
+@media (max-width: 900px) {
+  .search-card {
+    padding: 12px;
+    row-gap: 10px;
+    z-index: 10;
+  }
+  .divider {
+    display: none;
+  }
+
+  .search-item {
+    flex: 1 1 calc(50% - 5px);
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+  }
+
+  .search-btn {
+    flex: 1 1 100%;
+    width: 100%;
+    margin: 2px 0 0;
+  }
+}
+
+/* Phone: one field per row + bottom-sheet dropdowns */
+@media (max-width: 640px) {
+  .search-item {
+    flex: 1 1 100%;
+  }
+
+  /* turn dropdowns into full-width bottom sheets */
+  .dropdown-modal,
+  .search-item-guests .dropdown-modal {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 100%;
+    max-height: 85dvh;
+    overflow-y: auto;
+    border-radius: 16px 16px 0 0;
+    border-bottom: none;
+    padding: 18px 16px calc(18px + env(safe-area-inset-bottom));
+    animation: sheet-up 0.22s ease-out;
+  }
+
+  .date-modal,
+  .guest-modal {
+    width: 100%;
+  }
+
+  .date-cell {
+    max-width: 44px;
+  } /* tap-target friendly */
+
+  .dropdown-modal-footer .btn-apply {
+    flex: 1 1 auto;
+    text-align: center;
+  }
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dropdown-modal {
+    animation: none;
+  }
+  * {
+    transition-duration: 0.01ms !important;
+  }
+}

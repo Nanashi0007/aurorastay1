@@ -1,0 +1,722 @@
+/* ===================================================================
+   AuroraStay — plain white theme
+   Navy · Gold · Green kept as accents on a white base (not solid blocks)
+   Signature element: the "horizon line" — a thin navy→gold→green
+   gradient rule, standing in for dawn breaking over the Baler coastline,
+   used as a divider instead of heavy color blocks.
+   Type: Poppins (display) / Inter (body)
+   =================================================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap");
+
+:root {
+  --navy-deep: #14335c;
+  --navy-mid: #1f4c85;
+  --gold: #d9a62b;
+  --gold-deep: #b9861a;
+  --green: #3c7a46;
+
+  --paper: #ffffff;
+  --bg: #ffffff;
+  --bg-soft: #f7f8f7;
+  --ink: #1b1f23;
+  --ink-soft: #5b6570;
+  --line: #e6e7e4;
+
+  --radius: 10px;
+  --shadow-sm: 0 2px 10px rgba(20, 51, 92, 0.06);
+  --shadow-md: 0 12px 32px rgba(20, 51, 92, 0.1);
+
+  --font-display: "Poppins", sans-serif;
+  --font-body: "Inter", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--bg);
+}
+
+.container {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  margin: 0;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+
+:focus-visible {
+  outline: 2px solid var(--navy-mid);
+  outline-offset: 2px;
+}
+
+/* ================= SIGNATURE: horizon line ================= */
+
+.horizon-line {
+  height: 3px;
+  width: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--navy-mid) 0%,
+    var(--gold) 50%,
+    var(--green) 100%
+  );
+  border: none;
+  margin: 0;
+}
+
+/* ================= BUTTON SYSTEM ================= */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  padding: 11px 20px;
+  line-height: 1;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.1s ease;
+  white-space: nowrap;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn-primary {
+  background: var(--gold);
+  color: var(--navy-deep);
+}
+
+.btn-primary:hover {
+  background: var(--gold-deep);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--navy-deep);
+  border-color: var(--navy-deep);
+}
+
+.btn-outline:hover {
+  background: rgba(20, 51, 92, 0.06);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--navy-mid);
+  padding: 8px 4px;
+}
+
+.btn-ghost:hover {
+  color: var(--navy-deep);
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+  transform: none;
+}
+
+/* ================= NAVBAR ================= */
+
+.navbar {
+  background: var(--paper);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.nav-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 76px;
+  gap: 24px;
+}
+
+.logo {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--navy-deep);
+  letter-spacing: 0.1px;
+  flex-shrink: 0;
+}
+
+.logo span {
+  color: var(--gold-deep);
+}
+
+.navbar nav {
+  display: flex;
+  gap: 32px;
+}
+
+.navbar nav a {
+  color: var(--ink-soft);
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.15s ease;
+}
+
+.navbar nav a:hover {
+  color: var(--navy-deep);
+}
+
+.nav-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.nav-toggle {
+  display: none;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  color: var(--navy-deep);
+  font-size: 16px;
+}
+
+/* Search card */
+
+/* Quick-book strip */
+
+.quickbook {
+  margin-top: 34px;
+}
+
+.quickbook-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+
+.quickbook-head span {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 17px;
+}
+
+.quickbook-head small {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 11px;
+  color: var(--green);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.quickbook-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.quickbook-card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  padding: 0;
+  text-align: left;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.quickbook-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-sm);
+}
+
+.quickbook-card img {
+  width: 100%;
+  height: 90px;
+  object-fit: cover;
+  display: block;
+}
+
+.quickbook-info {
+  padding: 10px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.quickbook-info strong {
+  font-size: 13px;
+  color: var(--ink);
+  line-height: 1.25;
+}
+
+.quickbook-info span {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--navy-mid);
+  font-weight: 600;
+}
+
+/* ================= SECTION HEADERS ================= */
+
+.section-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin: 60px 0 24px;
+}
+
+.section-header h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.section-header p {
+  margin: 4px 0 0;
+  color: var(--ink-soft);
+  font-size: 14px;
+}
+
+/* ================= DESTINATIONS ================= */
+
+.destination-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.destination-card {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  height: 200px;
+  border: 1px solid var(--line);
+}
+
+.destination-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.destination-card:hover img {
+  transform: scale(1.06);
+}
+
+.destination-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 45%, rgba(20, 51, 92, 0.82));
+  display: flex;
+  align-items: flex-end;
+  padding: 14px;
+}
+
+.destination-overlay h3 {
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* ================= FEATURES ================= */
+
+.features {
+  background: var(--bg-soft);
+  margin-top: 64px;
+  padding: 50px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.features h2 {
+  color: var(--ink);
+  font-size: 22px;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.feature-card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 26px;
+  text-align: center;
+}
+
+.feature-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 14px;
+  font-size: 17px;
+}
+
+.feature-icon.navy {
+  background: rgba(20, 51, 92, 0.08);
+  color: var(--navy-deep);
+}
+
+.feature-icon.gold {
+  background: rgba(217, 166, 43, 0.14);
+  color: var(--gold-deep);
+}
+
+.feature-icon.green {
+  background: rgba(60, 122, 70, 0.1);
+  color: var(--green);
+}
+
+.feature-card h3 {
+  color: var(--ink);
+  font-size: 15px;
+  margin-bottom: 6px;
+}
+
+.feature-card p {
+  color: var(--ink-soft);
+  font-size: 13px;
+  margin: 0;
+}
+
+/* ================= POPULAR ACCOMMODATIONS ================= */
+
+.hotel-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.hotel-card {
+  background: var(--paper);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--line);
+  position: relative;
+}
+
+.hotel-image {
+  position: relative;
+  height: 160px;
+}
+
+.hotel-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.hotel-type {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: var(--navy-deep);
+  color: var(--gold);
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 5px 10px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ticket-perforation {
+  height: 0;
+  border-top: 1px dashed var(--line);
+  position: relative;
+  margin: 0;
+}
+
+.ticket-perforation::before,
+.ticket-perforation::after {
+  content: "";
+  position: absolute;
+  top: -7px;
+  width: 14px;
+  height: 14px;
+  background: var(--bg);
+  border-radius: 50%;
+}
+
+.ticket-perforation::before {
+  left: -7px;
+}
+
+.ticket-perforation::after {
+  right: -7px;
+}
+
+.hotel-content {
+  padding: 16px 18px 18px;
+}
+
+.hotel-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.hotel-top h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.hotel-top p {
+  margin: 3px 0 0;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.hotel-rating {
+  background: var(--navy-mid);
+  color: #ffffff;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 9px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.hotel-rating svg {
+  color: var(--gold);
+  font-size: 11px;
+}
+
+.reviews {
+  display: block;
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin-top: 4px;
+}
+
+.amenities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.amenities span {
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-size: 11px;
+  padding: 4px 9px;
+  border-radius: 999px;
+}
+
+.rooms-left {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--green);
+  font-weight: 600;
+}
+
+.hotel-bottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.price-stamp {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.price-stamp small {
+  font-size: 11px;
+  color: var(--ink-soft);
+}
+
+.price-stamp h2 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  color: var(--ink);
+}
+
+/* ================= CTA ================= */
+
+.cta {
+  margin-top: 64px;
+  padding: 56px 0 60px;
+  text-align: center;
+}
+
+.cta .container {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 48px 24px;
+  background: var(--bg-soft);
+}
+
+.cta h2 {
+  color: var(--ink);
+  font-size: 26px;
+}
+
+.cta p {
+  color: var(--ink-soft);
+  margin: 10px 0 22px;
+  font-size: 15px;
+}
+
+.cta .btn-primary {
+  padding: 13px 30px;
+}
+
+/* ================= RESPONSIVE ================= */
+
+/* Desktop is the primary target; these breakpoints keep the same
+   button system usable down to tablet and mobile widths. */
+
+@media (max-width: 900px) {
+  .search-card {
+    flex-wrap: wrap;
+  }
+
+  .divider {
+    display: none;
+  }
+
+  .search-item {
+    flex: 1 1 45%;
+    padding: 8px 10px;
+  }
+
+  .search-btn {
+    width: 100%;
+    justify-content: center;
+    margin-top: 8px;
+  }
+
+  .quickbook-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .destination-grid,
+  .hotel-list,
+  .feature-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .nav-toggle {
+    display: flex;
+  }
+
+  .navbar nav {
+    position: absolute;
+    top: 76px;
+    left: 0;
+    right: 0;
+    background: var(--paper);
+    border-bottom: 1px solid var(--line);
+    flex-direction: column;
+    gap: 0;
+    padding: 8px 0;
+    box-shadow: var(--shadow-sm);
+    display: none;
+  }
+
+  .navbar nav.nav-open {
+    display: flex;
+  }
+
+  .navbar nav a {
+    padding: 12px 24px;
+  }
+
+  .nav-user-name {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .hero-content h1 {
+    font-size: 26px;
+  }
+
+  .quickbook-row,
+  .destination-grid,
+  .hotel-list,
+  .feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .cta .container {
+    padding: 36px 20px;
+  }
+}

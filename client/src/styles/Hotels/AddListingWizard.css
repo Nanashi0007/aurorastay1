@@ -1,0 +1,9 @@
+.review-block {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.review-block h4 {
+  margin-bottom: 6px;
+}

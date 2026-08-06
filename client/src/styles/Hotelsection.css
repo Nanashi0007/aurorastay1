@@ -1,0 +1,118 @@
+/* ===============================
+   HOTEL CAROUSEL
+=================================*/
+
+.hotel-carousel-wrapper {
+  position: relative;
+}
+
+.hotel-carousel {
+  display: flex;
+  gap: 24px;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+
+  padding: 6px;
+
+  scrollbar-width: none;
+}
+
+.hotel-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.hotel-carousel .hotel-card {
+  flex: 0 0 calc(25% - 18px);
+
+  scroll-snap-align: start;
+}
+
+/* ===============================
+   ARROWS
+=================================*/
+
+.carousel-arrow {
+  position: absolute;
+  top: 45%;
+
+  transform: translateY(-50%);
+
+  width: 48px;
+  height: 48px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: white;
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  z-index: 20;
+
+  transition: 0.25s;
+}
+
+.carousel-arrow:hover {
+  transform: translateY(-50%) scale(1.06);
+}
+
+.carousel-arrow.left {
+  left: -22px;
+}
+
+.carousel-arrow.right {
+  right: -22px;
+}
+
+.carousel-arrow svg {
+  font-size: 18px;
+}
+
+.carousel-arrow.disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.carousel-arrow:disabled {
+  pointer-events: none;
+}
+
+/* ===============================
+   RESPONSIVE
+=================================*/
+
+@media (max-width: 1200px) {
+  .hotel-carousel .hotel-card {
+    flex: 0 0 calc(33.333% - 16px);
+  }
+}
+
+@media (max-width: 900px) {
+  .hotel-carousel .hotel-card {
+    flex: 0 0 calc(50% - 12px);
+  }
+}
+
+@media (max-width: 600px) {
+  .hotel-carousel .hotel-card {
+    flex: 0 0 80%;
+  }
+
+  .carousel-arrow {
+    display: none;
+  }
+
+  .hotel-carousel {
+    padding-bottom: 8px;
+  }
+}
