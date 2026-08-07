@@ -34,15 +34,70 @@ function mapListingToHotelCard(row, photos = [], minPrice = null) {
 // --- GET all active listings (public — for homepage/browse) ---
 router.get("/", async (req, res) => {
   try {
+    const { minPrice, maxPrice, type, amenities } = req.query;
+
+    const conditions = ["l.status = 'active'"];
+    const havingConditions = [];
+    const values = [];
+    let paramIndex = 1;
+
+    if (type) {
+      const types = type
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean);
+      if (types.length > 0) {
+        conditions.push(`l.accommodation_type = ANY($${paramIndex})`);
+        values.push(types);
+        paramIndex++;
+      }
+    }
+
+    if (amenities) {
+      const amenityList = amenities
+        .split(",")
+        .map((a) => a.trim())
+        .filter(Boolean);
+      if (amenityList.length > 0) {
+        // @> = "amenities column contains all of these values"
+        conditions.push(`l.amenities @> $${paramIndex}`);
+        values.push(amenityList);
+        paramIndex++;
+      }
+    }
+
+    if (minPrice && !isNaN(Number(minPrice))) {
+      havingConditions.push(`MIN(r.price_per_night) >= $${paramIndex}`);
+      values.push(Number(minPrice));
+      paramIndex++;
+    }
+
+    if (maxPrice && !isNaN(Number(maxPrice))) {
+      havingConditions.push(`MIN(r.price_per_night) <= $${paramIndex}`);
+      values.push(Number(maxPrice));
+      paramIndex++;
+    }
+
+    const whereClause = `WHERE ${conditions.join(" AND ")}`;
+    const havingClause =
+      havingConditions.length > 0
+        ? `HAVING ${havingConditions.join(" AND ")}`
+        : "";
+
     const listingsResult = await db.query(
-      "SELECT * FROM listings WHERE status = 'active' ORDER BY id DESC",
+      `SELECT l.*, MIN(r.price_per_night) AS min_price
+       FROM listings l
+       LEFT JOIN rooms r ON r.property_id = l.id AND r.status = 'active'
+       ${whereClause}
+       GROUP BY l.id
+       ${havingClause}
+       ORDER BY l.id DESC`,
+      values,
     );
 
     const listingIds = listingsResult.rows.map((row) => row.id);
 
     let photosByListing = {};
-    let minPriceByListing = {};
-
     if (listingIds.length > 0) {
       const photosResult = await db.query(
         `SELECT * FROM listing_photos WHERE listing_id = ANY($1) ORDER BY sort_order ASC`,
@@ -53,29 +108,51 @@ router.get("/", async (req, res) => {
         acc[photo.listing_id].push(photo);
         return acc;
       }, {});
-
-      const priceResult = await db.query(
-        `SELECT property_id, MIN(price_per_night) AS min_price
-         FROM rooms
-         WHERE property_id = ANY($1) AND status = 'active'
-         GROUP BY property_id`,
-        [listingIds],
-      );
-      minPriceByListing = priceResult.rows.reduce((acc, row) => {
-        acc[row.property_id] = row.min_price;
-        return acc;
-      }, {});
     }
 
     const hotels = listingsResult.rows.map((row) =>
-      mapListingToHotelCard(
-        row,
-        photosByListing[row.id] || [],
-        minPriceByListing[row.id] ?? null,
-      ),
+      mapListingToHotelCard(row, photosByListing[row.id] || [], row.min_price),
     );
 
     res.json({ hotels });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// --- GET filter options (accommodation types, amenities, price bounds) ---
+router.get("/filters/meta", async (req, res) => {
+  try {
+    const typesResult = await db.query(
+      `SELECT DISTINCT accommodation_type
+       FROM listings
+       WHERE status = 'active'
+       ORDER BY accommodation_type`,
+    );
+
+    const amenitiesResult = await db.query(
+      `SELECT DISTINCT unnest(amenities) AS amenity
+       FROM listings
+       WHERE status = 'active'
+       ORDER BY amenity`,
+    );
+
+    const priceResult = await db.query(
+      `SELECT MIN(r.price_per_night) AS min_price, MAX(r.price_per_night) AS max_price
+       FROM rooms r
+       JOIN listings l ON l.id = r.property_id
+       WHERE r.status = 'active' AND l.status = 'active'`,
+    );
+
+    res.json({
+      types: typesResult.rows.map((r) => r.accommodation_type),
+      amenities: amenitiesResult.rows.map((r) => r.amenity),
+      priceRange: {
+        min: Number(priceResult.rows[0]?.min_price ?? 0),
+        max: Number(priceResult.rows[0]?.max_price ?? 0),
+      },
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });

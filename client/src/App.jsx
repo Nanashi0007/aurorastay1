@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home/Home";
 import AccommodationDetails from "./pages/Owner/components/pages/components/AccommodationDetails";
 import HotelDetails from "./pages/Home/Pages/HotelDetails";
+import HotelsPage from "./pages/Home/HotelsPage";
 
 // Auth
 import Login from "./pages/Auth/Login";
@@ -33,6 +34,8 @@ function App() {
             <Route path="/tourist/register" element={<TouristRegister />} />
             <Route path="/owner/register" element={<OwnerRegister />} />
             <Route path="/hotels/:id" element={<HotelDetails />} />
+
+            <Route path="/hotels" element={<HotelsPage />} />
 
             <Route
               path="/owner/listings/:id"

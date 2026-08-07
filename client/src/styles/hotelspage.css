@@ -1,0 +1,227 @@
+:root {
+  --ink: #2b2b2b;
+  --ink-muted: #6b6b6b;
+  --white: #ffffff;
+  --smoke: #f4f4f2;
+  --smoke-dark: #e8e7e3;
+  --line: #dddad3;
+  --font-display: "Libre Caslon Display", Georgia, serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "Space Mono", monospace;
+}
+
+.hotels-page {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 32px;
+  padding: 40px 24px 80px;
+  background: var(--smoke);
+  min-height: 100vh;
+  color: var(--ink);
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.hotels-page h1 {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 400;
+  margin: 0 0 24px;
+  grid-column: 1 / -1;
+  color: var(--ink);
+}
+
+/* ---- Filter sidebar: ticket stub ---- */
+
+.filter-sidebar {
+  background: var(--white);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 24px 20px;
+  align-self: start;
+  position: sticky;
+  top: 24px;
+}
+
+.filter-group {
+  padding: 16px 0;
+  border-bottom: 1px dashed var(--line);
+}
+
+.filter-group:first-of-type {
+  padding-top: 0;
+}
+
+.filter-group:last-of-type {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.filter-group h4 {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  margin: 0 0 12px;
+}
+
+.filter-price-row {
+  display: flex;
+  gap: 8px;
+}
+
+.filter-sidebar input[type="number"] {
+  width: 100%;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--smoke);
+  color: var(--ink);
+}
+
+.filter-sidebar input[type="number"]:focus {
+  outline: none;
+  border-color: var(--ink);
+  background: var(--white);
+}
+
+/* ---- Stamp checkboxes ---- */
+
+.stamp-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  padding: 6px 0;
+  cursor: pointer;
+  user-select: none;
+  color: var(--ink);
+}
+
+.stamp-checkbox input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.stamp-checkbox .mark {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  border: 1.5px solid var(--ink-muted);
+  border-radius: 3px;
+  position: relative;
+  background: var(--smoke);
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.stamp-checkbox .mark::after {
+  content: "✕";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--white);
+  opacity: 0;
+  transform: scale(1.6) rotate(-14deg);
+  transition:
+    opacity 0.1s ease,
+    transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.stamp-checkbox input:checked ~ .mark {
+  border-color: var(--ink);
+  background: var(--ink);
+}
+
+.stamp-checkbox input:checked ~ .mark::after {
+  opacity: 1;
+  transform: scale(1) rotate(-14deg);
+}
+
+.stamp-checkbox input:focus-visible ~ .mark {
+  outline: 2px solid var(--ink-muted);
+  outline-offset: 2px;
+}
+
+/* ---- Active filter chips ---- */
+
+.active-filters {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 5px 10px 5px 12px;
+  border-radius: 3px;
+}
+
+.filter-chip button {
+  background: none;
+  border: none;
+  color: var(--ink-muted);
+  font-size: 13px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+}
+
+.filter-chip button:hover {
+  color: var(--ink);
+}
+
+/* ---- Results grid ---- */
+
+.hotels-results {
+  min-width: 0;
+}
+
+.hotels-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.hotels-empty {
+  font-family: var(--font-body);
+  color: var(--ink-muted);
+  padding: 60px 0;
+  text-align: center;
+}
+
+@media (max-width: 780px) {
+  .hotels-page {
+    grid-template-columns: 1fr;
+  }
+  .filter-sidebar {
+    position: static;
+  }
+}
+
+.hotels-search-bar {
+  margin-bottom: 32px;
+}
