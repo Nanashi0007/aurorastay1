@@ -51,6 +51,8 @@ export default function HotelDetails() {
   const [error, setError] = useState(null);
   const roomsSectionRef = useRef(null);
   const [editingRoom, setEditingRoom] = useState(null);
+  const [hasPendingBooking, setHasPendingBooking] = useState(false);
+  const [showPendingModal, setShowPendingModal] = useState(false);
 
   const [reservingRoom, setReservingRoom] = useState(null);
 
@@ -87,6 +89,28 @@ export default function HotelDetails() {
       block: "start",
     });
   }
+
+  useEffect(() => {
+    async function checkPendingBookings() {
+      if (!authToken) return;
+      try {
+        const res = await fetch("/api/bookings/me", {
+          headers: { Authorization: `Bearer ${authToken}` },
+        });
+        const data = await res.json();
+        if (res.ok) {
+          const pending = (data.bookings || []).some(
+            (b) => b.status === "pending",
+          );
+          setHasPendingBooking(pending);
+        }
+      } catch (err) {
+        console.error("Failed to check pending bookings:", err);
+      }
+    }
+
+    checkPendingBookings();
+  }, [authToken]);
   useEffect(() => {
     async function fetchRooms() {
       try {
@@ -390,7 +414,13 @@ export default function HotelDetails() {
                 <RoomCard
                   key={room.id}
                   room={room}
-                  onManage={() => setSelectedRoom(room)}
+                  onManage={() => {
+                    if (hasPendingBooking) {
+                      setShowPendingModal(true);
+                      return;
+                    }
+                    setSelectedRoom(room);
+                  }}
                 />
               ))}
             </div>
@@ -556,6 +586,43 @@ export default function HotelDetails() {
         onClose={() => setShowLogin(false)}
         onLoginSuccess={handleLoginSuccess}
       />
+
+      {showPendingModal && (
+        <div
+          className="hd-overlay"
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setShowPendingModal(false)}
+        >
+          <div
+            className="hd-pending-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3>You have a booking awaiting confirmation</h3>
+            <p>
+              You already have a booking that hasn't been confirmed by the owner
+              yet. You can book another room once that one is confirmed,
+              declined, or cancelled.
+            </p>
+            <div className="hd-pending-modal-actions">
+              <button
+                type="button"
+                className="btn-link"
+                onClick={() => setShowPendingModal(false)}
+              >
+                Close
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => navigate("/bookings")}
+              >
+                View My Bookings
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
