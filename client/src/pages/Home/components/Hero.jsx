@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
 import {
   FaSearch,
   FaMapMarkerAlt,
@@ -384,6 +385,13 @@ export default function Hero({ hotels }) {
       <div className="quickbook container">
         <div className="quickbook-head">
           <h2>Recently Viewed</h2>
+
+          <div className="t">
+            <Link to="/bookings?tab=recentlyViewed" className="browse-link">
+              Browse More
+              <FaChevronRight />
+            </Link>
+          </div>
         </div>
 
         {recentlyViewedHotels.length === 0 ? (

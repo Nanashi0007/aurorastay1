@@ -20,6 +20,11 @@ export function useHotels(filters) {
         if (filters.types?.length) params.set("type", filters.types.join(","));
         if (filters.amenities?.length)
           params.set("amenities", filters.amenities.join(","));
+        if (filters.destination) params.set("destination", filters.destination);
+        if (filters.checkIn) params.set("checkIn", toDateOnly(filters.checkIn));
+        if (filters.checkOut)
+          params.set("checkOut", toDateOnly(filters.checkOut));
+        if (filters.guests) params.set("guests", filters.guests);
 
         const res = await fetch(`${API_BASE}?${params.toString()}`, {
           signal: controller.signal,
@@ -42,7 +47,20 @@ export function useHotels(filters) {
     filters.maxPrice,
     filters.types?.join(","),
     filters.amenities?.join(","),
+    filters.destination,
+    filters.checkIn,
+    filters.checkOut,
+    filters.guests,
   ]);
 
   return { hotels, loading, error };
+}
+
+// checkIn/checkOut arrive as Date objects from SearchBar's calendar —
+// convert to a plain YYYY-MM-DD string for the query param.
+function toDateOnly(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
 }

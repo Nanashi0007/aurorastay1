@@ -41,7 +41,8 @@ function mapRoomRow(row, photos = []) {
     description: row.description,
     pricePerNight: row.price_per_night,
     maxGuests: row.max_guests,
-    roomsAvailable: row.rooms_available,
+    // was: roomsAvailable: row.rooms_available,
+    roomsAvailable: row.effective_rooms_available ?? row.rooms_available,
     bedType: row.bed_type,
     roomSizeSqm: row.room_size_sqm,
     floorRange: row.floor_range,
@@ -62,7 +63,20 @@ router.get("/public", async (req, res) => {
     const { id: propertyId } = req.params;
 
     const roomsResult = await db.query(
-      "SELECT * FROM rooms WHERE property_id = $1 AND status = 'active' ORDER BY id ASC",
+      `SELECT r.*,
+              GREATEST(
+                r.rooms_available - COALESCE(bc.active_bookings, 0),
+                0
+              ) AS effective_rooms_available
+       FROM rooms r
+       LEFT JOIN (
+         SELECT room_id, COUNT(*) AS active_bookings
+         FROM bookings
+         WHERE status = 'confirmed' AND check_out >= CURRENT_DATE
+         GROUP BY room_id
+       ) bc ON bc.room_id = r.id
+       WHERE r.property_id = $1 AND r.status = 'active'
+       ORDER BY r.id ASC`,
       [propertyId],
     );
 
@@ -83,6 +97,54 @@ router.get("/public", async (req, res) => {
     const rooms = roomsResult.rows.map((row) =>
       mapRoomRow(row, photosByRoom[row.id] || []),
     );
+    res.json({ rooms });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// --- GET all rooms for a property (public) ---
+router.get("/", async (req, res) => {
+  try {
+    const { id: propertyId } = req.params;
+
+    const roomsResult = await db.query(
+      `SELECT r.*,
+              GREATEST(
+                r.rooms_available - COALESCE(bc.active_bookings, 0),
+                0
+              ) AS effective_rooms_available
+       FROM rooms r
+       LEFT JOIN (
+         SELECT room_id, COUNT(*) AS active_bookings
+         FROM bookings
+         WHERE status = 'confirmed' AND check_out >= CURRENT_DATE
+         GROUP BY room_id
+       ) bc ON bc.room_id = r.id
+       WHERE r.property_id = $1 AND r.status = 'active'
+       ORDER BY r.id ASC`,
+      [propertyId],
+    );
+
+    const roomIds = roomsResult.rows.map((r) => r.id);
+    let photosByRoom = {};
+    if (roomIds.length > 0) {
+      const photosResult = await db.query(
+        `SELECT * FROM room_photos WHERE room_id = ANY($1) ORDER BY sort_order ASC`,
+        [roomIds],
+      );
+      photosByRoom = photosResult.rows.reduce((acc, photo) => {
+        if (!acc[photo.room_id]) acc[photo.room_id] = [];
+        acc[photo.room_id].push(photo);
+        return acc;
+      }, {});
+    }
+
+    const rooms = roomsResult.rows.map((row) =>
+      mapRoomRow(row, photosByRoom[row.id] || []),
+    );
+
     res.json({ rooms });
   } catch (err) {
     console.error(err);

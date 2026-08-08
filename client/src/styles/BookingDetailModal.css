@@ -1,0 +1,390 @@
+/* --- Overlay & modal shell --- */
+.bd-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.bd-modal {
+  background: #fff;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Top bar --- */
+.bd-topbar {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #eee;
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 2;
+}
+
+.bd-close-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #555;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+  min-width: 32px;
+  min-height: 32px;
+}
+
+.bd-close-btn:hover {
+  background: #f2f2f2;
+}
+
+/* --- Photo --- */
+.bd-photo {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  background: #f4f4f4;
+}
+
+.bd-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.bd-photo-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 14px;
+}
+
+/* reuse mb-card-type-badge if it exists elsewhere; fallback styling here */
+.bd-photo .mb-card-type-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(0, 0, 0, 0.65);
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* --- Body --- */
+.bd-body {
+  padding: 20px;
+}
+
+.bd-room-title {
+  margin: 0 0 4px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a1a1a;
+  word-break: break-word;
+}
+
+.bd-listing-title {
+  margin: 0 0 8px;
+  color: #666;
+  font-size: 14px;
+  word-break: break-word;
+}
+
+.bd-location {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  color: #555;
+  font-size: 14px;
+  margin: 0 0 16px;
+  word-break: break-word;
+}
+
+.bd-section {
+  padding: 16px 0;
+  border-top: 1px solid #eee;
+}
+
+.bd-section:first-of-type {
+  border-top: 1px solid #eee;
+}
+
+.bd-section h4 {
+  margin: 0 0 10px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #888;
+  font-weight: 600;
+}
+
+.bd-section p {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0 0 8px;
+  color: #333;
+  font-size: 14px;
+  word-break: break-word;
+}
+
+.bd-section p:last-child {
+  margin-bottom: 0;
+}
+
+.bd-special-requests {
+  align-items: flex-start !important;
+  line-height: 1.4;
+}
+
+/* --- Payment --- */
+.bd-price-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 14px;
+  color: #444;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.bd-price-deposit {
+  border-top: 1px dashed #ddd;
+  padding-top: 8px;
+  color: #1a1a1a;
+}
+
+.bd-payment-status {
+  font-size: 13px;
+  color: #777;
+  margin-top: 6px;
+}
+
+.bd-proof {
+  margin-top: 14px;
+}
+
+.bd-proof small {
+  display: block;
+  color: #888;
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+
+.bd-proof-image {
+  width: 100%;
+  max-width: 240px;
+  border-radius: 8px;
+  border: 1px solid #eee;
+  cursor: zoom-in;
+  display: block;
+}
+
+/* --- Footer actions --- */
+.bd-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-top: 1px solid #eee;
+  position: sticky;
+  bottom: 0;
+  background: #fff;
+  flex-wrap: wrap;
+}
+
+/* --- Photo nav arrows & counter --- */
+.bd-photo-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.bd-photo-nav-prev {
+  left: 12px;
+}
+
+.bd-photo-nav-next {
+  right: 12px;
+}
+
+.bd-photo-counter {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 12px;
+}
+
+/* --- Thumbnail strip --- */
+.bd-thumb-strip {
+  display: flex;
+  gap: 6px;
+  padding: 10px 20px;
+  overflow-x: auto;
+  border-bottom: 1px solid #eee;
+  -webkit-overflow-scrolling: touch;
+}
+
+.bd-thumb {
+  flex: 0 0 auto;
+  width: 56px;
+  height: 44px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  padding: 0;
+  cursor: pointer;
+  background: none;
+}
+
+.bd-thumb.active {
+  border-color: #1a73e8;
+}
+
+.bd-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ============================================================
+   Responsive breakpoints
+   ============================================================ */
+
+/* --- Tablets / small laptops --- */
+@media (max-width: 768px) {
+  .bd-overlay {
+    padding: 16px;
+    align-items: flex-start;
+    padding-top: 40px;
+  }
+
+  .bd-modal {
+    max-width: 480px;
+  }
+
+  .bd-photo {
+    height: 200px;
+  }
+}
+
+/* --- Large phones --- */
+@media (max-width: 600px) {
+  .bd-overlay {
+    padding: 0;
+    align-items: stretch;
+    padding-top: 0;
+  }
+
+  .bd-modal {
+    max-width: 100%;
+    width: 100%;
+    height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 0;
+  }
+
+  .bd-photo {
+    height: 180px;
+  }
+
+  .bd-topbar {
+    padding: 14px 16px;
+  }
+
+  .bd-body {
+    padding: 16px;
+  }
+
+  .bd-room-title {
+    font-size: 18px;
+  }
+
+  .bd-thumb-strip {
+    padding: 8px 16px;
+  }
+
+  .bd-thumb {
+    width: 48px;
+    height: 38px;
+  }
+
+  .bd-footer {
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+  }
+}
+
+/* --- Small phones --- */
+@media (max-width: 380px) {
+  .bd-photo {
+    height: 150px;
+  }
+
+  .bd-photo-nav {
+    width: 28px;
+    height: 28px;
+    font-size: 11px;
+  }
+
+  .bd-section h4 {
+    font-size: 12px;
+  }
+
+  .bd-section p {
+    font-size: 13px;
+  }
+
+  .bd-proof-image {
+    max-width: 100%;
+  }
+
+  .bd-footer {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .bd-footer button {
+    width: 100%;
+  }
+}

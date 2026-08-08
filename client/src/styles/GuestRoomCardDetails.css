@@ -1,0 +1,40 @@
+/* --- Sold out / unavailable room state --- */
+.rc-card-unavailable {
+  opacity: 0.75;
+}
+
+.rc-sold-out-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 20, 25, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: inherit;
+}
+
+.rc-sold-out-overlay span {
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+}
+
+.rc-availability-none {
+  color: #b3261e;
+  font-weight: 700;
+}
+
+.rc-manage-btn:disabled {
+  background: var(--bg-soft);
+  color: var(--ink-soft);
+  cursor: not-allowed;
+  border: 1px solid var(--line);
+}
+
+.rc-manage-btn:disabled:hover {
+  background: var(--bg-soft);
+}

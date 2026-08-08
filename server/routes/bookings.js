@@ -53,6 +53,10 @@ function mapBookingRow(row) {
     paymentStatus: row.payment_status,
     status: row.status,
     createdAt: row.created_at,
+    // new:
+    coverPhotoUrl: row.cover_photo_url,
+    accommodationType: row.accommodation_type,
+    location: [row.barangay, row.municipality].filter(Boolean).join(", "),
   };
 }
 
@@ -157,10 +161,14 @@ router.post(
 router.get("/me", authenticate, async (req, res) => {
   try {
     const result = await db.query(
-      `SELECT b.*, r.room_name, r.property_id, l.title
+      `SELECT b.*, r.room_name, r.property_id, l.title,
+              l.accommodation_type, l.municipality, l.barangay,
+              lp.image_url AS cover_photo_url
        FROM bookings b
        JOIN rooms r ON r.id = b.room_id
        JOIN listings l ON l.id = r.property_id
+       LEFT JOIN listing_photos lp
+         ON lp.listing_id = l.id AND lp.sort_order = 0
        WHERE b.guest_id = $1
        ORDER BY b.created_at DESC`,
       [req.userId],
@@ -176,10 +184,14 @@ router.get("/me", authenticate, async (req, res) => {
 router.get("/owner", authenticate, async (req, res) => {
   try {
     const result = await db.query(
-      `SELECT b.*, r.room_name, r.property_id, l.title
+      `SELECT b.*, r.room_name, r.property_id, l.title,
+              l.accommodation_type, l.municipality, l.barangay,
+              lp.image_url AS cover_photo_url
        FROM bookings b
        JOIN rooms r ON r.id = b.room_id
        JOIN listings l ON l.id = r.property_id
+       LEFT JOIN listing_photos lp
+         ON lp.listing_id = l.id AND lp.sort_order = 0
        WHERE l.owner_id = $1
        ORDER BY b.created_at DESC`,
       [req.userId],
@@ -224,5 +236,4 @@ router.patch("/:id/status", authenticate, async (req, res) => {
     res.status(500).json({ message: "Failed to update booking." });
   }
 });
-
 module.exports = router;

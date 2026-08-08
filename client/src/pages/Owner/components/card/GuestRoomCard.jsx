@@ -8,6 +8,7 @@ import {
 } from "react-icons/fa";
 import RoomDetailModal from "../pages/components/RoomDetailModal";
 import "../../../../styles/Hotels/RoomCardDetails.css";
+import "../../../../styles/GuestRoomCardDetails.css";
 
 export default function RoomCard({ room, onManage }) {
   const [photoIndex, setPhotoIndex] = useState(0);
@@ -15,6 +16,8 @@ export default function RoomCard({ room, onManage }) {
 
   const photos = room.photos || [];
   const hasPhotos = photos.length > 0;
+
+  const isAvailable = Number(room.roomsAvailable) > 0;
 
   function prevPhoto(e) {
     e.stopPropagation();
@@ -37,7 +40,7 @@ export default function RoomCard({ room, onManage }) {
 
   return (
     <>
-      <div className="rc-card">
+      <div className={`rc-card ${!isAvailable ? "rc-card-unavailable" : ""}`}>
         <div className="rc-image-col">
           <div className="rc-image">
             {hasPhotos ? (
@@ -73,6 +76,12 @@ export default function RoomCard({ room, onManage }) {
             <span className="rc-guest-badge">
               <FaUserFriends /> {room.maxGuests}
             </span>
+
+            {!isAvailable && (
+              <div className="rc-sold-out-overlay">
+                <span>No Rooms Left</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -132,17 +141,24 @@ export default function RoomCard({ room, onManage }) {
           </div>
           <small className="rc-price-note">per night</small>
 
-          <div className="rc-availability">
-            {room.roomsAvailable} room{room.roomsAvailable > 1 ? "s" : ""}{" "}
-            available
-          </div>
+          {isAvailable ? (
+            <div className="rc-availability">
+              {room.roomsAvailable} room{room.roomsAvailable > 1 ? "s" : ""}{" "}
+              available
+            </div>
+          ) : (
+            <div className="rc-availability rc-availability-none">
+              No rooms left
+            </div>
+          )}
 
           <button
             type="button"
             className="btn btn-primary rc-manage-btn"
             onClick={() => onManage?.(room)}
+            disabled={!isAvailable}
           >
-            Book
+            {isAvailable ? "Book" : "Sold Out"}
           </button>
         </div>
       </div>

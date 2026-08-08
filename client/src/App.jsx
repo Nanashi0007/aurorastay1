@@ -16,7 +16,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import TouristDashboard from "./pages/Tourist/Dashboard";
 import AdminDashboard from "./pages/Admin/Dashboard";
 import OwnerDashboard from "./pages/Owner/Dashboard";
-
+import OwnerBookings from "./pages/Home/Pages/OwnerBookings";
 //owner
 import OwnerListings from "./pages/Owner/components/pages/OwnerListings";
 import MyBookings from "./pages/Home/Pages/MyBookings";
@@ -36,6 +36,8 @@ function App() {
             <Route path="/hotels/:id" element={<HotelDetails />} />
 
             <Route path="/hotels" element={<HotelsPage />} />
+
+            <Route path="/owner/bookings" element={<OwnerBookings />} />
 
             <Route
               path="/owner/listings/:id"

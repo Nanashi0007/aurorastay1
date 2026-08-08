@@ -582,3 +582,30 @@
     grid-template-columns: 1fr;
   }
 }
+
+.hd-room-card-wrap {
+  position: relative;
+}
+
+.hd-room-sold-out > *:not(.hd-room-sold-out-overlay) {
+  pointer-events: none;
+  opacity: 0.55;
+  filter: grayscale(30%);
+}
+
+.hd-room-sold-out-overlay {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 5;
+}
+
+.hd-room-sold-out-badge {
+  background: #1a1a1a;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+}

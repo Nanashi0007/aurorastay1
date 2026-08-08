@@ -226,6 +226,7 @@ button {
 .quickbook-head {
   display: flex;
   align-items: baseline;
+  justify-content: space-between;
   gap: 10px;
   color: var(--ink);
   margin-bottom: 12px;
@@ -443,6 +444,7 @@ button {
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--line);
   position: relative;
+  border-radius: 10px;
 }
 
 .hotel-image {

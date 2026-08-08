@@ -13,6 +13,10 @@ export default function HotelsPage() {
     maxPrice: "",
     types: [],
     amenities: [],
+    destination: "",
+    checkIn: null,
+    checkOut: null,
+    guests: "",
   });
 
   const { hotels, loading, error } = useHotels(filters);
@@ -70,7 +74,19 @@ export default function HotelsPage() {
   };
 
   function handleSearch({ destination, checkIn, checkOut, guests }) {
-    console.log("search:", { destination, checkIn, checkOut, guests });
+    console.log("handleSearch fired:", {
+      destination,
+      checkIn,
+      checkOut,
+      guests,
+    }); // temp
+    setFilters((prev) => ({
+      ...prev,
+      destination,
+      checkIn,
+      checkOut,
+      guests,
+    }));
   }
 
   return (

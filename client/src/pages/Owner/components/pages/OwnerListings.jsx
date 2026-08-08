@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   FaPlus,
   FaHome,
@@ -20,15 +20,36 @@ import Navbar from "../../../Home/components/Navbar";
 import CompleteProfileModal from "../../../Home/ProfileModal";
 
 const NAV_ITEMS = [
-  { id: "listings", label: "My Listings", icon: FaHome },
-  { id: "bookings", label: "Bookings", icon: FaClipboardList },
-  { id: "messages", label: "Messages", icon: FaEnvelope },
-  { id: "earnings", label: "Earnings", icon: FaWallet },
-  { id: "settings", label: "Settings", icon: FaCog },
+  {
+    id: "listings",
+    label: "My Listings",
+    icon: FaHome,
+    path: "/owner/listings",
+  },
+  {
+    id: "bookings",
+    label: "Bookings",
+    icon: FaClipboardList,
+    path: "/owner/bookings",
+  },
+  {
+    id: "messages",
+    label: "Messages",
+    icon: FaEnvelope,
+    path: "/owner/messages",
+  },
+  {
+    id: "earnings",
+    label: "Earnings",
+    icon: FaWallet,
+    path: "/owner/earnings",
+  },
+  { id: "settings", label: "Settings", icon: FaCog, path: "/owner/settings" },
 ];
 
 export default function OwnerListings() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -178,12 +199,14 @@ export default function OwnerListings() {
         {/* --- Floating sidebar --- */}
         <aside className="owner-sidebar">
           <nav className="owner-sidebar-nav">
-            {NAV_ITEMS.map(({ id, label, icon: Icon }) => (
+            {NAV_ITEMS.map(({ id, label, icon: Icon, path }) => (
               <button
                 type="button"
                 key={id}
-                className={`owner-sidebar-link ${activeNav === id ? "active" : ""}`}
-                onClick={() => setActiveNav(id)}
+                className={`owner-sidebar-link ${
+                  location.pathname === path ? "active" : ""
+                }`}
+                onClick={() => navigate(path)}
               >
                 <Icon />
                 <span>{label}</span>

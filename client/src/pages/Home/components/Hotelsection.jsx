@@ -10,6 +10,8 @@ export default function HotelsSection({ hotels }) {
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
 
+  const visibleHotels = hotels.slice(0, 7); // ADD THIS
+
   const updateButtons = () => {
     const slider = sliderRef.current;
     if (!slider) return;
@@ -33,7 +35,7 @@ export default function HotelsSection({ hotels }) {
       slider.removeEventListener("scroll", updateButtons);
       window.removeEventListener("resize", updateButtons);
     };
-  }, []);
+  }, [visibleHotels]); // UPDATED — recalculate arrow state if the sliced list changes
 
   const scroll = (direction) => {
     const slider = sliderRef.current;
@@ -68,9 +70,13 @@ export default function HotelsSection({ hotels }) {
         </button>
 
         <div className="hotel-carousel" ref={sliderRef}>
-          {hotels.map((hotel) => (
-            <HotelCard hotel={hotel} key={hotel.id} />
-          ))}
+          {visibleHotels.map(
+            (
+              hotel, // UPDATED — was hotels.map
+            ) => (
+              <HotelCard hotel={hotel} key={hotel.id} />
+            ),
+          )}
         </div>
 
         <button

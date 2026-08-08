@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 
 import "../../../styles/MyBookings.css"; // adjust path to match your structure
 import Navbar from "../components/Navbar";
@@ -177,6 +177,7 @@ export default function MyBookings() {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchParams] = useSearchParams();
 
   // "upcoming" | "history" | "recentlyViewed"
   const [activeTab, setActiveTab] = useState("upcoming");
@@ -304,6 +305,13 @@ export default function MyBookings() {
       setRecentLoading(false);
     }
   }
+
+  useEffect(() => {
+    if (searchParams.get("tab") === "recentlyViewed") {
+      handleRecentlyViewedClick();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const byTab =
     activeTab === "upcoming"
