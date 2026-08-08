@@ -63,14 +63,14 @@ export default function Navbar({
                     <FaSuitcaseRolling />
                     My Bookings
                   </Link>
-                  <a href="/saved">
+                  {/* <a href="/saved">
                     <FaHeart />
                     Saved
                   </a>
                   <a href="/recently-viewed">
                     <FaHistory />
                     Recently Viewed
-                  </a>
+                  </a> */}
                   <div className="nav-user-dropdown-divider" />
                   <button onClick={onLogout}>
                     <FaSignOutAlt />
