@@ -5,6 +5,7 @@ const router = express.Router();
 const db = require("../db");
 const cloudinary = require("../cloudinary");
 const { authenticate } = require("../middleware/authenticate");
+const { createNotification } = require("../utils/notify");
 
 const DEPOSIT_RATE = 0.3; // 30% down payment
 
@@ -97,8 +98,15 @@ router.post(
         return res.status(400).json({ message: "Invalid date range." });
       }
 
+      // const roomResult = await db.query(
+      //   "SELECT * FROM rooms WHERE id = $1 AND status = 'active'",
+      //   [roomId],
+      // );
       const roomResult = await db.query(
-        "SELECT * FROM rooms WHERE id = $1 AND status = 'active'",
+        `SELECT r.*, l.owner_id, l.title AS listing_title
+   FROM rooms r
+   JOIN listings l ON l.id = r.property_id
+   WHERE r.id = $1 AND r.status = 'active'`,
         [roomId],
       );
       if (roomResult.rows.length === 0) {
@@ -141,6 +149,13 @@ router.post(
           proofUpload.public_id,
         ],
       );
+
+      await createNotification({
+        userId: room.owner_id,
+        type: "booking_request",
+        message: `${guestName} requested a booking for ${room.listing_title}.`,
+        bookingId: inserted.rows[0].id,
+      });
 
       res.status(201).json({
         message: "Booking request submitted.",
@@ -214,11 +229,11 @@ router.patch("/:id/status", authenticate, async (req, res) => {
     }
 
     const ownsCheck = await db.query(
-      `SELECT b.id
-       FROM bookings b
-       JOIN rooms r ON r.id = b.room_id
-       JOIN listings l ON l.id = r.property_id
-       WHERE b.id = $1 AND l.owner_id = $2`,
+      `SELECT b.id, b.guest_id, l.title
+   FROM bookings b
+   JOIN rooms r ON r.id = b.room_id
+   JOIN listings l ON l.id = r.property_id
+   WHERE b.id = $1 AND l.owner_id = $2`,
       [id, req.userId],
     );
     if (ownsCheck.rows.length === 0) {
@@ -230,10 +245,131 @@ router.patch("/:id/status", authenticate, async (req, res) => {
       [status, id],
     );
 
+    const { guest_id, title } = ownsCheck.rows[0];
+    const statusMessages = {
+      confirmed: `Your booking for ${title} was confirmed.`,
+      declined: `Your booking for ${title} was declined.`,
+      cancelled: `Your booking for ${title} was cancelled by the owner.`,
+    };
+
+    await createNotification({
+      userId: guest_id,
+      type: `booking_${status}`,
+      message: statusMessages[status],
+      bookingId: id,
+    });
     res.json({ message: "Booking updated.", booking: updated.rows[0] });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Failed to update booking." });
+    res.status(500).json({ message: "Failed to RETURNING booking." });
+  }
+});
+
+// --- PATCH guest cancels their own booking ---
+router.patch("/:id/cancel", authenticate, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const bookingCheck = await db.query(
+      `SELECT b.id, b.status, l.owner_id, l.title
+   FROM bookings b
+   JOIN rooms r ON r.id = b.room_id
+   JOIN listings l ON l.id = r.property_id
+   WHERE b.id = $1 AND b.guest_id = $2`,
+      [id, req.userId],
+    );
+    if (bookingCheck.rows.length === 0) {
+      return res.status(404).json({ message: "Booking not found." });
+    }
+
+    const currentStatus = bookingCheck.rows[0].status;
+    if (!["pending", "confirmed"].includes(currentStatus)) {
+      return res
+        .status(400)
+        .json({ message: "This booking can no longer be cancelled." });
+    }
+
+    const updated = await db.query(
+      "UPDATE bookings SET status = 'cancelled' WHERE id = $1 RETURNING *",
+      [id],
+    );
+
+    await createNotification({
+      userId: bookingCheck.rows[0].owner_id,
+      type: "booking_cancelled",
+      message: `A guest cancelled their booking for ${bookingCheck.rows[0].title}.`,
+      bookingId: id,
+    });
+
+    res.json({ message: "Booking cancelled.", booking: updated.rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to cancel booking." });
+  }
+});
+
+// --- POST guest submits a review for a completed, confirmed booking ---
+router.post("/:id/review", authenticate, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { rating, comment } = req.body;
+
+    const ratingNum = Number(rating);
+    if (!ratingNum || ratingNum < 1 || ratingNum > 5) {
+      return res
+        .status(400)
+        .json({ message: "Rating must be between 1 and 5." });
+    }
+
+    const bookingCheck = await db.query(
+      `SELECT b.id, b.status, b.check_out, l.id AS listing_id
+       FROM bookings b
+       JOIN rooms r ON r.id = b.room_id
+       JOIN listings l ON l.id = r.property_id
+       WHERE b.id = $1 AND b.guest_id = $2`,
+      [id, req.userId],
+    );
+    if (bookingCheck.rows.length === 0) {
+      return res.status(404).json({ message: "Booking not found." });
+    }
+
+    const booking = bookingCheck.rows[0];
+    if (booking.status !== "confirmed") {
+      return res
+        .status(400)
+        .json({ message: "Only confirmed stays can be reviewed." });
+    }
+    if (new Date(booking.check_out) >= new Date()) {
+      return res
+        .status(400)
+        .json({ message: "You can review after your stay is complete." });
+    }
+
+    const inserted = await db.query(
+      `INSERT INTO reviews (booking_id, guest_id, listing_id, rating, comment)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING *`,
+      [id, req.userId, booking.listing_id, ratingNum, comment || null],
+    );
+
+    res.status(201).json({
+      message: "Review submitted.",
+      review: {
+        id: inserted.rows[0].id,
+        rating: inserted.rows[0].rating,
+        comment: inserted.rows[0].comment,
+        createdAt: inserted.rows[0].created_at,
+      },
+    });
+  } catch (err) {
+    if (err.code === "23505") {
+      // unique constraint on booking_id — already reviewed
+      return res
+        .status(400)
+        .json({ message: "You already reviewed this booking." });
+    }
+    console.error(err);
+    res.status(500).json({ message: "Failed to submit review." });
   }
 });
 module.exports = router;

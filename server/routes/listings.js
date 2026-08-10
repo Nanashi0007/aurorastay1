@@ -675,4 +675,50 @@ router.delete("/:id", authenticate, async (req, res) => {
   }
 });
 
+// --- GET all reviews + rating summary for a listing (public) ---
+router.get("/public/:id/reviews", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const limit = Math.min(Number(req.query.limit) || 5, 20);
+    const offset = Number(req.query.offset) || 0;
+
+    const summaryResult = await db.query(
+      `SELECT COUNT(*) AS review_count, AVG(rating) AS avg_rating
+       FROM reviews WHERE listing_id = $1`,
+      [id],
+    );
+
+    const reviewsResult = await db.query(
+      `SELECT r.rating, r.comment, r.created_at, u.first_name, u.picture
+       FROM reviews r
+       JOIN users u ON u.id = r.guest_id
+       WHERE r.listing_id = $1
+       ORDER BY r.created_at DESC
+       LIMIT $2 OFFSET $3`,
+      [id, limit, offset],
+    );
+
+    const reviewCount = Number(summaryResult.rows[0].review_count);
+    const avgRating = summaryResult.rows[0].avg_rating
+      ? Number(summaryResult.rows[0].avg_rating)
+      : null;
+
+    res.json({
+      reviewCount,
+      averageRating: avgRating,
+      scoreOutOf10: avgRating ? Math.round(avgRating * 2 * 10) / 10 : null,
+      reviews: reviewsResult.rows.map((row) => ({
+        rating: row.rating,
+        comment: row.comment,
+        createdAt: row.created_at,
+        guestFirstName: row.first_name,
+        guestPicture: row.picture,
+      })),
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch reviews." });
+  }
+});
+
 module.exports = router;

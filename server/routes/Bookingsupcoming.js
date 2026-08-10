@@ -26,6 +26,15 @@ function mapBookingRow(row) {
     paymentStatus: row.payment_status,
     status: row.status,
     createdAt: row.created_at,
+    // new:
+    review: row.review_id
+      ? {
+          id: row.review_id,
+          rating: row.review_rating,
+          comment: row.review_comment,
+          createdAt: row.review_created_at,
+        }
+      : null,
   };
 }
 
@@ -37,7 +46,11 @@ const BOOKING_SELECT = `
     l.title,
     l.accommodation_type,
     complete_address,        
-    lp.image_url AS cover_photo_url
+    lp.image_url AS cover_photo_url,
+    rev.id AS review_id,
+    rev.rating AS review_rating,
+    rev.comment AS review_comment,
+    rev.created_at AS review_created_at
   FROM bookings b
   JOIN rooms r ON r.id = b.room_id
   JOIN listings l ON l.id = r.property_id
@@ -48,6 +61,7 @@ const BOOKING_SELECT = `
     ORDER BY sort_order ASC
     LIMIT 1
   ) lp ON true
+  LEFT JOIN reviews rev ON rev.booking_id = b.id
 `;
 
 // --- GET current guest's upcoming bookings only ---

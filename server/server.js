@@ -12,6 +12,11 @@ const publicListingRoutes = require("./routes/publicListings");
 const roomRoutes = require("./routes/rooms");
 const bookingRoutes = require("./routes/bookings");
 const bookingsUpcomingRoutes = require("./routes/bookingsUpcoming"); // ADD THIS
+const notificationRoutes = require("./routes/notifications");
+const { startReminderJobs } = require("./jobs/reminders");
+const savedListingsRoutes = require("./routes/savedListings");
+const adminRoutes = require("./routes/admin");
+const adminAuthRoutes = require("./routes/adminAuth");
 
 const app = express();
 
@@ -64,7 +69,7 @@ app.post("/api/auth/google", async (req, res) => {
 
   try {
     const existing = await pool.query(
-      "SELECT id, first_name, last_name, email, picture FROM users WHERE google_id = $1 OR email = $2",
+      "SELECT id, first_name, last_name, email, picture, role FROM users WHERE google_id = $1 OR email = $2",
       [googleId, email],
     );
 
@@ -85,9 +90,9 @@ app.post("/api/auth/google", async (req, res) => {
 
       const inserted = await pool.query(
         `INSERT INTO users
-         (google_id, first_name, last_name, email, picture, email_verified)
-         VALUES ($1, $2, $3, $4, $5, $6)
-         RETURNING id, first_name, last_name, email, picture`,
+   (google_id, first_name, last_name, email, picture, email_verified)
+   VALUES ($1, $2, $3, $4, $5, $6)
+   RETURNING id, first_name, last_name, email, picture, role`,
         [
           googleId,
           firstName || "",
@@ -100,9 +105,11 @@ app.post("/api/auth/google", async (req, res) => {
       user = inserted.rows[0];
     }
 
-    const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, {
-      expiresIn: "7d",
-    });
+    const token = jwt.sign(
+      { userId: user.id, email: user.email, role: user.role || "guest" },
+      JWT_SECRET,
+      { expiresIn: "7d" },
+    );
 
     res.json({
       message: "Logged in.",
@@ -114,6 +121,7 @@ app.post("/api/auth/google", async (req, res) => {
         lastName: user.last_name,
         email: user.email,
         picture: user.picture,
+        role: user.role || "guest",
       },
     });
   } catch (err) {
@@ -168,7 +176,12 @@ app.use("/api/host-applications", hostApplicationsRoutes);
 app.use("/api/listings", listingRoutes);
 app.use("/api/hotels", publicListingRoutes);
 app.use("/api/bookings", bookingsUpcomingRoutes);
+app.use("/api/notifications", authenticate, notificationRoutes);
+app.use("/api/saved", savedListingsRoutes);
+app.use("/api/admin/auth", adminAuthRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.listen(5000, () => {
   console.log("Server running on port 5000");
+  startReminderJobs();
 });

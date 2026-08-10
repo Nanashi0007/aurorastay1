@@ -2,11 +2,20 @@ const express = require("express");
 const router = express.Router();
 const db = require("../db");
 
-function mapListingToHotelCard(row, photos = [], minPrice = null) {
+function mapListingToHotelCard(
+  row,
+  photos = [],
+  minPrice = null,
+  reviewStats = null,
+) {
   const coverImage =
     photos.find((p) => p.sort_order === 0)?.image_url ||
     photos[0]?.image_url ||
     null;
+
+  const avgRating = reviewStats?.avg_rating
+    ? Number(reviewStats.avg_rating)
+    : null;
 
   return {
     id: row.id,
@@ -26,8 +35,10 @@ function mapListingToHotelCard(row, photos = [], minPrice = null) {
       row.rooms_available > 0
         ? `${row.rooms_available} room${row.rooms_available > 1 ? "s" : ""} left today`
         : "Fully booked",
-    rating: null,
-    reviews: null,
+    rating: avgRating ? Math.round(avgRating * 2 * 10) / 10 : null, // out of 10, e.g. 9.5
+    reviews: reviewStats?.review_count
+      ? Number(reviewStats.review_count)
+      : null,
   };
 }
 
@@ -97,6 +108,21 @@ router.get("/", async (req, res) => {
 
     const listingIds = listingsResult.rows.map((row) => row.id);
 
+    let reviewStatsByListing = {};
+    if (listingIds.length > 0) {
+      const reviewsResult = await db.query(
+        `SELECT listing_id, AVG(rating) AS avg_rating, COUNT(*) AS review_count
+     FROM reviews
+     WHERE listing_id = ANY($1)
+     GROUP BY listing_id`,
+        [listingIds],
+      );
+      reviewStatsByListing = reviewsResult.rows.reduce((acc, row) => {
+        acc[row.listing_id] = row;
+        return acc;
+      }, {});
+    }
+
     let photosByListing = {};
     if (listingIds.length > 0) {
       const photosResult = await db.query(
@@ -111,7 +137,12 @@ router.get("/", async (req, res) => {
     }
 
     const hotels = listingsResult.rows.map((row) =>
-      mapListingToHotelCard(row, photosByListing[row.id] || [], row.min_price),
+      mapListingToHotelCard(
+        row,
+        photosByListing[row.id] || [],
+        row.min_price,
+        reviewStatsByListing[row.id] || null,
+      ),
     );
 
     res.json({ hotels });
@@ -185,11 +216,21 @@ router.get("/:id", async (req, res) => {
       [id],
     );
 
+    const reviewStatsResult = await db.query(
+      `SELECT AVG(rating) AS avg_rating, COUNT(*) AS review_count
+   FROM reviews
+   WHERE listing_id = $1`,
+      [id],
+    );
+
     res.json({
       hotel: mapListingToHotelCard(
         listingResult.rows[0],
         photosResult.rows,
         priceResult.rows[0]?.min_price ?? null,
+        reviewStatsResult.rows[0]?.review_count > 0
+          ? reviewStatsResult.rows[0]
+          : null,
       ),
     });
   } catch (err) {
