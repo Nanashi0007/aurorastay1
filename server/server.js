@@ -17,6 +17,9 @@ const { startReminderJobs } = require("./jobs/reminders");
 const savedListingsRoutes = require("./routes/savedListings");
 const adminRoutes = require("./routes/admin");
 const adminAuthRoutes = require("./routes/adminAuth");
+const adminApplicationsRoutes = require("./routes/adminApplications");
+const adminAnnouncementsRoutes = require("./routes/adminAnnouncements");
+const announcementsRoutes = require("./routes/announcements");
 
 const app = express();
 
@@ -179,7 +182,10 @@ app.use("/api/bookings", bookingsUpcomingRoutes);
 app.use("/api/notifications", authenticate, notificationRoutes);
 app.use("/api/saved", savedListingsRoutes);
 app.use("/api/admin/auth", adminAuthRoutes);
+app.use("/api/admin/applications", adminApplicationsRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/admin/announcements", adminAnnouncementsRoutes);
+app.use("/api/announcements", announcementsRoutes);
 
 app.listen(5000, () => {
   console.log("Server running on port 5000");

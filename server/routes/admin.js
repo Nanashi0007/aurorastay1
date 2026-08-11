@@ -63,8 +63,11 @@ router.patch("/users/:id/role", async (req, res) => {
     const { id } = req.params;
     const { role } = req.body;
 
-    if (!["guest", "owner", "admin"].includes(role)) {
-      return res.status(400).json({ message: "Invalid role." });
+    if (!["guest", "admin"].includes(role)) {
+      return res.status(400).json({
+        message:
+          "Role must be 'guest' or 'admin'. 'Owner' status is granted automatically when a host application is approved.",
+      });
     }
 
     // Prevent an admin from demoting themselves and locking everyone out

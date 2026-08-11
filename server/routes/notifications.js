@@ -9,6 +9,7 @@ function mapNotificationRow(row) {
     type: row.type,
     message: row.message,
     relatedBookingId: row.related_booking_id,
+    relatedAnnouncementId: row.related_announcement_id,
     read: row.read,
     createdAt: row.created_at,
   };
