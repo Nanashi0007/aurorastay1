@@ -194,6 +194,7 @@ export default function RoomDetailModal({
                   user={user}
                   onCancel={() => setShowReserveForm(false)}
                   onSuccess={() => setReserveSuccess(true)}
+                  onRequireLogin={onRequireLogin}
                 />
               </div>
             ) : (

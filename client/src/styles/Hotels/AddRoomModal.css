@@ -37,7 +37,7 @@
 
 .amenity-chip-sm svg {
   font-size: 10px;
-  color: #2e8b57;
+  color: var(--gold-deep);
 }
 
 .amenity-chip-sm.active {

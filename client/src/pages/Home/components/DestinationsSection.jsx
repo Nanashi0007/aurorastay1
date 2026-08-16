@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { FaChevronRight } from "react-icons/fa";
-import DestinationCard from "./DestinationCard";
+import DestinationCard from "../../../components/cards/DestinationCard";
 
 export default function DestinationsSection({ destinations }) {
   return (

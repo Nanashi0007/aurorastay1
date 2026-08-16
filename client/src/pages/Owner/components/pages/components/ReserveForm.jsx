@@ -23,6 +23,7 @@ export default function ReserveForm({
   user,
   onSuccess,
   onCancel,
+  onRequireLogin,
 }) {
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
@@ -78,6 +79,11 @@ export default function ReserveForm({
 
   async function handleSubmit(e) {
     e.preventDefault();
+    if (!authToken) {
+      onRequireLogin?.();
+      setErrors({ form: "Please log in to reserve this room." });
+      return;
+    }
     if (!validate()) return;
 
     setSubmitting(true);

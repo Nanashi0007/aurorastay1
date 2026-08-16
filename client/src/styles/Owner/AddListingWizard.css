@@ -1,7 +1,7 @@
 .wizard-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(10, 15, 25, 0.6);
+  background: color-mix(in srgb, var(--navy-deep) 60%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -96,8 +96,8 @@
 }
 
 .wizard-progress-dot.completed {
-  background: #2e8b57;
-  border-color: #2e8b57;
+  background: var(--gold-deep);
+  border-color: var(--gold-deep);
   color: white;
 }
 
@@ -110,7 +110,7 @@
 }
 
 .wizard-progress-line.completed {
-  background: #2e8b57;
+  background: var(--gold-deep);
 }
 
 .wizard-progress-label {
@@ -278,7 +278,7 @@
   height: 24px;
   border-radius: 50%;
   border: none;
-  background: rgba(0, 0, 0, 0.6);
+  background: color-mix(in srgb, var(--navy-deep) 60%, transparent);
   color: white;
   display: flex;
   align-items: center;
@@ -365,7 +365,7 @@
   top: 8px;
   right: 8px;
   font-size: 11px;
-  color: #2e8b57;
+  color: var(--gold-deep);
 }
 
 /* --- Contact / communications --- */
@@ -436,10 +436,22 @@
 }
 
 /* --- Responsiveness --- */
+@media (max-width: 768px) {
+  .wizard-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .wizard-modal {
+    max-height: 94dvh;
+    border-radius: 16px 16px 0 0;
+  }
+}
+
 @media (max-width: 640px) {
   .wizard-modal {
-    max-height: 95vh;
-    border-radius: 14px;
+    max-height: 95dvh;
+    border-radius: 14px 14px 0 0;
   }
 
   .wizard-row,
@@ -450,13 +462,39 @@
   }
 
   .wizard-body {
-    padding: 8px 18px 20px;
+    padding: 8px 16px 20px;
   }
 
   .wizard-header,
   .wizard-footer {
-    padding-left: 18px;
-    padding-right: 18px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .wizard-progress {
+    padding: 14px 16px 4px;
+  }
+
+  .wizard-progress-label {
+    font-size: 11px;
+  }
+
+  .wizard-footer {
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .wizard-next-btn {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 420px) {
+  .property-type-grid,
+  .amenities-grid,
+  .photo-grid {
+    grid-template-columns: 1fr;
   }
 }
 .location-map-wrap {
@@ -485,5 +523,5 @@
 }
 
 .map-error {
-  color: #c0392b;
+  color: var(--gold-deep);
 }

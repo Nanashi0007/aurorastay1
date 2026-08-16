@@ -131,42 +131,7 @@ router.get("/", async (req, res) => {
     let photosByRoom = {};
     if (roomIds.length > 0) {
       const photosResult = await db.query(
-        `SELECT * FROM room_photos WHERE room_id = ANY($1) ORDER BY sort_order ASC`,
-        [roomIds],
-      );
-      photosByRoom = photosResult.rows.reduce((acc, photo) => {
-        if (!acc[photo.room_id]) acc[photo.room_id] = [];
-        acc[photo.room_id].push(photo);
-        return acc;
-      }, {});
-    }
-
-    const rooms = roomsResult.rows.map((row) =>
-      mapRoomRow(row, photosByRoom[row.id] || []),
-    );
-
-    res.json({ rooms });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
-// --- GET all rooms for a property (public) ---
-router.get("/", async (req, res) => {
-  try {
-    const { id: propertyId } = req.params;
-
-    const roomsResult = await db.query(
-      "SELECT * FROM rooms WHERE property_id = $1 AND status = 'active' ORDER BY id ASC",
-      [propertyId],
-    );
-
-    const roomIds = roomsResult.rows.map((r) => r.id);
-    let photosByRoom = {};
-    if (roomIds.length > 0) {
-      const photosResult = await db.query(
-        `SELECT * FROM room_photos WHERE room_id = ANY($1) ORDER BY sort_order ASC`,
+        "SELECT * FROM room_photos WHERE room_id = ANY($1) ORDER BY sort_order ASC",
         [roomIds],
       );
       photosByRoom = photosResult.rows.reduce((acc, photo) => {

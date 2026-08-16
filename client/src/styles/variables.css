@@ -1,0 +1,69 @@
+:root {
+  color-scheme: light;
+
+  --gold-deep: #b9861a;
+  --gold: #e6c24a;
+  --navy-deep: #14335c;
+
+  --color-bg: white;
+  --color-bg-strong: white;
+  --color-surface: white;
+  --color-surface-soft: color-mix(in srgb, var(--navy-deep) 4%, white);
+  --color-primary: var(--gold-deep);
+  --color-primary-dark: var(--navy-deep);
+  --color-primary-soft: color-mix(in srgb, var(--gold-deep) 14%, white);
+  --color-text: var(--navy-deep);
+  --color-text-muted: color-mix(in srgb, var(--navy-deep) 68%, white);
+  --color-border: color-mix(in srgb, var(--navy-deep) 16%, white);
+  --color-success: var(--gold-deep);
+  --color-success-soft: color-mix(in srgb, var(--gold-deep) 14%, white);
+  --color-danger: var(--gold-deep);
+  --color-danger-soft: color-mix(in srgb, var(--gold-deep) 14%, white);
+  --color-warning: var(--gold-deep);
+  --color-shadow: 0 18px 50px
+    color-mix(in srgb, var(--navy-deep) 16%, transparent);
+
+  --theme-ink: var(--navy-deep);
+  --theme-muted: color-mix(in srgb, var(--navy-deep) 65%, white);
+  --theme-line: color-mix(in srgb, var(--navy-deep) 16%, white);
+  --theme-surface: color-mix(in srgb, var(--navy-deep) 4%, white);
+  --theme-gold-soft: color-mix(in srgb, var(--gold-deep) 14%, white);
+  --theme-overlay: color-mix(in srgb, var(--navy-deep) 58%, transparent);
+  --theme-shadow: color-mix(in srgb, var(--navy-deep) 18%, transparent);
+
+  --font-family: "Inter", "Segoe UI", sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.5rem;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+
+  --shadow-soft: 0 10px 30px var(--theme-shadow);
+  --shadow-card: 0 12px 32px var(--theme-shadow);
+
+  --container-max: 1200px;
+
+  /* Shared breakpoints (documentation / JS helpers) */
+  --bp-xs: 360px;
+  --bp-sm: 480px;
+  --bp-md: 640px;
+  --bp-lg: 768px;
+  --bp-xl: 900px;
+  --bp-2xl: 1024px;
+  --bp-3xl: 1200px;
+}

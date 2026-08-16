@@ -20,38 +20,38 @@
 .rf-field label {
   font-size: 13px;
   font-weight: 600;
-  color: #1a1a2e;
+  color: var(--navy-deep);
 }
 
 .rf-hint {
   font-size: 12px;
-  color: #6b7280;
+  color: var(--navy-deep);
   margin-bottom: 4px;
 }
 
 .rf-field input,
 .rf-field textarea {
-  border: 1px solid #e8e8ec;
+  border: 1px solid var(--theme-line);
   border-radius: 10px;
   padding: 10px 12px;
   font-size: 14px;
   font-family: inherit;
-  color: #1a1a2e;
+  color: var(--navy-deep);
 }
 
 .rf-field input:focus,
 .rf-field textarea:focus {
   outline: none;
-  border-color: #b8860b;
+  border-color: var(--gold-deep);
 }
 
 .rf-error {
   font-size: 12.5px;
-  color: #d64545;
+  color: var(--gold-deep);
 }
 
 .rf-summary {
-  background: #f7f7fa;
+  background: var(--theme-surface);
   border-radius: 10px;
   padding: 12px 16px;
   font-size: 14px;
@@ -64,10 +64,10 @@
 }
 
 .rf-summary-deposit {
-  border-top: 1px dashed #e8e8ec;
+  border-top: 1px dashed var(--theme-line);
   margin-top: 6px;
   padding-top: 10px;
-  color: #8a6508;
+  color: var(--gold-deep);
 }
 
 .rf-upload-box {
@@ -75,18 +75,18 @@
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  border: 2px dashed #e8e8ec;
+  border: 2px dashed var(--theme-line);
   border-radius: 12px;
   padding: 24px;
   background: none;
   cursor: pointer;
-  color: #6b7280;
+  color: var(--navy-deep);
   font-size: 13px;
 }
 
 .rf-upload-box svg {
   font-size: 20px;
-  color: #b8860b;
+  color: var(--gold-deep);
 }
 
 .rf-proof-preview {
@@ -110,14 +110,54 @@
 }
 
 .rf-submit {
+  min-height: 44px;
   padding: 12px 28px;
   border-radius: 999px;
   font-weight: 700;
 }
 
+@media (max-width: 640px) {
+  .rf-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .rf-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .rf-actions .btn-link,
+  .rf-submit {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .rf-upload-box {
+    padding: 16px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .rf-row,
+  .rf-actions {
+    flex-direction: column;
+  }
+
+  .rf-actions {
+    gap: 10px;
+  }
+
+  .rf-actions .btn-link,
+  .rf-submit {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 .rm-hint {
   font-size: 12px;
-  color: #6b7280;
+  color: var(--navy-deep);
   margin-bottom: 4px;
 }
 
@@ -126,7 +166,7 @@
   height: 160px;
   object-fit: contain;
   border-radius: 12px;
-  border: 1px solid #e8e8ec;
+  border: 1px solid var(--theme-line);
   margin-bottom: 10px;
   display: block;
 }
@@ -138,10 +178,10 @@
 }
 
 .rm-summary-deposit {
-  border-top: 1px dashed #e8e8ec;
+  border-top: 1px dashed var(--theme-line);
   margin-top: 6px;
   padding-top: 10px;
-  color: #8a6508;
+  color: var(--gold-deep);
 }
 
 .rm-upload-box {
@@ -149,12 +189,12 @@
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  border: 2px dashed #e8e8ec;
+  border: 2px dashed var(--theme-line);
   border-radius: 12px;
   padding: 20px;
   background: none;
   cursor: pointer;
-  color: #6b7280;
+  color: var(--navy-deep);
   font-size: 13px;
   width: 100%;
 }
@@ -166,7 +206,7 @@
 
 .rm-upload-box svg {
   font-size: 20px;
-  color: #b8860b;
+  color: var(--gold-deep);
 }
 
 .rm-proof-preview {
@@ -189,20 +229,20 @@
 }
 
 .rf-payment-tab {
-  border: 1px solid #e8e8ec;
-  background: #fff;
+  border: 1px solid var(--theme-line);
+  background: white;
   border-radius: 999px;
   padding: 8px 16px;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  color: #1a1a2e;
+  color: var(--navy-deep);
 }
 
 .rf-payment-tab.active {
-  background: #1a1a2e;
-  color: #b8860b;
-  border-color: #1a1a2e;
+  background: var(--navy-deep);
+  color: var(--gold-deep);
+  border-color: var(--navy-deep);
 }
 
 .rf-qr-image {
@@ -211,18 +251,18 @@
   height: 160px;
   object-fit: contain;
   border-radius: 12px;
-  border: 1px solid #e8e8ec;
+  border: 1px solid var(--theme-line);
   margin: 8px auto 0;
 }
 
 .rf-wise-details {
-  background: #f7f7fa;
+  background: var(--theme-surface);
   border-radius: 10px;
   padding: 12px 16px;
   font-size: 13.5px;
   white-space: pre-wrap;
   margin-top: 8px;
-  color: #1a1a2e;
+  color: var(--navy-deep);
 }
 
 .edit-room-footer {

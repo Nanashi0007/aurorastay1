@@ -1,42 +1,15 @@
-.btn {
-  width: 50px;
-  padding: 10px 0;
-  background-color: white;
-  color: black;
-  border: 1px solid black;
-  cursor: pointer;
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease,
-    transform 0.15s ease;
+.hotel-card-view-btn {
+  width: 46px;
+  min-width: 46px;
+  padding-inline: 0;
+  border-radius: 50%;
+  color: white !important;
 }
 
-/* Hover: invert to black background, white text */
-.btn:hover {
-  background-color: black;
-  color: white;
-}
-
-/* Click animation: quick pulse/press effect */
-.btn:active {
-  animation: btn-click 0.25s ease;
-}
-
-@keyframes btn-click {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(0.92);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-/* Remove the blue focus highlight */
-.btn:focus,
-.btn:focus-visible {
-  outline: none;
-  box-shadow: none;
+.hotel-card-view-btn svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  fill: currentColor;
 }

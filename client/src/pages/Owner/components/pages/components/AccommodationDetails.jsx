@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { clearAuth } from "../../../../../utils/storage";
 import {
   FaBed,
   FaUserFriends,
@@ -12,8 +13,8 @@ import {
 } from "react-icons/fa";
 import { GoogleMap, MarkerF, useJsApiLoader } from "@react-google-maps/api";
 import "../../../../../styles/Owner/AccommodationDetails.css";
-import Navbar from "../../../../Home/components/Navbar";
-import CompleteProfileModal from "../../../../Home/ProfileModal";
+import Navbar from "../../../../../components/layout/Navbar";
+import CompleteProfileModal from "../../../../../components/modals/ProfileModal";
 import AddRoomWizard from "./AddRoomModal";
 import RoomCard from "../../card/RoomCard";
 import EditRoomModal from "./EditRoomModal"; // adjust path
@@ -45,6 +46,7 @@ export default function AccommodationDetails() {
   const [authToken, setAuthToken] = useState(null);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const userMenuRef = useRef(null);
+  const [authLoading, setAuthLoading] = useState(true);
 
   const handleProfileComplete = (updatedUser) => {
     setUser(updatedUser);
@@ -52,8 +54,7 @@ export default function AccommodationDetails() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    clearAuth();
     setUser(null);
     setAuthToken(null);
     setShowUserMenu(false);
@@ -65,9 +66,7 @@ export default function AccommodationDetails() {
     libraries: LIBRARIES,
   });
 
-  // fetchRooms lives at component level so both the useEffect below
-  // and handleRoomAdded (after adding a new room) can call it.
-  async function fetchRooms() {
+  const fetchRooms = useCallback(async () => {
     try {
       const res = await fetch(`/api/listings/${id}/rooms`);
       const data = await res.json();
@@ -79,7 +78,7 @@ export default function AccommodationDetails() {
     } finally {
       setRoomsLoading(false);
     }
-  }
+  }, [id]);
   function handleRoomSaved(updatedRoom) {
     setRooms((prev) =>
       prev.map((r) => (r.id === updatedRoom.id ? updatedRoom : r)),
@@ -107,6 +106,7 @@ export default function AccommodationDetails() {
         console.error("Failed to parse stored user:", err);
       }
     }
+    setAuthLoading(false);
   }, []);
 
   useEffect(() => {
@@ -138,7 +138,7 @@ export default function AccommodationDetails() {
 
   useEffect(() => {
     fetchRooms();
-  }, [id]);
+  }, [fetchRooms]);
 
   if (loading) return <div className="ad-loading">Loading…</div>;
   if (error) return <div className="ad-error">{error}</div>;
@@ -167,6 +167,7 @@ export default function AccommodationDetails() {
     <>
       <Navbar
         user={user}
+        authLoading={authLoading}
         showUserMenu={showUserMenu}
         setShowUserMenu={setShowUserMenu}
         userMenuRef={userMenuRef}

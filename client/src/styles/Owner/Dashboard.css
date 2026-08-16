@@ -87,7 +87,7 @@
 }
 
 .field-error {
-  color: #c0392b;
+  color: var(--gold-deep);
   font-size: 12px;
   font-weight: 600;
 }
@@ -243,7 +243,7 @@
 .upload-remove {
   background: none;
   border: none;
-  color: #c0392b;
+  color: var(--gold-deep);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -287,7 +287,7 @@
 
 .submit-success svg {
   font-size: 40px;
-  color: #2e8b57;
+  color: var(--gold-deep);
   margin-bottom: 16px;
 }
 
@@ -318,24 +318,24 @@
 }
 
 .submit-success.pending svg {
-  color: #b8860b;
+  color: var(--gold-deep);
 }
 
 .submit-success.approved svg {
-  color: #2e8b57;
+  color: var(--gold-deep);
 }
 
 .rejection-banner {
   display: flex;
   gap: 12px;
   align-items: flex-start;
-  background: #fdecea;
-  border: 1px solid #f5c2c0;
+  background: var(--theme-line);
+  border: 1px solid var(--gold-deep);
   border-radius: 10px;
   padding: 14px 16px;
   margin-bottom: 20px;
   font-size: 13px;
-  color: #7a2f2a;
+  color: var(--gold-deep);
 }
 
 .rejection-banner svg {
@@ -368,19 +368,19 @@
   justify-content: center;
   align-items: center;
   padding: 40px 20px;
-  background: #f8fafc;
+  background: white;
 }
 
 /* Card */
 .approval-card {
   width: 100%;
   max-width: 520px;
-  background: #fff;
+  background: white;
   border-radius: 18px;
   padding: 40px;
   text-align: center;
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
-  border-top: 6px solid #22c55e;
+  box-shadow: 0 12px 35px color-mix(in srgb, var(--navy-deep) 8%, transparent);
+  border-top: 6px solid var(--gold-deep);
 }
 
 /* Icon */
@@ -389,7 +389,7 @@
   height: 90px;
   margin: 0 auto 24px;
   border-radius: 50%;
-  background: #ecfdf3;
+  background: var(--theme-surface);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -397,19 +397,19 @@
 
 .approval-icon svg {
   font-size: 52px;
-  color: #22c55e;
+  color: var(--gold-deep);
 }
 
 /* Title */
 .approval-card h2 {
   margin-bottom: 16px;
   font-size: 30px;
-  color: #111827;
+  color: var(--navy-deep);
 }
 
 /* Description */
 .approval-card p {
-  color: #6b7280;
+  color: var(--navy-deep);
   font-size: 16px;
   line-height: 1.7;
   margin-bottom: 30px;
@@ -421,7 +421,7 @@
   align-items: center;
   justify-content: center;
   padding: 14px 34px;
-  background: #22c55e;
+  background: var(--gold-deep);
   color: white;
   border-radius: 10px;
   text-decoration: none;
@@ -430,9 +430,9 @@
 }
 
 .approved-btn:hover {
-  background: #16a34a;
+  background: var(--gold-deep);
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(34, 197, 94, 0.25);
+  box-shadow: 0 10px 20px color-mix(in srgb, var(--gold-deep) 25%, transparent);
 }
 
 /* Mobile */

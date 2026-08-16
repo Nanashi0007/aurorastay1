@@ -9,13 +9,10 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-
   text-decoration: none;
-
   color: var(--navy-mid);
   font-weight: 600;
   font-size: 15px;
-
   transition: 0.25s;
 }
 
@@ -28,23 +25,33 @@
   font-size: 13px;
 }
 
-/* Mobile */
-@media (max-width: 768px) {
-  .section-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-}
 .carousel-arrow {
+  position: absolute;
+  top: 45%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
   background: white;
-  color: black;
+  color: var(--navy-deep);
   border: none;
-  outline: none;
+  border-radius: 50%;
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--navy-deep) 15%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 20;
   transition:
     background 0.2s ease,
-    color 0.2s ease;
+    color 0.2s ease,
+    transform 0.25s ease;
   -webkit-tap-highlight-color: transparent;
+}
+
+.carousel-arrow:hover:not(:disabled) {
+  transform: translateY(-50%) scale(1.06);
+  background: white;
+  color: var(--navy-deep);
 }
 
 .carousel-arrow.left {
@@ -55,16 +62,14 @@
   right: -22px;
 }
 
-/* Hover */
-.carousel-arrow:hover:not(:disabled) {
-  background: black;
-  color: white;
+.carousel-arrow:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
-/* While mouse button is pressed */
-.carousel-arrow:active:not(:disabled) {
-  background: #444;
-  color: white;
+.carousel-arrow svg {
+  font-size: 18px;
 }
 
 /* Remove blue focus highlight */
@@ -72,4 +77,27 @@
 .carousel-arrow:focus-visible {
   outline: none;
   box-shadow: none;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .carousel-arrow.left {
+    left: 4px;
+  }
+
+  .carousel-arrow.right {
+    right: 4px;
+  }
+}
+
+@media (max-width: 600px) {
+  .carousel-arrow {
+    display: none;
+  }
 }

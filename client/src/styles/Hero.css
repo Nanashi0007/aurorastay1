@@ -94,7 +94,8 @@
 /* single, non-conflicting definition */
 .search-btn {
   height: 48px;
-  padding: 0 22px;
+  min-width: 154px;
+  padding: 0 24px;
   margin: 0 0 0 15px;
   display: flex;
   align-items: center;
@@ -103,7 +104,10 @@
   border-radius: 999px;
   flex-shrink: 0;
   cursor: pointer;
-  width: 80px;
+  width: auto;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 /* ========== DROPDOWN SHELL ========== */
@@ -187,7 +191,7 @@
   transition: 0.2s;
 }
 .date-modal-header button:hover {
-  background: #f5f5f5;
+  background: var(--theme-surface);
 }
 
 .date-modal-weekdays,
@@ -203,7 +207,7 @@
   text-align: center;
   font-size: 12px;
   font-weight: 700;
-  color: #6b7280;
+  color: var(--navy-deep);
 }
 .date-modal-grid {
   justify-items: center;
@@ -224,7 +228,7 @@
   font-weight: 500;
   cursor: pointer;
   transition: 0.2s ease;
-  color: #000;
+  color: var(--navy-deep);
 }
 .date-cell.empty {
   cursor: default;
@@ -237,13 +241,13 @@
   background: var(--bg-soft);
 }
 .date-cell.selected {
-  background: #0d3b66;
-  color: #fff;
+  background: var(--navy-deep);
+  color: white;
   font-weight: 700;
 }
 .date-cell.in-range {
-  background: #eaf2ff;
-  color: #0d3b66;
+  background: var(--theme-line);
+  color: var(--navy-deep);
   border-radius: 8px;
 }
 
@@ -351,8 +355,8 @@
   height: 320px;
   background: radial-gradient(
     ellipse at center,
-    rgba(217, 166, 43, 0.12) 0%,
-    rgba(60, 122, 70, 0.05) 45%,
+    color-mix(in srgb, var(--gold-deep) 12%, transparent) 0%,
+    color-mix(in srgb, var(--gold-deep) 5%, transparent) 45%,
     transparent 75%
   );
   pointer-events: none;

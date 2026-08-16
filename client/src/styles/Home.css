@@ -10,22 +10,20 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap");
 
 :root {
-  --navy-deep: #14335c;
-  --navy-mid: #1f4c85;
-  --gold: #d9a62b;
-  --gold-deep: #b9861a;
-  --green: #3c7a46;
+  --navy-mid: var(--navy-deep);
+  --gold: var(--gold-deep);
+  --green: var(--gold-deep);
 
-  --paper: #ffffff;
-  --bg: #ffffff;
-  --bg-soft: #f7f8f7;
-  --ink: #1b1f23;
-  --ink-soft: #5b6570;
-  --line: #e6e7e4;
+  --paper: white;
+  --bg: white;
+  --bg-soft: var(--theme-surface);
+  --ink: var(--navy-deep);
+  --ink-soft: var(--theme-muted);
+  --line: var(--theme-line);
 
   --radius: 10px;
-  --shadow-sm: 0 2px 10px rgba(20, 51, 92, 0.06);
-  --shadow-md: 0 12px 32px rgba(20, 51, 92, 0.1);
+  --shadow-sm: 0 2px 10px var(--theme-shadow);
+  --shadow-md: 0 12px 32px var(--theme-shadow);
 
   --font-display: "Poppins", sans-serif;
   --font-body: "Inter", sans-serif;
@@ -43,9 +41,11 @@ body {
 }
 
 .container {
+  width: min(100%, 1180px);
   max-width: 1180px;
   margin: 0 auto;
   padding: 0 24px;
+  box-sizing: border-box;
 }
 
 h1,
@@ -94,10 +94,11 @@ button {
   gap: 8px;
   font-family: var(--font-body);
   font-weight: 600;
-  font-size: 14px;
-  border-radius: var(--radius);
+  font-size: 15px;
+  min-height: 46px;
+  border-radius: 10px;
   border: 1px solid transparent;
-  padding: 11px 20px;
+  padding: 0 22px;
   line-height: 1;
   transition:
     background 0.15s ease,
@@ -126,12 +127,13 @@ button {
 }
 
 .btn-outline:hover {
-  background: rgba(20, 51, 92, 0.06);
+  background: color-mix(in srgb, var(--navy-deep) 6%, transparent);
 }
 
 .btn-ghost {
   background: transparent;
   color: var(--navy-mid);
+  min-height: auto;
   padding: 8px 4px;
 }
 
@@ -156,6 +158,12 @@ button {
   position: sticky;
   top: 0;
   z-index: 40;
+  width: 100%;
+}
+
+.navbar .nav-container,
+.nav-container {
+  position: relative;
 }
 
 .nav-container {
@@ -254,12 +262,16 @@ button {
 }
 
 .quickbook-card {
+  display: block;
+  width: 100%;
   background: var(--paper);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   overflow: hidden;
   padding: 0;
   text-align: left;
+  color: inherit;
+  cursor: pointer;
   transition:
     transform 0.15s ease,
     box-shadow 0.15s ease;
@@ -280,8 +292,9 @@ button {
 .quickbook-info {
   padding: 10px 12px 12px;
   display: flex;
+  min-width: 0;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
 }
 
 .quickbook-info strong {
@@ -295,6 +308,102 @@ button {
   font-size: 12px;
   color: var(--navy-mid);
   font-weight: 600;
+}
+
+.quickbook-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--gold-deep) !important;
+}
+
+.quickbook-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.quickbook-stars .star-filled {
+  color: var(--gold-deep);
+  font-size: 12px;
+}
+
+.quickbook-stars .star-empty {
+  color: var(--line);
+  font-size: 12px;
+}
+
+.hotel-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.hotel-stars .star-filled {
+  color: var(--gold-deep);
+  font-size: 13px;
+}
+
+.hotel-stars .star-empty {
+  color: var(--line);
+  font-size: 13px;
+}
+
+.hotel-rating-score {
+  margin-left: 4px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--navy-deep);
+}
+
+.hotel-card-view-btn svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+  fill: currentColor;
+}
+
+.hotel-card-view-btn {
+  color: var(--navy-deep) !important;
+  width: 42px;
+  min-width: 42px;
+  min-height: 42px;
+  padding: 0;
+  border-radius: 50%;
+}
+
+.hotel-save-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: color-mix(in srgb, white 92%, transparent);
+  border: none;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--ink-soft, #374151);
+  font-size: 15px;
+  z-index: 2;
+  transition:
+    transform 0.15s ease,
+    color 0.15s ease,
+    background 0.15s ease;
+}
+
+.hotel-save-btn:hover {
+  transform: scale(1.06);
+  background: white;
+}
+
+.hotel-save-btn.is-saved {
+  color: #e11d48;
 }
 
 /* ================= SECTION HEADERS ================= */
@@ -348,14 +457,18 @@ button {
 .destination-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 45%, rgba(20, 51, 92, 0.82));
+  background: linear-gradient(
+    180deg,
+    transparent 45%,
+    color-mix(in srgb, var(--navy-deep) 82%, transparent)
+  );
   display: flex;
   align-items: flex-end;
   padding: 14px;
 }
 
 .destination-overlay h3 {
-  color: #ffffff;
+  color: white;
   font-size: 18px;
   font-weight: 600;
 }
@@ -403,17 +516,17 @@ button {
 }
 
 .feature-icon.navy {
-  background: rgba(20, 51, 92, 0.08);
+  background: color-mix(in srgb, var(--navy-deep) 8%, transparent);
   color: var(--navy-deep);
 }
 
 .feature-icon.gold {
-  background: rgba(217, 166, 43, 0.14);
+  background: color-mix(in srgb, var(--gold-deep) 14%, transparent);
   color: var(--gold-deep);
 }
 
 .feature-icon.green {
-  background: rgba(60, 122, 70, 0.1);
+  background: color-mix(in srgb, var(--gold-deep) 10%, transparent);
   color: var(--green);
 }
 
@@ -528,7 +641,7 @@ button {
 
 .hotel-rating {
   background: var(--navy-mid);
-  color: #ffffff;
+  color: white;
   font-family: var(--font-body);
   font-size: 12px;
   font-weight: 600;
@@ -701,6 +814,10 @@ button {
 }
 
 @media (max-width: 560px) {
+  .container {
+    padding: 0 16px;
+  }
+
   .hero-content h1 {
     font-size: 26px;
   }
@@ -716,9 +833,55 @@ button {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
+    margin: 36px 0 18px;
+  }
+
+  .section-header h2 {
+    font-size: 20px;
+  }
+
+  .hotel-list .hotel-bottom,
+  .hotel-carousel .hotel-bottom {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .hotel-list .hotel-bottom .btn,
+  .hotel-carousel .hotel-bottom .btn {
+    width: 100%;
   }
 
   .cta .container {
-    padding: 36px 20px;
+    padding: 28px 16px;
+  }
+
+  .cta h2 {
+    font-size: 22px;
+  }
+
+  .nav-buttons .btn {
+    min-height: 40px;
+    padding: 0 12px;
+    font-size: 13px;
+  }
+
+  .logo {
+    font-size: 17px;
+  }
+}
+
+@media (max-width: 380px) {
+  .container {
+    padding: 0 12px;
+  }
+
+  .nav-container {
+    height: 60px;
+    gap: 8px;
+  }
+
+  .destination-card {
+    height: 160px;
   }
 }

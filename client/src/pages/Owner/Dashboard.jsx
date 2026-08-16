@@ -135,6 +135,7 @@ export default function Dashboard() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const userMenuRef = useRef(null);
+  const [authLoading, setAuthLoading] = useState(true);
 
   const approvalSeen = user
     ? localStorage.getItem(`approvalSeen_${user.id}`) === "true"
@@ -146,6 +147,7 @@ export default function Dashboard() {
     const storedToken = localStorage.getItem("token");
     if (storedUser) setUser(JSON.parse(storedUser));
     if (storedToken) setAuthToken(storedToken);
+    setAuthLoading(false);
   }, []);
 
   // Close dropdown on outside click
@@ -267,6 +269,7 @@ export default function Dashboard() {
 
   const navbarProps = {
     user,
+    authLoading,
     showUserMenu,
     setShowUserMenu,
     userMenuRef,
@@ -308,7 +311,7 @@ export default function Dashboard() {
   }
 
   if (application?.status === "approved" && approvalSeen) {
-    return <Navigate to="/owner/listings" replace />;
+    return <Navigate to="/owner/dashboard" replace />;
   }
   // Approved: also block the form
   if (application && application.status === "approved") {

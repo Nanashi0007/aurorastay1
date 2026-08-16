@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { FaTimes, FaCamera } from "react-icons/fa";
-import "../../../../../styles/Hotels/ReserveForm.css";
+import "../../../../../styles/ReserveModal.css";
 
 const DEPOSIT_RATE = 0.2; // 20% down payment
 
@@ -23,6 +23,7 @@ export default function ReserveModal({
   user,
   onClose,
   onSuccess,
+  onRequireLogin,
 }) {
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
@@ -71,6 +72,11 @@ export default function ReserveModal({
 
   async function handleSubmit(e) {
     e.preventDefault();
+    if (!authToken) {
+      onRequireLogin?.();
+      setErrors({ form: "Please log in to reserve this room." });
+      return;
+    }
     if (!validate()) return;
 
     setSubmitting(true);
@@ -116,10 +122,6 @@ export default function ReserveModal({
       aria-modal="true"
     >
       <div className="rm-card" onClick={(e) => e.stopPropagation()}>
-        <h1 style={{ background: "yellow", padding: 8 }}>
-          DEBUG gcashQrUrl: {String(gcashQrUrl)}
-        </h1>
-
         <button
           type="button"
           className="rm-close"

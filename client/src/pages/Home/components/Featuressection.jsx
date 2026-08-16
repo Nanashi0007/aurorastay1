@@ -1,5 +1,5 @@
 import { FaWifi, FaSwimmingPool, FaParking } from "react-icons/fa";
-import FeatureCard from "./FeatureCard";
+import FeatureCard from "../../../components/cards/FeatureCard";
 
 const features = [
   {

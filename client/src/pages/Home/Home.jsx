@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from "react";
+import { clearAuth } from "../../utils/storage";
 import "../../styles/Home.css";
 import "../../styles/Navbar.css";
 import "../../styles/hotelsection.css";
-import LoginModal from "./LoginModal";
-import CompleteProfileModal from "./ProfileModal";
-import Navbar from "./components/Navbar";
+import LoginModal from "../../components/modals/LoginModal";
+import CompleteProfileModal from "../../components/modals/ProfileModal";
+import Navbar from "../../components/layout/Navbar";
 import Hero from "./components/Hero";
 import DestinationsSection from "./components/DestinationsSection";
 import FeaturesSection from "./components/FeaturesSection";
@@ -23,6 +24,7 @@ export default function Home() {
   const [hotels, setHotels] = useState([]);
   const [hotelsLoading, setHotelsLoading] = useState(true);
   const [hotelsError, setHotelsError] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
 
   useEffect(() => {
     async function fetchHotels() {
@@ -62,6 +64,7 @@ export default function Home() {
         localStorage.removeItem("user");
       }
     }
+    setAuthLoading(false);
   }, []);
 
   // Close the user dropdown when clicking outside it.
@@ -76,8 +79,11 @@ export default function Home() {
   }, []);
 
   const handleLoginSuccess = (loggedInUser, isNewUser, token) => {
+    setAuthLoading(true);
     setUser(loggedInUser);
     setAuthToken(token);
+
+    setTimeout(() => setAuthLoading(false), 300);
 
     if (isNewUser) {
       setShowCompleteProfile(true);
@@ -90,8 +96,7 @@ export default function Home() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    clearAuth();
     setUser(null);
     setAuthToken(null);
     setShowUserMenu(false);
@@ -101,6 +106,7 @@ export default function Home() {
     <>
       <Navbar
         user={user}
+        authLoading={authLoading}
         showUserMenu={showUserMenu}
         setShowUserMenu={setShowUserMenu}
         userMenuRef={userMenuRef}

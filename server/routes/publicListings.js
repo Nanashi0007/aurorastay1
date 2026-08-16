@@ -35,7 +35,7 @@ function mapListingToHotelCard(
       row.rooms_available > 0
         ? `${row.rooms_available} room${row.rooms_available > 1 ? "s" : ""} left today`
         : "Fully booked",
-    rating: avgRating ? Math.round(avgRating * 2 * 10) / 10 : null, // out of 10, e.g. 9.5
+    rating: avgRating ? Math.round(avgRating * 2 * 10) / 10 : null,
     reviews: reviewStats?.review_count
       ? Number(reviewStats.review_count)
       : null,
@@ -45,7 +45,15 @@ function mapListingToHotelCard(
 // --- GET all active listings (public — for homepage/browse) ---
 router.get("/", async (req, res) => {
   try {
-    const { minPrice, maxPrice, type, amenities } = req.query;
+    const {
+      minPrice,
+      maxPrice,
+      type,
+      amenities,
+      destination,
+      guests,
+      // checkIn, checkOut — see note below the route
+    } = req.query;
 
     const conditions = ["l.status = 'active'"];
     const havingConditions = [];
@@ -70,11 +78,18 @@ router.get("/", async (req, res) => {
         .map((a) => a.trim())
         .filter(Boolean);
       if (amenityList.length > 0) {
-        // @> = "amenities column contains all of these values"
         conditions.push(`l.amenities @> $${paramIndex}`);
         values.push(amenityList);
         paramIndex++;
       }
+    }
+
+    if (destination && destination.trim()) {
+      conditions.push(
+        `(l.municipality ILIKE $${paramIndex} OR l.barangay ILIKE $${paramIndex})`,
+      );
+      values.push(`%${destination.trim()}%`);
+      paramIndex++;
     }
 
     if (minPrice && !isNaN(Number(minPrice))) {
@@ -86,6 +101,12 @@ router.get("/", async (req, res) => {
     if (maxPrice && !isNaN(Number(maxPrice))) {
       havingConditions.push(`MIN(r.price_per_night) <= $${paramIndex}`);
       values.push(Number(maxPrice));
+      paramIndex++;
+    }
+
+    if (guests && !isNaN(Number(guests))) {
+      havingConditions.push(`MAX(r.max_guests) >= $${paramIndex}`);
+      values.push(Number(guests));
       paramIndex++;
     }
 

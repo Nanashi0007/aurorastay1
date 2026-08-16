@@ -205,7 +205,6 @@ export default function BookingDetailModal({
                 <small>Payment proof</small>
 
                 <a
-                  href=""
                   href={booking.depositProofUrl}
                   target="_blank"
                   rel="noopener noreferrer"

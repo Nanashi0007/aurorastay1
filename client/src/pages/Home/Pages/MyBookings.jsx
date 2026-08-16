@@ -1,10 +1,14 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { clearAuth } from "../../../utils/storage";
+import { authFetch } from "../../../utils/api";
 
 import "../../../styles/MyBookings.css"; // adjust path to match your structure
-import Navbar from "../components/Navbar";
-import CompleteProfileModal from "../ProfileModal";
-import { getRecentlyViewedIds } from "../../../utils/recentlyViewed";
+import Navbar from "../../../components/layout/Navbar";
+import CompleteProfileModal from "../../../components/modals/ProfileModal";
+// import { getRecentlyViewedIds } from "../../../utils/recentlyViewed";
+import GuestBookingDetailModal from "../../../components/modals/GuestBookingDetailModal";
+import HotelCard from "../../../components/cards/HotelCard";
 
 import {
   FaCalendarAlt,
@@ -68,6 +72,16 @@ function nightsBetween(checkInIso, checkOutIso) {
   return diff > 0 ? diff : 0;
 }
 
+const STATUS_ORDER = ["pending", "confirmed", "declined", "cancelled"];
+
+function groupByStatus(bookings) {
+  return STATUS_ORDER.map((status) => ({
+    status,
+    label: STATUS_LABELS[status] || status,
+    items: bookings.filter((b) => b.status === status),
+  })).filter((group) => group.items.length > 0);
+}
+
 function ratingLabel(score) {
   if (score == null) return "";
   if (score >= 9) return "Excellent";
@@ -106,7 +120,7 @@ function RecentlyViewedRow({ hotel }) {
   const TypeIcon = accommodationType ? TYPE_ICONS[accommodationType] : null;
 
   return (
-    <Link to={`/listing/${hotel.id}`} className="rv-row">
+    <Link to={`/hotels/${hotel.id}`} className="rv-row">
       <div className="rv-row-photo">
         {image ? (
           <img src={image} alt={name} />
@@ -141,7 +155,9 @@ function RecentlyViewedRow({ hotel }) {
 
         {rating != null && (
           <div className="rv-row-rating">
-            <span className="rv-row-score">{Number(rating).toFixed(1)}</span>
+            <span className="rv-row-score">
+              <FaStar aria-hidden="true" /> {Number(rating).toFixed(1)}
+            </span>
             <span className="rv-row-score-label">{ratingLabel(rating)}</span>
             {reviewCount != null && (
               <span className="rv-row-review-count">
@@ -177,7 +193,7 @@ export default function MyBookings() {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   // "upcoming" | "history" | "recentlyViewed"
   const [activeTab, setActiveTab] = useState("upcoming");
@@ -186,15 +202,19 @@ export default function MyBookings() {
   // --- Recently Viewed state ---
   // Recently viewed hotel IDs live in localStorage (see utils/recentlyViewed.js).
   // We resolve them against the full hotels list, same pattern as Hero.jsx.
-  const [allHotels, setAllHotels] = useState([]);
+  // const [allHotels, setAllHotels] = useState([]);
   const [recentLoading, setRecentLoading] = useState(false);
   const [recentError, setRecentError] = useState(null);
   const [recentLoaded, setRecentLoaded] = useState(false); // fetch hotels once, lazily
+  const [authChecked, setAuthChecked] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState(null);
 
-  const recentlyViewedIds = getRecentlyViewedIds();
-  const recentlyViewedHotels = recentlyViewedIds
-    .map((id) => allHotels.find((h) => h.id === id))
-    .filter(Boolean);
+  // const recentlyViewedIds = getRecentlyViewedIds();
+  // const recentlyViewedHotels = recentlyViewedIds
+  //   .map((id) => allHotels.find((h) => h.id === id))
+  //   .filter(Boolean);
+
+  const [recentlyViewedHotels, setRecentlyViewedHotels] = useState([]);
 
   const [showLogin, setShowLogin] = useState(false);
   const [showCompleteProfile, setShowCompleteProfile] = useState(false);
@@ -203,12 +223,21 @@ export default function MyBookings() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const userMenuRef = useRef(null);
 
-  function handleLogout() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setUser(null);
-    setAuthToken(null);
-    setShowUserMenu(false);
+  const [savedHotels, setSavedHotels] = useState([]);
+  const [savedLoading, setSavedLoading] = useState(false);
+  const [savedError, setSavedError] = useState(null);
+  const [savedLoaded, setSavedLoaded] = useState(false);
+
+  async function handleLogout() {
+    try {
+      clearAuth();
+      setAuthToken(null);
+      setUser(null);
+      setShowUserMenu(false);
+    } catch (error) {
+      console.error("Logout error:", error);
+      throw error;
+    }
   }
 
   function handleProfileComplete(updatedUser) {
@@ -216,7 +245,16 @@ export default function MyBookings() {
     setShowCompleteProfile(false);
   }
 
-  // Restore the logged-in state on page load / refresh.
+  function handleBookingCancelled(bookingId) {
+    setUpcoming((prev) =>
+      prev.map((b) => (b.id === bookingId ? { ...b, status: "cancelled" } : b)),
+    );
+    setHistory((prev) =>
+      prev.map((b) => (b.id === bookingId ? { ...b, status: "cancelled" } : b)),
+    );
+  }
+
+  // Restore the logged-in state on page load / refresh — runs first.
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
@@ -230,13 +268,70 @@ export default function MyBookings() {
         localStorage.removeItem("user");
       }
     }
+    setAuthChecked(true); // new — see below
   }, []);
+
+  async function handleSavedClick() {
+    setActiveTab("saved");
+
+    if (savedLoaded) return;
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setSavedLoaded(true);
+      return;
+    }
+
+    setSavedLoading(true);
+    setSavedError(null);
+
+    try {
+      const res = await fetch("/api/saved", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setSavedError(data.message || "Failed to load saved listings.");
+        return;
+      }
+
+      setSavedHotels(data.hotels || []);
+      setSavedLoaded(true);
+    } catch (err) {
+      console.error(err);
+      setSavedError("Something went wrong loading saved listings.");
+    } finally {
+      setSavedLoading(false);
+    }
+  }
+
+  // Open the modal automatically if arriving from a notification click
+  useEffect(() => {
+    const bookingId = searchParams.get("bookingId");
+    if (!bookingId || loading) return; // wait until bookings have loaded
+
+    const match =
+      upcoming.find((b) => String(b.id) === bookingId) ||
+      history.find((b) => String(b.id) === bookingId);
+
+    if (match) {
+      setSelectedBooking(match);
+      searchParams.delete("bookingId");
+      setSearchParams(searchParams, { replace: true });
+      setActiveTab(
+        ["pending", "confirmed"].includes(match.status)
+          ? "upcoming"
+          : "history",
+      );
+    }
+  }, [searchParams, setSearchParams, loading, upcoming, history]);
 
   useEffect(() => {
     async function fetchBookings() {
       const token = localStorage.getItem("token");
       if (!token) {
-        navigate("/");
+        setLoading(false); // no redirect — just nothing to show yet
         return;
       }
 
@@ -273,30 +368,37 @@ export default function MyBookings() {
     }
 
     fetchBookings();
-  }, [navigate]);
+  }, []); // navigate no longer used here, so drop it from deps
 
   // Fetch the hotels list the first time the Recently Viewed tab is opened,
   // then resolve it against the IDs stored in localStorage (recentlyViewedIds above).
-  async function handleRecentlyViewedClick() {
+  const handleRecentlyViewedClick = useCallback(async () => {
     setActiveTab("recentlyViewed");
 
-    if (recentLoaded) return; // already fetched once, don't refetch every click
+    if (!localStorage.getItem("token")) {
+      setRecentlyViewedHotels([]);
+      setRecentLoaded(true);
+      setRecentError(null);
+      return;
+    }
+
+    if (recentLoaded) return;
 
     setRecentLoading(true);
     setRecentError(null);
 
     try {
-      const res = await fetch("/api/hotels");
-      const data = await res.json();
+      const result = await authFetch("/api/recently-viewed");
 
-      if (!res.ok) {
+      if (!result.ok) {
+        setRecentlyViewedHotels([]);
         setRecentError(
-          data.message || "Failed to load recently viewed listings.",
+          result.data?.message || "Failed to load recently viewed listings.",
         );
         return;
       }
 
-      setAllHotels(data.hotels || data || []);
+      setRecentlyViewedHotels(result.data?.hotels || []);
       setRecentLoaded(true);
     } catch (err) {
       console.error(err);
@@ -304,14 +406,13 @@ export default function MyBookings() {
     } finally {
       setRecentLoading(false);
     }
-  }
+  }, [recentLoaded]);
 
   useEffect(() => {
     if (searchParams.get("tab") === "recentlyViewed") {
       handleRecentlyViewedClick();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [searchParams, handleRecentlyViewedClick]);
 
   const byTab =
     activeTab === "upcoming"
@@ -329,6 +430,7 @@ export default function MyBookings() {
     <>
       <Navbar
         user={user}
+        authLoading={!authChecked}
         showUserMenu={showUserMenu}
         setShowUserMenu={setShowUserMenu}
         userMenuRef={userMenuRef}
@@ -349,40 +451,54 @@ export default function MyBookings() {
                   type="button"
                   key={type}
                   className={`mb-sidebar-sublink ${
-                    activeTab !== "recentlyViewed" && typeFilter === type
+                    activeTab !== "recentlyViewed" &&
+                    activeTab !== "saved" &&
+                    typeFilter === type
                       ? "active"
                       : ""
                   }`}
                   onClick={() => {
                     setTypeFilter(type);
-                    if (activeTab === "recentlyViewed")
+                    if (
+                      activeTab === "recentlyViewed" ||
+                      activeTab === "saved"
+                    ) {
                       setActiveTab("upcoming");
+                    }
                   }}
                 >
                   {type}
                 </button>
               ))}
+
+              <button
+                type="button"
+                className={`mb-sidebar-sublink ${activeTab === "saved" ? "active" : ""}`}
+                onClick={handleSavedClick}
+              >
+                <FaHeart /> Saved
+              </button>
+              <button
+                type="button"
+                className={`mb-sidebar-sublink ${
+                  activeTab === "recentlyViewed" ? "active" : ""
+                }`}
+                onClick={handleRecentlyViewedClick}
+              >
+                <FaHistory /> Recently Viewed
+              </button>
             </nav>
           </div>
-
-          <Link to="/saved" className="mb-sidebar-toplink">
-            <FaHeart /> Saved
-          </Link>
-          <button
-            type="button"
-            className={`mb-sidebar-toplink ${
-              activeTab === "recentlyViewed" ? "active" : ""
-            }`}
-            onClick={handleRecentlyViewedClick}
-          >
-            <FaHistory /> Recently Viewed
-          </button>
         </aside>
 
         {/* --- Main content --- */}
         <div className="mb-page">
           <h1>
-            {activeTab === "recentlyViewed" ? "Recently Viewed" : "My Bookings"}
+            {activeTab === "recentlyViewed"
+              ? "Recently Viewed"
+              : activeTab === "saved"
+                ? "Saved"
+                : "My Bookings"}
           </h1>
 
           {activeTab === "recentlyViewed" ? (
@@ -399,6 +515,34 @@ export default function MyBookings() {
               <div className="rv-list">
                 {recentlyViewedHotels.map((hotel) => (
                   <RecentlyViewedRow hotel={hotel} key={hotel.id} />
+                ))}
+              </div>
+            )
+          ) : activeTab === "saved" ? (
+            savedLoading ? (
+              <div className="mb-loading">Loading saved listings…</div>
+            ) : savedError ? (
+              <div className="mb-error">{savedError}</div>
+            ) : savedHotels.length === 0 ? (
+              <div className="mb-empty">
+                <FaHeart className="mb-empty-icon" />
+                <p>Listings you save will show up here.</p>
+              </div>
+            ) : (
+              <div className="saved-hotel-grid">
+                {savedHotels.map((hotel) => (
+                  <HotelCard
+                    key={hotel.id}
+                    hotel={hotel}
+                    isSaved={true}
+                    onToggleSave={(action, id) => {
+                      if (action === "unsaved") {
+                        setSavedHotels((prev) =>
+                          prev.filter((h) => h.id !== id),
+                        );
+                      }
+                    }}
+                  />
                 ))}
               </div>
             )
@@ -437,82 +581,105 @@ export default function MyBookings() {
                   </p>
                 </div>
               ) : (
-                <div className="mb-list">
-                  {visible.map((booking) => {
-                    const nights = nightsBetween(
-                      booking.checkIn,
-                      booking.checkOut,
-                    );
-                    return (
-                      <div className="mb-card" key={booking.id}>
-                        <div className="mb-card-photo">
-                          {booking.coverPhotoUrl ? (
-                            <img
-                              src={booking.coverPhotoUrl}
-                              alt={booking.listingTitle}
-                            />
-                          ) : (
-                            <div className="mb-card-photo-placeholder">
-                              No photo
-                            </div>
-                          )}
-                          {booking.accommodationType && (
-                            <span className="mb-card-type-badge">
-                              {TYPE_ICONS[booking.accommodationType] &&
-                                (() => {
-                                  const Icon =
-                                    TYPE_ICONS[booking.accommodationType];
-                                  return <Icon />;
-                                })()}
-                              {booking.accommodationType}
-                            </span>
-                          )}
-                        </div>
+                groupByStatus(visible).map((group) => (
+                  <div className="mb-status-group" key={group.status}>
+                    <div className="mb-status-group-header">
+                      <span className={`mb-status mb-status-${group.status}`}>
+                        {group.label}
+                      </span>
+                      <span className="mb-status-group-count">
+                        {group.items.length}
+                      </span>
+                    </div>
 
-                        <div className="mb-card-main">
-                          <h3>{booking.roomName}</h3>
-                          <p className="mb-listing-title">
-                            {booking.listingTitle}
-                          </p>
-                          {booking.location && (
-                            <p className="mb-location">
-                              <FaMapMarkerAlt /> {booking.location}
-                            </p>
-                          )}
-                          <p className="mb-dates">
-                            <FaCalendarAlt />{" "}
-                            {formatDateRange(booking.checkIn, booking.checkOut)}
-                            {nights > 0 && (
-                              <span className="mb-nights">
-                                {" "}
-                                · {nights} night{nights > 1 ? "s" : ""}
-                              </span>
-                            )}
-                          </p>
-                          <p className="mb-guests">
-                            {booking.guestsCount} guest
-                            {booking.guestsCount > 1 ? "s" : ""}
-                          </p>
-                        </div>
-
-                        <div className="mb-card-side">
-                          <span
-                            className={`mb-status mb-status-${booking.status}`}
+                    <div className="mb-list">
+                      {group.items.map((booking) => {
+                        const nights = nightsBetween(
+                          booking.checkIn,
+                          booking.checkOut,
+                        );
+                        return (
+                          <div
+                            className="mb-card mb-card-clickable"
+                            key={booking.id}
+                            onClick={() => setSelectedBooking(booking)}
+                            role="button"
+                            tabIndex={0}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault();
+                                setSelectedBooking(booking);
+                              }
+                            }}
                           >
-                            {STATUS_LABELS[booking.status] || booking.status}
-                          </span>
-                          <p className="mb-price">
-                            ₱{Number(booking.totalPrice).toLocaleString()}
-                          </p>
-                          <p className="mb-deposit">
-                            Deposit paid: ₱
-                            {Number(booking.depositAmount).toLocaleString()}
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                            <div className="mb-card-photo">
+                              {booking.coverPhotoUrl ? (
+                                <img
+                                  src={booking.coverPhotoUrl}
+                                  alt={booking.listingTitle}
+                                />
+                              ) : (
+                                <div className="mb-card-photo-placeholder">
+                                  No photo
+                                </div>
+                              )}
+                              {booking.accommodationType && (
+                                <span className="mb-card-type-badge">
+                                  {TYPE_ICONS[booking.accommodationType] &&
+                                    (() => {
+                                      const Icon =
+                                        TYPE_ICONS[booking.accommodationType];
+                                      return <Icon />;
+                                    })()}
+                                  {booking.accommodationType}
+                                </span>
+                              )}
+                            </div>
+
+                            <div className="mb-card-main">
+                              <h3>{booking.roomName}</h3>
+                              <p className="mb-listing-title">
+                                {booking.listingTitle}
+                              </p>
+                              {booking.location && (
+                                <p className="mb-location">
+                                  <FaMapMarkerAlt /> {booking.location}
+                                </p>
+                              )}
+                              <p className="mb-dates">
+                                <FaCalendarAlt />{" "}
+                                {formatDateRange(
+                                  booking.checkIn,
+                                  booking.checkOut,
+                                )}
+                                {nights > 0 && (
+                                  <span className="mb-nights">
+                                    {" "}
+                                    · {nights} night{nights > 1 ? "s" : ""}
+                                  </span>
+                                )}
+                              </p>
+                              <p className="mb-guests">
+                                {booking.guestsCount} guest
+                                {booking.guestsCount > 1 ? "s" : ""}
+                              </p>
+                            </div>
+
+                            <div className="mb-card-side">
+                              <p className="mb-price">
+                                ₱{Number(booking.totalPrice).toLocaleString()}
+                              </p>
+                              <p className="mb-deposit">
+                                Deposit paid: ₱
+                                {Number(booking.depositAmount).toLocaleString()}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))
               )}
             </>
           )}
@@ -526,6 +693,15 @@ export default function MyBookings() {
         initialLastName={user?.lastName}
         onComplete={handleProfileComplete}
       />
+
+      {selectedBooking && (
+        <GuestBookingDetailModal
+          booking={selectedBooking}
+          authToken={authToken}
+          onClose={() => setSelectedBooking(null)}
+          onCancelled={handleBookingCancelled}
+        />
+      )}
     </>
   );
 }

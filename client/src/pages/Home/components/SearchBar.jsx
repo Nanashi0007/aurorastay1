@@ -131,8 +131,15 @@ export default function SearchBar({ onSearch, initialDestination = "" }) {
     });
   }
 
+  const guestCount = guests === "" ? MIN_GUESTS : guests;
+
   function handleSearchClick() {
-    onSearch?.({ destination, checkIn, checkOut, guests: guestCount });
+    onSearch?.({
+      destination: destination.trim(),
+      checkIn,
+      checkOut,
+      guests: guestCount,
+    });
   }
 
   const days = buildCalendarDays(viewDate.getFullYear(), viewDate.getMonth());
@@ -145,8 +152,6 @@ export default function SearchBar({ onSearch, initialDestination = "" }) {
       : checkIn
         ? `${formatDate(checkIn)} - Add checkout`
         : "Add dates";
-
-  const guestCount = guests === "" ? MIN_GUESTS : guests;
 
   return (
     <div className="search-card">

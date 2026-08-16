@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
+import { clearAuth } from "../../../utils/storage";
 import {
   FaPlus,
   FaHome,
@@ -13,12 +14,18 @@ import {
   FaHotel,
   FaBed,
 } from "react-icons/fa";
-import Navbar from "../components/Navbar";
-import CompleteProfileModal from "../ProfileModal";
-import BookingDetailModal from "../components/BookingDetailModal"; // adjust path to match where you save it
+import Navbar from "../../../components/layout/Navbar";
+import CompleteProfileModal from "../../../components/modals/ProfileModal";
+import BookingDetailModal from "../../../components/modals/BookingDetailModal";
 import "../../../styles/Owner/OwnerListings.css";
 
 const NAV_ITEMS = [
+  {
+    id: "dashboard",
+    label: "Dashboard",
+    icon: FaHome,
+    path: "/owner/dashboard",
+  },
   {
     id: "listings",
     label: "My Listings",
@@ -32,18 +39,18 @@ const NAV_ITEMS = [
     path: "/owner/bookings",
   },
   {
-    id: "messages",
-    label: "Messages",
+    id: "notification",
+    label: "Notification",
     icon: FaEnvelope,
-    path: "/owner/messages",
+    path: "/owner/notification",
   },
-  {
-    id: "earnings",
-    label: "Earnings",
-    icon: FaWallet,
-    path: "/owner/earnings",
-  },
-  { id: "settings", label: "Settings", icon: FaCog, path: "/owner/settings" },
+  // {
+  //   id: "earnings",
+  //   label: "Earnings",
+  //   icon: FaWallet,
+  //   path: "/owner/earnings",
+  // },
+  // { id: "settings", label: "Settings", icon: FaCog, path: "/owner/settings" },
 ];
 
 const TYPE_ICONS = {
@@ -108,6 +115,19 @@ export default function OwnerBookings() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const userMenuRef = useRef(null);
   const [selectedBooking, setSelectedBooking] = useState(null);
+  const [searchParams] = useSearchParams();
+  const [statusFilter, setStatusFilter] = useState(
+    searchParams.get("status") || "all",
+  );
+  const [authLoading, setAuthLoading] = useState(true);
+
+  const STATUS_FILTERS = [
+    { key: "all", label: "All" },
+    { key: "pending", label: "Pending" },
+    { key: "confirmed", label: "Confirmed" },
+    { key: "declined", label: "Declined" },
+    { key: "cancelled", label: "Cancelled" },
+  ];
 
   useEffect(() => {
     async function fetchOwnerBookings() {
@@ -153,11 +173,11 @@ export default function OwnerBookings() {
         localStorage.removeItem("user");
       }
     }
+    setAuthLoading(false);
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    clearAuth();
     setUser(null);
     setAuthToken(null);
     setShowUserMenu(false);
@@ -175,10 +195,21 @@ export default function OwnerBookings() {
     );
   }
 
+  const statusCounts = bookings.reduce((acc, b) => {
+    acc[b.status] = (acc[b.status] || 0) + 1;
+    return acc;
+  }, {});
+
+  const filteredBookings =
+    statusFilter === "all"
+      ? bookings
+      : bookings.filter((b) => b.status === statusFilter);
+
   return (
     <>
       <Navbar
         user={user}
+        authLoading={authLoading}
         showUserMenu={showUserMenu}
         setShowUserMenu={setShowUserMenu}
         userMenuRef={userMenuRef}
@@ -239,99 +270,136 @@ export default function OwnerBookings() {
             </div>
           </div>
 
-          {loading ? (
-            <p className="mb-loading">Loading bookings…</p>
-          ) : error ? (
-            <div className="mb-error">{error}</div>
-          ) : bookings.length === 0 ? (
-            <div className="owner-listings-empty">
-              <FaClipboardList />
-              <h2>No bookings yet</h2>
-              <p>Bookings guests make will show up here.</p>
-            </div>
-          ) : (
-            <div className="mb-list">
-              {bookings.map((booking) => {
-                const nights = nightsBetween(booking.checkIn, booking.checkOut);
+          <div className="ob-bookings-body">
+            <div className="ob-status-filter-panel">
+              {STATUS_FILTERS.map(({ key, label }) => {
+                const count =
+                  key === "all" ? bookings.length : statusCounts[key] || 0;
                 return (
-                  <div
-                    className="mb-card"
-                    key={booking.id}
-                    onClick={() => setSelectedBooking(booking)}
-                    style={{ cursor: "pointer" }}
+                  <button
+                    type="button"
+                    key={key}
+                    className={`ob-status-filter-item ${
+                      statusFilter === key ? "active" : ""
+                    }`}
+                    onClick={() => setStatusFilter(key)}
                   >
-                    <div className="mb-card-photo">
-                      {booking.coverPhotoUrl ? (
-                        <img
-                          src={booking.coverPhotoUrl}
-                          alt={booking.listingTitle}
-                        />
-                      ) : (
-                        <div className="mb-card-photo-placeholder">
-                          No photo
-                        </div>
-                      )}
-                      {booking.accommodationType && (
-                        <span className="mb-card-type-badge">
-                          {TYPE_ICONS[booking.accommodationType] &&
-                            (() => {
-                              const Icon =
-                                TYPE_ICONS[booking.accommodationType];
-                              return <Icon />;
-                            })()}
-                          {booking.accommodationType}
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="mb-card-main">
-                      <h3>{booking.roomName}</h3>
-                      <p className="mb-listing-title">{booking.listingTitle}</p>
-                      {booking.location && (
-                        <p className="mb-location">
-                          <FaMapMarkerAlt /> {booking.location}
-                        </p>
-                      )}
-                      <p className="mb-dates">
-                        <FaCalendarAlt />{" "}
-                        {formatDateRange(booking.checkIn, booking.checkOut)}
-                        {nights > 0 && (
-                          <span className="mb-nights">
-                            {" "}
-                            · {nights} night{nights > 1 ? "s" : ""}
-                          </span>
-                        )}
-                      </p>
-                      <p className="mb-guests">
-                        {booking.guestsCount} guest
-                        {booking.guestsCount > 1 ? "s" : ""}
-                      </p>
-                      {booking.guestName && (
-                        <p className="mb-guest-name">
-                          Booked by {booking.guestName}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="mb-card-side">
-                      <span className={`mb-status mb-status-${booking.status}`}>
-                        {STATUS_LABELS[booking.status] || booking.status}
-                      </span>
-                      <p className="mb-price">
-                        ₱{Number(booking.totalPrice).toLocaleString()}
-                      </p>
-                      <p className="mb-deposit">
-                        Deposit paid: ₱
-                        {Number(booking.depositAmount).toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
+                    <span>{label}</span>
+                    <span className="ob-status-filter-count">{count}</span>
+                  </button>
                 );
               })}
             </div>
-          )}
+
+            <div className="ob-bookings-results">
+              {loading ? (
+                <p className="mb-loading">Loading bookings…</p>
+              ) : error ? (
+                <div className="mb-error">{error}</div>
+              ) : filteredBookings.length === 0 ? (
+                <div className="owner-listings-empty">
+                  <FaClipboardList />
+                  <h2>
+                    {statusFilter === "all"
+                      ? "No bookings yet"
+                      : `No ${statusFilter} bookings`}
+                  </h2>
+                  <p>Bookings guests make will show up here.</p>
+                </div>
+              ) : (
+                <div className="mb-list">
+                  {filteredBookings.map((booking) => {
+                    const nights = nightsBetween(
+                      booking.checkIn,
+                      booking.checkOut,
+                    );
+                    return (
+                      <div
+                        className="mb-card"
+                        key={booking.id}
+                        onClick={() => setSelectedBooking(booking)}
+                        style={{ cursor: "pointer" }}
+                      >
+                        <div className="mb-card-photo">
+                          {booking.coverPhotoUrl ? (
+                            <img
+                              src={booking.coverPhotoUrl}
+                              alt={booking.listingTitle}
+                            />
+                          ) : (
+                            <div className="mb-card-photo-placeholder">
+                              No photo
+                            </div>
+                          )}
+                          {booking.accommodationType && (
+                            <span className="mb-card-type-badge">
+                              {TYPE_ICONS[booking.accommodationType] &&
+                                (() => {
+                                  const Icon =
+                                    TYPE_ICONS[booking.accommodationType];
+                                  return <Icon />;
+                                })()}
+                              {booking.accommodationType}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="mb-card-main">
+                          <h3>{booking.roomName}</h3>
+                          <p className="mb-listing-title">
+                            {booking.listingTitle}
+                          </p>
+                          {booking.location && (
+                            <p className="mb-location">
+                              <FaMapMarkerAlt /> {booking.location}
+                            </p>
+                          )}
+                          <p className="mb-dates">
+                            <FaCalendarAlt />{" "}
+                            {formatDateRange(booking.checkIn, booking.checkOut)}
+                            {nights > 0 && (
+                              <span className="mb-nights">
+                                {" "}
+                                · {nights} night{nights > 1 ? "s" : ""}
+                              </span>
+                            )}
+                          </p>
+                          <p className="mb-guests">
+                            {booking.guestsCount} guest
+                            {booking.guestsCount > 1 ? "s" : ""}
+                          </p>
+                          {booking.guestName && (
+                            <p className="mb-guest-name">
+                              Booked by {booking.guestName}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="mb-card-side">
+                          <span
+                            className={`mb-status mb-status-${booking.status}`}
+                          >
+                            {STATUS_LABELS[booking.status] || booking.status}
+                          </span>
+                          <p className="mb-price">
+                            ₱{Number(booking.totalPrice).toLocaleString()}
+                          </p>
+                          <p className="mb-deposit">
+                            Deposit paid: ₱
+                            {Number(booking.depositAmount).toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
+        {/* closes owner-listings-wrap */}
       </div>
+      {/* closes owner-layout */}
 
       <CompleteProfileModal
         isOpen={showCompleteProfile}

@@ -7,6 +7,7 @@ import {
   FaCheck,
 } from "react-icons/fa";
 import "../../../../../styles/Hotels/RoomCardDetails.css";
+import "../../../../../styles/Hotels/ReserveForm.css";
 
 import ReserveForm from "./ReserveForm"; // adjust path to match where you save it
 
@@ -42,7 +43,6 @@ export default function RoomDetailModal({
   const photos = room.photos || [];
   const hasPhotos = photos.length > 0;
 
-  // NEW — true when the logged-in user owns this listing
   const isOwner = isLoggedIn && user?.id != null && user.id === ownerId;
 
   function nextPhoto() {
@@ -60,9 +60,6 @@ export default function RoomDetailModal({
     }
     setShowReserveForm(true);
   }
-
-  console.log(room);
-  console.log("hatdog: ", user.id);
 
   return (
     <div
@@ -202,6 +199,7 @@ export default function RoomDetailModal({
                   user={user}
                   onCancel={() => setShowReserveForm(false)}
                   onSuccess={() => setReserveSuccess(true)}
+                  onRequireLogin={onRequireLogin}
                 />
               </div>
             ) : (

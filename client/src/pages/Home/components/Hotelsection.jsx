@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FaArrowRight, FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import HotelCard from "./Hotelcard";
+import HotelCard from "../../../components/cards/HotelCard";
 import "../../../styles/htsection.css";
 
 export default function HotelsSection({ hotels }) {
@@ -62,9 +62,11 @@ export default function HotelsSection({ hotels }) {
 
       <div className="hotel-carousel-wrapper">
         <button
+          type="button"
           className={`carousel-arrow left ${!canScrollLeft ? "disabled" : ""}`}
           onClick={() => scroll("left")}
           disabled={!canScrollLeft}
+          aria-label="Show previous stays"
         >
           <FaChevronLeft />
         </button>
@@ -80,11 +82,13 @@ export default function HotelsSection({ hotels }) {
         </div>
 
         <button
+          type="button"
           className={`carousel-arrow right ${
             !canScrollRight ? "disabled" : ""
           }`}
           onClick={() => scroll("right")}
           disabled={!canScrollRight}
+          aria-label="Show next stays"
         >
           <FaChevronRight />
         </button>

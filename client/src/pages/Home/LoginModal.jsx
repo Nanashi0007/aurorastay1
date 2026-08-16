@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { GoogleLogin } from "@react-oauth/google";
+import { persistAuth } from "../../utils/storage";
 import "../../styles/LoginModal.css";
 
 export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
@@ -13,7 +14,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
     setSubmitting(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/google", {
+      const res = await fetch("/api/auth/google", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -25,20 +26,18 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
 
       if (!res.ok) {
         setError(data.message || "Login failed. Please try again.");
+        setSubmitting(false);
         return;
       }
 
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-
-      // Let the parent decide what happens next -- if this is a first-time
-      // sign-up, it'll show the "confirm your name" step.
+      persistAuth(data.token, data.user);
       onLoginSuccess?.(data.user, data.isNewUser, data.token);
-      onClose();
+
+      await new Promise((resolve) => setTimeout(resolve, 700));
+      window.location.replace("/");
     } catch (err) {
       console.error("Google login request failed:", err);
       setError("Something went wrong. Please try again.");
-    } finally {
       setSubmitting(false);
     }
   };
@@ -48,7 +47,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
   };
 
   const handleBackdropClick = (e) => {
-    if (e.target === e.currentTarget) onClose();
+    if (e.target === e.currentTarget && !submitting) onClose();
   };
 
   return (
@@ -59,7 +58,12 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
         aria-modal="true"
         aria-labelledby="lm-title"
       >
-        <button className="lm-close" onClick={onClose} aria-label="Close">
+        <button
+          className="lm-close"
+          onClick={onClose}
+          aria-label="Close"
+          disabled={submitting}
+        >
           &times;
         </button>
 
@@ -73,18 +77,23 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
         </div>
 
         <div className="lm-google-wrap">
-          <GoogleLogin
-            onSuccess={handleGoogleSuccess}
-            onError={handleGoogleError}
-            useOneTap
-            theme="outline"
-            size="large"
-            width="320"
-            text="continue_with"
-          />
+          {submitting ? (
+            <div className="lm-loading-box">
+              <span className="lm-spinner" aria-hidden="true" />
+              <span>Signing you in…</span>
+            </div>
+          ) : (
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={handleGoogleError}
+              theme="outline"
+              size="large"
+              width="320"
+              text="continue_with"
+            />
+          )}
         </div>
 
-        {submitting && <p className="lm-status">Signing you in...</p>}
         {error && <p className="lm-error">{error}</p>}
       </div>
     </div>

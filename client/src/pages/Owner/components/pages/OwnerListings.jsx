@@ -1,5 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { authFetch } from "../../../../utils/api";
+import { clearAuth } from "../../../../utils/storage";
 import {
   FaPlus,
   FaHome,
@@ -16,10 +18,16 @@ import EditListingModal from "./components/EditListingModal";
 import ConfirmModal from "./components/ConfirmModal";
 import SuccessModal from "./components/SuccessModal";
 import "../../../../styles/Owner/OwnerListings.css";
-import Navbar from "../../../Home/components/Navbar";
-import CompleteProfileModal from "../../../Home/ProfileModal";
+import Navbar from "../../../../components/layout/Navbar";
+import CompleteProfileModal from "../../../../components/modals/ProfileModal";
 
 const NAV_ITEMS = [
+  {
+    id: "dashboard",
+    label: "Dashboard",
+    icon: FaHome,
+    path: "/owner/dashboard",
+  },
   {
     id: "listings",
     label: "My Listings",
@@ -33,18 +41,18 @@ const NAV_ITEMS = [
     path: "/owner/bookings",
   },
   {
-    id: "messages",
-    label: "Messages",
+    id: "notification",
+    label: "Notification",
     icon: FaEnvelope,
-    path: "/owner/messages",
+    path: "/owner/notification",
   },
-  {
-    id: "earnings",
-    label: "Earnings",
-    icon: FaWallet,
-    path: "/owner/earnings",
-  },
-  { id: "settings", label: "Settings", icon: FaCog, path: "/owner/settings" },
+  // {
+  //   id: "earnings",
+  //   label: "Earnings",
+  //   icon: FaWallet,
+  //   path: "/owner/earnings",
+  // },
+  // { id: "settings", label: "Settings", icon: FaCog, path: "/owner/settings" },
 ];
 
 export default function OwnerListings() {
@@ -55,9 +63,7 @@ export default function OwnerListings() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showWizard, setShowWizard] = useState(false);
-  const [activeNav, setActiveNav] = useState("listings");
 
-  // View / Edit / Delete state
   const [viewingListing, setViewingListing] = useState(null);
   const [editingListing, setEditingListing] = useState(null);
   const [deletingListing, setDeletingListing] = useState(null);
@@ -70,21 +76,18 @@ export default function OwnerListings() {
   const [authToken, setAuthToken] = useState(null);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const userMenuRef = useRef(null);
+  const [authLoading, setAuthLoading] = useState(true);
 
   async function fetchListings() {
-    const token = localStorage.getItem("token");
     try {
-      const res = await fetch("/api/listings/mine", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
+      const result = await authFetch("/api/listings/mine");
 
-      if (!res.ok) {
-        setError(data.message || "Failed to load your listings.");
+      if (!result.ok) {
+        setError(result.data?.message || "Failed to load your listings.");
         return;
       }
 
-      setListings(data.listings || []);
+      setListings(result.data?.listings || []);
       setError(null);
     } catch (err) {
       console.error("Failed to fetch listings:", err);
@@ -116,11 +119,11 @@ export default function OwnerListings() {
         localStorage.removeItem("user");
       }
     }
+    setAuthLoading(false);
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    clearAuth();
     setUser(null);
     setAuthToken(null);
     setShowUserMenu(false);
@@ -188,6 +191,7 @@ export default function OwnerListings() {
     <>
       <Navbar
         user={user}
+        authLoading={authLoading}
         showUserMenu={showUserMenu}
         setShowUserMenu={setShowUserMenu}
         userMenuRef={userMenuRef}
@@ -196,7 +200,6 @@ export default function OwnerListings() {
       />
 
       <div className="owner-layout">
-        {/* --- Floating sidebar --- */}
         <aside className="owner-sidebar">
           <nav className="owner-sidebar-nav">
             {NAV_ITEMS.map(({ id, label, icon: Icon, path }) => (
@@ -213,19 +216,6 @@ export default function OwnerListings() {
               </button>
             ))}
           </nav>
-
-          <div className="owner-sidebar-stats">
-            <div className="owner-sidebar-stat">
-              <span className="owner-sidebar-stat-value">
-                {listings.length}
-              </span>
-              <span className="owner-sidebar-stat-label">Total Listings</span>
-            </div>
-            <div className="owner-sidebar-stat">
-              <span className="owner-sidebar-stat-value">{activeCount}</span>
-              <span className="owner-sidebar-stat-label">Active</span>
-            </div>
-          </div>
 
           {user && (
             <div className="owner-sidebar-account">
@@ -252,7 +242,6 @@ export default function OwnerListings() {
           )}
         </aside>
 
-        {/* --- Main content --- */}
         <div className="owner-listings-wrap">
           <div className="owner-listings-header">
             <div>

@@ -1,14 +1,16 @@
 .ad-page {
+  width: min(100%, 1100px);
   max-width: 1100px;
   margin: 0 auto;
   padding: 24px;
+  box-sizing: border-box;
 }
 
 .ad-loading,
 .ad-error {
   text-align: center;
   padding: 60px 20px;
-  color: #666;
+  color: var(--theme-muted);
 }
 
 .ad-back-btn {
@@ -18,7 +20,7 @@
   border: none;
   background: none;
   font-size: 14px;
-  color: #555;
+  color: var(--navy-deep);
   cursor: pointer;
   margin-bottom: 16px;
   padding: 0;
@@ -40,7 +42,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  color: #666;
+  color: var(--theme-muted);
   font-size: 14px;
 }
 
@@ -53,18 +55,18 @@
 }
 
 .ad-status-active {
-  background: #ecfdf5;
-  color: #059669;
+  background: var(--theme-surface);
+  color: var(--gold-deep);
 }
 
 .ad-status-hidden {
-  background: #fef3c7;
-  color: #b45309;
+  background: var(--theme-gold-soft);
+  color: var(--gold-deep);
 }
 
 .ad-status-archived {
-  background: #f3f4f6;
-  color: #6b7280;
+  background: var(--theme-surface);
+  color: var(--navy-deep);
 }
 
 /* --- Media carousel --- */
@@ -86,7 +88,7 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.9);
+  background: color-mix(in srgb, white 90%, transparent);
   border: none;
   width: 36px;
   height: 36px;
@@ -106,8 +108,8 @@
   position: absolute;
   bottom: 12px;
   right: 12px;
-  background: rgba(0, 0, 0, 0.6);
-  color: #fff;
+  background: color-mix(in srgb, var(--navy-deep) 60%, transparent);
+  color: white;
   font-size: 12px;
   padding: 4px 10px;
   border-radius: 999px;
@@ -132,7 +134,7 @@
 }
 
 .ad-media-thumb-btn.active {
-  border-color: #4338ca;
+  border-color: var(--navy-deep);
 }
 
 .ad-media-thumb-btn img {
@@ -172,13 +174,13 @@
 }
 
 .ad-grid-item svg {
-  color: #4338ca;
+  color: var(--navy-deep);
   font-size: 16px;
 }
 
 .ad-grid-item small {
   display: block;
-  color: #888;
+  color: var(--theme-muted);
   font-size: 11px;
 }
 
@@ -189,7 +191,7 @@
 }
 
 .ad-amenity-chip {
-  background: #f4f4f5;
+  background: var(--theme-surface);
   padding: 6px 12px;
   border-radius: 999px;
   font-size: 13px;
@@ -199,15 +201,15 @@
 .ad-price-card {
   position: sticky;
   top: 24px;
-  border: 1px solid #eee;
+  border: 1px solid var(--theme-line);
   border-radius: 16px;
   padding: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 20px color-mix(in srgb, var(--navy-deep) 6%, transparent);
 }
 
 .ad-price-label {
   font-size: 12px;
-  color: #888;
+  color: var(--theme-muted);
 }
 
 .ad-price-value {
@@ -221,7 +223,7 @@
   flex-direction: column;
   gap: 8px;
   font-size: 13px;
-  color: #555;
+  color: var(--navy-deep);
 }
 
 .ad-section-no-margin {
@@ -229,17 +231,30 @@
 }
 
 @media (max-width: 800px) {
+  .ad-page {
+    padding: 20px 16px 48px;
+  }
+
   .ad-body {
     grid-template-columns: 1fr;
+    gap: 20px;
   }
+
   .ad-price-card {
     position: static;
   }
+
   .ad-grid {
     grid-template-columns: 1fr;
   }
+
+  .ad-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+
   .ad-section-no-margin {
-    margin-bottom: none !important;
+    margin-bottom: 0 !important;
   }
 
   .dividerss {
@@ -257,7 +272,7 @@
 
 /* --- Rooms section --- */
 .ad-rooms-empty {
-  color: #888;
+  color: var(--theme-muted);
   font-size: 14px;
 }
 
@@ -271,10 +286,10 @@
   display: grid;
   grid-template-columns: 200px 1fr 160px;
   gap: 20px;
-  border: 1px solid #eee;
+  border: 1px solid var(--theme-line);
   border-radius: 12px;
   padding: 18px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--navy-deep) 4%, transparent);
 }
 
 /* --- Image column --- */
@@ -284,7 +299,7 @@
   height: 150px;
   border-radius: 8px;
   overflow: hidden;
-  background: #f4f4f5;
+  background: var(--theme-surface);
 }
 
 .rc-image img {
@@ -299,7 +314,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #999;
+  color: var(--theme-muted);
   font-size: 12px;
 }
 
@@ -307,7 +322,7 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.9);
+  background: color-mix(in srgb, white 90%, transparent);
   border: none;
   width: 26px;
   height: 26px;
@@ -331,8 +346,8 @@
   position: absolute;
   bottom: 8px;
   right: 8px;
-  background: rgba(0, 0, 0, 0.65);
-  color: #fff;
+  background: color-mix(in srgb, var(--navy-deep) 65%, transparent);
+  color: white;
   font-size: 11px;
   padding: 3px 8px;
   border-radius: 999px;
@@ -352,7 +367,7 @@
   flex-wrap: wrap;
   gap: 14px;
   font-size: 12px;
-  color: #555;
+  color: var(--navy-deep);
   margin-bottom: 10px;
 }
 
@@ -363,7 +378,7 @@
 }
 
 .rc-spec svg {
-  color: #4338ca;
+  color: var(--navy-deep);
   font-size: 12px;
 }
 
@@ -371,39 +386,39 @@
   display: flex;
   gap: 18px;
   font-size: 12px;
-  color: #666;
+  color: var(--theme-muted);
   margin-bottom: 4px;
 }
 
 .rc-description {
   font-size: 13px;
-  color: #777;
+  color: var(--theme-muted);
   margin-top: 10px;
 }
 
 /* --- Price column --- */
 .rc-price-col {
   text-align: right;
-  border-left: 1px solid #eee;
+  border-left: 1px solid var(--theme-line);
   padding-left: 16px;
 }
 
 .rc-price {
   font-size: 20px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--navy-deep);
 }
 
 .rc-price-note {
   display: block;
-  color: #888;
+  color: var(--theme-muted);
   font-size: 11px;
   margin-bottom: 12px;
 }
 
 .rc-availability {
   font-size: 12px;
-  color: #059669;
+  color: var(--gold-deep);
   margin-bottom: 12px;
 }
 
@@ -415,16 +430,21 @@
   .rc-card {
     grid-template-columns: 1fr;
   }
+
   .rc-image {
     width: 100%;
+    height: auto;
+    min-height: 180px;
   }
+
   .rc-price-col {
     text-align: left;
     border-left: none;
     padding-left: 0;
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--theme-line);
     padding-top: 12px;
   }
+
   .dividerss {
     display: block;
     width: 100%;
@@ -432,20 +452,45 @@
     background: var(--line);
     flex-shrink: 0;
   }
+
   .rc-manage-btn {
-    width: 20%;
+    width: 100%;
   }
 
   .ad-media-carousel {
     height: 200px;
   }
+
+  .ad-room-card-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .ad-add-room-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .ad-page {
+    padding: 16px 12px 40px;
+  }
+
+  .ad-header h1 {
+    font-size: 22px;
+  }
+
+  .ad-price-value {
+    font-size: 22px;
+  }
 }
 
 .ad-room-card {
-  background: #fff;
+  background: white;
   border-radius: 8px;
-  padding: 24px, 15px, 24px, 15px;
-  border: 1px solid #e6e6e6;
+  padding: 24px 15px;
+  border: 1px solid var(--theme-line);
 }
 
 .ad-room-card-header {
@@ -461,7 +506,7 @@
 
 .ad-room-card-header p {
   margin: 4px 0 0;
-  color: #666;
+  color: var(--theme-muted);
   font-size: 14px;
 }
 
@@ -476,11 +521,11 @@
 .ad-room-summary {
   margin-bottom: 16px;
   font-size: 14px;
-  color: #666;
+  color: var(--theme-muted);
 }
 
 .ad-room-empty {
-  border: 2px dashed #ddd;
+  border: 2px dashed var(--theme-line);
   border-radius: 14px;
   padding: 40px 20px;
   text-align: center;
@@ -489,7 +534,7 @@
 .ad-room-empty-icon {
   font-size: 42px;
   margin-bottom: 16px;
-  color: #999;
+  color: var(--theme-muted);
 }
 
 .ad-room-empty h4 {
@@ -499,7 +544,7 @@
 .ad-room-empty p {
   max-width: 420px;
   margin: 0 auto 20px;
-  color: #666;
+  color: var(--theme-muted);
 }
 
 .dividers {

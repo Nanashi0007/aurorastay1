@@ -2,7 +2,7 @@
 .bd-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: color-mix(in srgb, var(--navy-deep) 50%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -11,13 +11,13 @@
 }
 
 .bd-modal {
-  background: #fff;
+  background: white;
   border-radius: 12px;
   width: 100%;
   max-width: 560px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 20px 60px color-mix(in srgb, var(--navy-deep) 30%, transparent);
   display: flex;
   flex-direction: column;
 }
@@ -27,10 +27,10 @@
   display: flex;
   align-items: center;
   padding: 16px 20px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--theme-line);
   position: sticky;
   top: 0;
-  background: #fff;
+  background: white;
   z-index: 2;
 }
 
@@ -38,7 +38,7 @@
   background: none;
   border: none;
   font-size: 18px;
-  color: #555;
+  color: var(--navy-deep);
   cursor: pointer;
   padding: 6px;
   border-radius: 50%;
@@ -51,7 +51,7 @@
 }
 
 .bd-close-btn:hover {
-  background: #f2f2f2;
+  background: var(--theme-line);
 }
 
 /* --- Photo --- */
@@ -59,7 +59,7 @@
   position: relative;
   width: 100%;
   height: 220px;
-  background: #f4f4f4;
+  background: var(--theme-surface);
 }
 
 .bd-photo img {
@@ -75,7 +75,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #999;
+  color: var(--theme-muted);
   font-size: 14px;
 }
 
@@ -84,8 +84,8 @@
   position: absolute;
   top: 12px;
   left: 12px;
-  background: rgba(0, 0, 0, 0.65);
-  color: #fff;
+  background: color-mix(in srgb, var(--navy-deep) 65%, transparent);
+  color: white;
   padding: 4px 10px;
   border-radius: 20px;
   font-size: 12px;
@@ -103,13 +103,13 @@
   margin: 0 0 4px;
   font-size: 20px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--navy-deep);
   word-break: break-word;
 }
 
 .bd-listing-title {
   margin: 0 0 8px;
-  color: #666;
+  color: var(--theme-muted);
   font-size: 14px;
   word-break: break-word;
 }
@@ -118,7 +118,7 @@
   display: flex;
   align-items: flex-start;
   gap: 6px;
-  color: #555;
+  color: var(--navy-deep);
   font-size: 14px;
   margin: 0 0 16px;
   word-break: break-word;
@@ -126,11 +126,11 @@
 
 .bd-section {
   padding: 16px 0;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--theme-line);
 }
 
 .bd-section:first-of-type {
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--theme-line);
 }
 
 .bd-section h4 {
@@ -138,7 +138,7 @@
   font-size: 13px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: #888;
+  color: var(--theme-muted);
   font-weight: 600;
 }
 
@@ -147,7 +147,7 @@
   align-items: flex-start;
   gap: 8px;
   margin: 0 0 8px;
-  color: #333;
+  color: var(--navy-deep);
   font-size: 14px;
   word-break: break-word;
 }
@@ -167,20 +167,20 @@
   justify-content: space-between;
   gap: 12px;
   font-size: 14px;
-  color: #444;
+  color: var(--navy-deep);
   margin-bottom: 8px;
   flex-wrap: wrap;
 }
 
 .bd-price-deposit {
-  border-top: 1px dashed #ddd;
+  border-top: 1px dashed var(--theme-line);
   padding-top: 8px;
-  color: #1a1a1a;
+  color: var(--navy-deep);
 }
 
 .bd-payment-status {
   font-size: 13px;
-  color: #777;
+  color: var(--theme-muted);
   margin-top: 6px;
 }
 
@@ -190,7 +190,7 @@
 
 .bd-proof small {
   display: block;
-  color: #888;
+  color: var(--theme-muted);
   margin-bottom: 6px;
   font-size: 12px;
 }
@@ -199,7 +199,7 @@
   width: 100%;
   max-width: 240px;
   border-radius: 8px;
-  border: 1px solid #eee;
+  border: 1px solid var(--theme-line);
   cursor: zoom-in;
   display: block;
 }
@@ -211,10 +211,10 @@
   align-items: center;
   gap: 12px;
   padding: 16px 20px;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--theme-line);
   position: sticky;
   bottom: 0;
-  background: #fff;
+  background: white;
   flex-wrap: wrap;
 }
 
@@ -223,8 +223,8 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(0, 0, 0, 0.55);
-  color: #fff;
+  background: color-mix(in srgb, var(--navy-deep) 55%, transparent);
+  color: white;
   border: none;
   border-radius: 50%;
   width: 32px;
@@ -248,8 +248,8 @@
   position: absolute;
   bottom: 12px;
   right: 12px;
-  background: rgba(0, 0, 0, 0.6);
-  color: #fff;
+  background: color-mix(in srgb, var(--navy-deep) 60%, transparent);
+  color: white;
   font-size: 12px;
   padding: 3px 8px;
   border-radius: 12px;
@@ -261,7 +261,7 @@
   gap: 6px;
   padding: 10px 20px;
   overflow-x: auto;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--theme-line);
   -webkit-overflow-scrolling: touch;
 }
 
@@ -278,7 +278,7 @@
 }
 
 .bd-thumb.active {
-  border-color: #1a73e8;
+  border-color: var(--navy-deep);
 }
 
 .bd-thumb img {
@@ -387,4 +387,24 @@
   .bd-footer button {
     width: 100%;
   }
+}
+
+.btn-danger {
+  background: var(--gold-deep);
+  color: white;
+  border: none;
+}
+
+.btn-danger:hover {
+  background: var(--gold-deep);
+}
+
+.bd-cancel-btn {
+  color: var(--gold-deep);
+}
+
+.bd-cancel-confirm-text {
+  margin-right: auto;
+  font-size: 14px;
+  color: var(--navy-deep);
 }

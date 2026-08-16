@@ -1,11 +1,34 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-const API_BASE = "http://localhost:5000/api/hotels";
+const API_BASE = "/api/hotels";
 
 export function useHotels(filters) {
   const [hotels, setHotels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const normalizedFilters = useMemo(
+    () => ({
+      minPrice: filters.minPrice,
+      maxPrice: filters.maxPrice,
+      types: filters.types?.join(",") ?? "",
+      amenities: filters.amenities?.join(",") ?? "",
+      destination: filters.destination,
+      checkIn: filters.checkIn,
+      checkOut: filters.checkOut,
+      guests: filters.guests,
+    }),
+    [
+      filters.minPrice,
+      filters.maxPrice,
+      filters.types,
+      filters.amenities,
+      filters.destination,
+      filters.checkIn,
+      filters.checkOut,
+      filters.guests,
+    ],
+  );
 
   useEffect(() => {
     const controller = new AbortController();
@@ -15,16 +38,21 @@ export function useHotels(filters) {
       setError(null);
       try {
         const params = new URLSearchParams();
-        if (filters.minPrice) params.set("minPrice", filters.minPrice);
-        if (filters.maxPrice) params.set("maxPrice", filters.maxPrice);
-        if (filters.types?.length) params.set("type", filters.types.join(","));
-        if (filters.amenities?.length)
-          params.set("amenities", filters.amenities.join(","));
-        if (filters.destination) params.set("destination", filters.destination);
-        if (filters.checkIn) params.set("checkIn", toDateOnly(filters.checkIn));
-        if (filters.checkOut)
-          params.set("checkOut", toDateOnly(filters.checkOut));
-        if (filters.guests) params.set("guests", filters.guests);
+        if (normalizedFilters.minPrice)
+          params.set("minPrice", normalizedFilters.minPrice);
+        if (normalizedFilters.maxPrice)
+          params.set("maxPrice", normalizedFilters.maxPrice);
+        if (normalizedFilters.types) params.set("type", normalizedFilters.types);
+        if (normalizedFilters.amenities)
+          params.set("amenities", normalizedFilters.amenities);
+        if (normalizedFilters.destination)
+          params.set("destination", normalizedFilters.destination);
+        if (normalizedFilters.checkIn)
+          params.set("checkIn", toDateOnly(normalizedFilters.checkIn));
+        if (normalizedFilters.checkOut)
+          params.set("checkOut", toDateOnly(normalizedFilters.checkOut));
+        if (normalizedFilters.guests)
+          params.set("guests", normalizedFilters.guests);
 
         const res = await fetch(`${API_BASE}?${params.toString()}`, {
           signal: controller.signal,
@@ -41,17 +69,7 @@ export function useHotels(filters) {
 
     fetchHotels();
     return () => controller.abort();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    filters.minPrice,
-    filters.maxPrice,
-    filters.types?.join(","),
-    filters.amenities?.join(","),
-    filters.destination,
-    filters.checkIn,
-    filters.checkOut,
-    filters.guests,
-  ]);
+  }, [normalizedFilters]);
 
   return { hotels, loading, error };
 }

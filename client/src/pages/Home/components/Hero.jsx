@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { authFetch } from "../../../utils/api";
 import {
   FaSearch,
   FaMapMarkerAlt,
@@ -10,10 +11,10 @@ import {
   FaChevronLeft,
   FaChevronRight,
 } from "react-icons/fa";
-import QuickBookCard from "./QuickBookCard";
+import QuickBookCard from "../../../components/cards/QuickBookCard";
 import "../../../styles/Hero.css";
 import "../../../styles/recent.css";
-import { getRecentlyViewedIds } from "../../../utils/recentlyViewed";
+// import { getRecentlyViewedIds } from "../../../utils/recentlyViewed";
 
 const MIN_GUESTS = 1;
 const MAX_GUESTS = 10;
@@ -60,6 +61,7 @@ function buildCalendarDays(year, month) {
 }
 
 export default function Hero({ hotels }) {
+  const navigate = useNavigate();
   const [destination, setDestination] = useState("");
 
   const [checkIn, setCheckIn] = useState(null);
@@ -78,10 +80,22 @@ export default function Hero({ hotels }) {
   const [canScrollNext, setCanScrollNext] = useState(false);
 
   //hotels
-  const recentlyViewedIds = getRecentlyViewedIds();
-  const recentlyViewedHotels = recentlyViewedIds
-    .map((id) => hotels.find((h) => h.id === id))
-    .filter(Boolean);
+  const [recentlyViewedHotels, setRecentlyViewedHotels] = useState([]);
+
+  useEffect(() => {
+    async function fetchRecentlyViewed() {
+      const result = await authFetch("/api/recently-viewed");
+
+      if (!result.ok) {
+        setRecentlyViewedHotels([]);
+        return;
+      }
+
+      setRecentlyViewedHotels(result.data?.hotels || []);
+    }
+
+    fetchRecentlyViewed();
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -115,7 +129,16 @@ export default function Hero({ hotels }) {
       el.removeEventListener("scroll", updateScrollButtons);
       window.removeEventListener("resize", updateScrollButtons);
     };
-  }, [hotels]);
+  }, [recentlyViewedHotels]);
+
+  function handleSearch() {
+    const params = new URLSearchParams();
+    if (destination.trim()) params.set("search", destination.trim());
+    if (checkIn) params.set("checkIn", checkIn.toISOString().split("T")[0]);
+    if (checkOut) params.set("checkOut", checkOut.toISOString().split("T")[0]);
+    if (guestCount > 1) params.set("guests", guestCount);
+    navigate(`/hotels?${params.toString()}`);
+  }
 
   function scrollCarousel(direction) {
     const el = carouselRef.current;
@@ -376,7 +399,11 @@ export default function Hero({ hotels }) {
 
           <div className="divider"></div>
 
-          <button className="btn btn-primary search-btn" aria-label="Search">
+          <button
+            className="btn btn-primary search-btn"
+            aria-label="Search"
+            onClick={handleSearch}
+          >
             <FaSearch />
           </button>
         </div>
@@ -400,7 +427,16 @@ export default function Hero({ hotels }) {
           </p>
         ) : (
           <div className="quickbook-carousel-wrap">
-            {/* same carousel structure, but map over recentlyViewedHotels instead of hotels */}
+            <button
+              type="button"
+              className="quickbook-nav quickbook-nav-prev"
+              onClick={() => scrollCarousel(-1)}
+              disabled={!canScrollPrev}
+              aria-label="Show previous recently viewed stays"
+            >
+              <FaChevronLeft />
+            </button>
+
             <div className="quickbook-carousel" ref={carouselRef}>
               {recentlyViewedHotels.map((hotel) => (
                 <div className="quickbook-card-wrap" key={hotel.id}>
@@ -408,6 +444,16 @@ export default function Hero({ hotels }) {
                 </div>
               ))}
             </div>
+
+            <button
+              type="button"
+              className="quickbook-nav quickbook-nav-next"
+              onClick={() => scrollCarousel(1)}
+              disabled={!canScrollNext}
+              aria-label="Show next recently viewed stays"
+            >
+              <FaChevronRight />
+            </button>
           </div>
         )}
       </div>

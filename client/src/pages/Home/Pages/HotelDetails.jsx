@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import CompleteProfileModal from "../ProfileModal";
+import { clearAuth } from "../../../utils/storage";
+import { authFetch } from "../../../utils/api";
+import CompleteProfileModal from "../../../components/modals/ProfileModal";
 import {
   FaStar,
   FaMapMarkerAlt,
@@ -18,12 +20,12 @@ import {
   FaChevronRight,
 } from "react-icons/fa";
 import "../../../styles/Hotels/HotelDetails.css";
-import Navbar from "../components/Navbar";
+import Navbar from "../../../components/layout/Navbar";
 import RoomCard from "../../Owner/components/card/GuestRoomCard";
 import RoomDetailModal from "../../Owner/components/pages/components/GuestRoomDetailModal.jsx";
 import ReserveModal from "../../Owner/components/pages/components/ReserveModal.jsx"; //hhhh
 import { GoogleMap, MarkerF, useJsApiLoader } from "@react-google-maps/api";
-import LoginModal from "../LoginModal.jsx";
+import LoginModal from "../../../components/modals/LoginModal";
 import EditRoomModal from "../../Owner/components/pages/components/EditRoomModal.jsx";
 
 const AMENITY_ICONS = {
@@ -72,6 +74,15 @@ export default function HotelDetails() {
   const [roomsLoading, setRoomsLoading] = useState(true);
   const [selectedRoom, setSelectedRoom] = useState(null);
 
+  const [reviewSummary, setReviewSummary] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [reviewsLoading, setReviewsLoading] = useState(true);
+  const [loadingMoreReviews, setLoadingMoreReviews] = useState(false);
+  const [hasMoreReviews, setHasMoreReviews] = useState(false);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  const REVIEWS_PAGE_SIZE = 5;
+
   const handleProfileComplete = (updatedUser) => {
     setUser(updatedUser);
     setShowCompleteProfile(false);
@@ -88,6 +99,46 @@ export default function HotelDetails() {
       behavior: "smooth",
       block: "start",
     });
+  }
+
+  useEffect(() => {
+    async function fetchReviews() {
+      try {
+        const res = await fetch(
+          `/api/listings/public/${id}/reviews?limit=${REVIEWS_PAGE_SIZE}&offset=0`,
+        );
+        const data = await res.json();
+        if (res.ok) {
+          setReviewSummary(data);
+          setReviews(data.reviews);
+          setHasMoreReviews(data.reviews.length < data.reviewCount);
+        }
+      } catch (err) {
+        console.error("Failed to fetch reviews:", err);
+      } finally {
+        setReviewsLoading(false);
+      }
+    }
+    fetchReviews();
+  }, [id]);
+
+  async function loadMoreReviews() {
+    setLoadingMoreReviews(true);
+    try {
+      const res = await fetch(
+        `/api/listings/public/${id}/reviews?limit=${REVIEWS_PAGE_SIZE}&offset=${reviews.length}`,
+      );
+      const data = await res.json();
+      if (res.ok) {
+        const updated = [...reviews, ...data.reviews];
+        setReviews(updated);
+        setHasMoreReviews(updated.length < reviewSummary.reviewCount);
+      }
+    } catch (err) {
+      console.error("Failed to load more reviews:", err);
+    } finally {
+      setLoadingMoreReviews(false);
+    }
   }
 
   useEffect(() => {
@@ -153,6 +204,14 @@ export default function HotelDetails() {
   }, [id]);
 
   useEffect(() => {
+    if (!authToken || !hotel?.id) return;
+    authFetch("/api/recently-viewed", {
+      method: "POST",
+      body: JSON.stringify({ listingId: hotel.id }),
+    }).catch((err) => console.error("Failed to record view:", err));
+  }, [authToken, hotel?.id]);
+
+  useEffect(() => {
     const token = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
 
@@ -167,6 +226,7 @@ export default function HotelDetails() {
         console.error("Failed to parse stored user:", err);
       }
     }
+    setAuthLoading(false);
   }, []);
 
   // Keyboard navigation while in full view (left/right arrows, Escape to close)
@@ -207,8 +267,7 @@ export default function HotelDetails() {
 
   //navbar
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    clearAuth();
     setUser(null);
     setAuthToken(null);
     setShowUserMenu(false);
@@ -227,6 +286,7 @@ export default function HotelDetails() {
     <>
       <Navbar
         user={user}
+        authLoading={authLoading}
         showUserMenu={showUserMenu}
         setShowUserMenu={setShowUserMenu}
         userMenuRef={userMenuRef}
@@ -380,12 +440,12 @@ export default function HotelDetails() {
           {/* --- Sticky price card --- */}
           <aside className="hd-price-card">
             <span className="hd-price-label">You can book as low as</span>
-            <div className="hd-price-value">₱{hotel.price}</div>
-            <span className="hd-price-sub">per night</span>
-
             <div className="hd-price-value">
-              {hotel.minPricePerNight ? `₱${hotel.minPricePerNight}` : "—"}
+              {hotel.minPricePerNight
+                ? `₱${hotel.minPricePerNight} / per night`
+                : "—"}
             </div>
+
             <div className="hd-price-facts">
               <span>Up to {hotel.maxGuestsAcrossRooms ?? "—"} guests</span>
               <span>{hotel.totalRoomsAvailable ?? 0} rooms available</span>
@@ -400,6 +460,150 @@ export default function HotelDetails() {
             </button>
           </aside>
         </div>
+
+        {/* --- Reviews summary --- */}
+        {!reviewsLoading && reviewSummary && reviewSummary.reviewCount > 0 && (
+          <div className="hd-section hd-reviews-section">
+            <h3>Guest Reviews</h3>
+
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 16,
+                marginBottom: 20,
+                padding: "16px 20px",
+                background: "#f9fafb",
+                borderRadius: 12,
+                border: "1px solid #f0f0f0",
+              }}
+            >
+              <div
+                style={{
+                  background: "#111827",
+                  color: "white",
+                  fontWeight: 700,
+                  fontSize: 20,
+                  borderRadius: 8,
+                  padding: "8px 14px",
+                  minWidth: 52,
+                  textAlign: "center",
+                }}
+              >
+                {reviewSummary.scoreOutOf10}
+              </div>
+              <div>
+                <div style={{ fontWeight: 600, fontSize: 15 }}>
+                  {reviewSummary.scoreOutOf10 >= 9
+                    ? "Exceptional"
+                    : reviewSummary.scoreOutOf10 >= 8
+                      ? "Excellent"
+                      : reviewSummary.scoreOutOf10 >= 7
+                        ? "Very Good"
+                        : reviewSummary.scoreOutOf10 >= 6
+                          ? "Good"
+                          : "Fair"}
+                </div>
+                <div style={{ fontSize: 13, color: "#6b7280" }}>
+                  {reviewSummary.reviewCount} review
+                  {reviewSummary.reviewCount > 1 ? "s" : ""}
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              {reviews.map((r, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    paddingBottom: 16,
+                    borderBottom:
+                      idx < reviews.length - 1 ? "1px solid #f0f0f0" : "none",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      marginBottom: 6,
+                    }}
+                  >
+                    {r.guestPicture ? (
+                      <img
+                        src={r.guestPicture}
+                        alt={r.guestFirstName}
+                        style={{ width: 32, height: 32, borderRadius: "50%" }}
+                      />
+                    ) : (
+                      <div
+                        style={{
+                          width: 32,
+                          height: 32,
+                          borderRadius: "50%",
+                          background: "#e5e7eb",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: 13,
+                          fontWeight: 600,
+                          color: "#374151",
+                        }}
+                      >
+                        {r.guestFirstName?.[0]}
+                      </div>
+                    )}
+                    <div>
+                      <div style={{ fontWeight: 600, fontSize: 13.5 }}>
+                        {r.guestFirstName}
+                      </div>
+                      <div style={{ fontSize: 11, color: "#9ca3af" }}>
+                        {new Date(r.createdAt).toLocaleDateString("en-US", {
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    style={{ color: "#f59e0b", fontSize: 13, marginBottom: 4 }}
+                  >
+                    {"★".repeat(r.rating)}
+                    {"☆".repeat(5 - r.rating)}
+                  </div>
+                  {r.comment && (
+                    <p style={{ fontSize: 13.5, color: "#374151", margin: 0 }}>
+                      {r.comment}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {hasMoreReviews && (
+              <button
+                type="button"
+                onClick={loadMoreReviews}
+                disabled={loadingMoreReviews}
+                style={{
+                  marginTop: 16,
+                  padding: "10px 20px",
+                  border: "1px solid #d1d5db",
+                  borderRadius: 8,
+                  background: "white",
+                  fontSize: 13.5,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  color: "#374151",
+                }}
+              >
+                {loadingMoreReviews
+                  ? "Loading…"
+                  : `Show more reviews (${reviewSummary.reviewCount - reviews.length} more)`}
+              </button>
+            )}
+          </div>
+        )}
 
         {/* --- Rooms (full width, outside the grid) --- */}
         <div className="hd-section hd-rooms-section" ref={roomsSectionRef}>
@@ -576,6 +780,10 @@ export default function HotelDetails() {
           authToken={authToken}
           user={user}
           onClose={() => setReservingRoom(null)}
+          onRequireLogin={() => {
+            setReservingRoom(null);
+            setShowLogin(true);
+          }}
           onSuccess={() => {
             // booking created — nothing else required right now
           }}

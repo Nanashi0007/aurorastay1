@@ -11,7 +11,7 @@ const listingRoutes = require("./routes/listings");
 const publicListingRoutes = require("./routes/publicListings");
 const roomRoutes = require("./routes/rooms");
 const bookingRoutes = require("./routes/bookings");
-const bookingsUpcomingRoutes = require("./routes/bookingsUpcoming"); // ADD THIS
+const bookingsUpcomingRoutes = require("./routes/bookingsUpcoming");
 const notificationRoutes = require("./routes/notifications");
 const { startReminderJobs } = require("./jobs/reminders");
 const savedListingsRoutes = require("./routes/savedListings");
@@ -20,29 +20,65 @@ const adminAuthRoutes = require("./routes/adminAuth");
 const adminApplicationsRoutes = require("./routes/adminApplications");
 const adminAnnouncementsRoutes = require("./routes/adminAnnouncements");
 const announcementsRoutes = require("./routes/announcements");
+const recentlyViewedRoutes = require("./routes/recentlyViewed");
+const adminAnalyticsRoutes = require("./routes/admin/analytics");
+
+const backupRoutes = require("./routes/backup");
 
 const app = express();
+const port = Number(process.env.PORT || 5000);
+const allowedOrigins = (process.env.CORS_ORIGINS || "http://localhost:5173")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
-app.use(cors());
-app.use(express.json());
+app.disable("x-powered-by");
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+  }),
+);
+app.use(express.json({ limit: "1mb" }));
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  next();
+});
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const JWT_SECRET = process.env.JWT_SECRET;
 
 if (!GOOGLE_CLIENT_ID) {
-  throw new Error("GOOGLE_CLIENT_ID env var is required");
+  console.warn(
+    "GOOGLE_CLIENT_ID is not set. Google login will fail until configured.",
+  );
 }
 if (!JWT_SECRET) {
-  throw new Error("JWT_SECRET env var is required");
+  console.warn("JWT_SECRET is not set. Authentication tokens may be insecure.");
 }
 
-const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
+const googleClient = GOOGLE_CLIENT_ID
+  ? new OAuth2Client(GOOGLE_CLIENT_ID)
+  : null;
+
+app.get("/health", (req, res) => {
+  res.json({ ok: true, timestamp: new Date().toISOString() });
+});
 
 app.post("/api/auth/google", async (req, res) => {
   const { credential } = req.body;
 
-  if (!credential) {
-    return res.status(400).json({ message: "Missing Google credential." });
+  if (!credential || !googleClient) {
+    return res.status(400).json({ message: "Google login is not configured." });
   }
 
   let payload;
@@ -93,9 +129,9 @@ app.post("/api/auth/google", async (req, res) => {
 
       const inserted = await pool.query(
         `INSERT INTO users
-   (google_id, first_name, last_name, email, picture, email_verified)
-   VALUES ($1, $2, $3, $4, $5, $6)
-   RETURNING id, first_name, last_name, email, picture, role`,
+         (google_id, first_name, last_name, email, picture, email_verified)
+         VALUES ($1, $2, $3, $4, $5, $6)
+         RETURNING id, first_name, last_name, email, picture, role`,
         [
           googleId,
           firstName || "",
@@ -110,7 +146,7 @@ app.post("/api/auth/google", async (req, res) => {
 
     const token = jwt.sign(
       { userId: user.id, email: user.email, role: user.role || "guest" },
-      JWT_SECRET,
+      JWT_SECRET || "development-secret",
       { expiresIn: "7d" },
     );
 
@@ -186,8 +222,16 @@ app.use("/api/admin/applications", adminApplicationsRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/admin/announcements", adminAnnouncementsRoutes);
 app.use("/api/announcements", announcementsRoutes);
+app.use("/api/recently-viewed", recentlyViewedRoutes);
+app.use("/api/admin/backup", backupRoutes);
+app.use("/api/admin/analytics", adminAnalyticsRoutes);
 
-app.listen(5000, () => {
-  console.log("Server running on port 5000");
+app.use((err, req, res, next) => {
+  console.error("Unhandled error:", err);
+  res.status(500).json({ message: "Internal server error." });
+});
+
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
   startReminderJobs();
 });

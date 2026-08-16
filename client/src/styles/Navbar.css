@@ -97,15 +97,15 @@
 
 /* Logout button keeps its warning color */
 .nav-user-dropdown button {
-  color: #c0392b;
+  color: var(--gold-deep);
 }
 
 .nav-user-dropdown button:hover {
-  background: #fbebeb;
+  background: var(--theme-line);
 }
 
 .nav-user-dropdown-divider {
   height: 1px;
-  background: rgba(0, 0, 0, 0.08);
+  background: color-mix(in srgb, var(--navy-deep) 8%, transparent);
   margin: 6px 0;
 }
