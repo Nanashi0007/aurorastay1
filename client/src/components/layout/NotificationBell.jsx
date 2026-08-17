@@ -4,6 +4,7 @@ import { authFetch } from "../../utils/api";
 import "../../styles/NotificationBell.css";
 
 const API_BASE = "/api/notifications"; // adjust if you proxy differently
+const DROPDOWN_LIMIT = 4;
 
 function timeAgo(dateString) {
   const seconds = Math.floor((Date.now() - new Date(dateString)) / 1000);
@@ -71,6 +72,14 @@ export default function NotificationBell() {
       setLoading(false);
     }
   };
+
+  function handleViewAll() {
+    setIsOpen(false);
+    navigate("/owner/notification");
+  }
+
+  const visibleNotifications = notifications.slice(0, DROPDOWN_LIMIT);
+  const hasMore = notifications.length > DROPDOWN_LIMIT;
 
   return (
     <div ref={containerRef} className="nb-container">
@@ -166,7 +175,7 @@ export default function NotificationBell() {
             )}
 
             {!loading &&
-              notifications.map((n) => {
+              visibleNotifications.map((n) => {
                 const isClickable = !!(
                   n.relatedBookingId || n.relatedAnnouncementId
                 );
@@ -215,6 +224,18 @@ export default function NotificationBell() {
                 );
               })}
           </div>
+
+          {!loading && hasMore && (
+            <div className="nb-dropdown-footer">
+              <button
+                type="button"
+                className="nb-view-all-btn"
+                onClick={handleViewAll}
+              >
+                View all ({notifications.length})
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

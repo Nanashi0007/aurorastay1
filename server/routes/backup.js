@@ -9,10 +9,13 @@ const multer = require("multer");
 const bcrypt = require("bcrypt");
 const pool = require("../db");
 const { authenticate, requireAdmin } = require("../middleware/authenticate");
+const { logActivity } = require("../services/activityLogger"); // ADJUST path if it lives elsewhere
 
 const PG_BIN = "C:\\Program Files\\PostgreSQL\\18\\bin";
 const PG_DUMP = path.join(PG_BIN, "pg_dump.exe");
 const PSQL = path.join(PG_BIN, "psql.exe");
+
+const CONFIRM_PHRASE = "RESTORE DATABASE";
 
 const upload = multer({
   dest: os.tmpdir(),
@@ -25,29 +28,54 @@ const upload = multer({
   },
 });
 
-// Require the admin to re-enter their password immediately before this
-// action, even though they already have a valid session. Protects against
-// a hijacked or left-open admin session being used to wipe the database.
+// Handles two possible admin identities:
+//   1. A row in `admins` (logged in via the username/password form) —
+//      requires the actual account password.
+//   2. A row in `users` with role = 'admin' (logged in via Google) —
+//      has no app password to check, so instead requires the typed
+//      confirmation phrase as the step-up factor.
+// Either way, the typed confirmation phrase is always required.
 async function requireReauth(req, res, next) {
-  const { password } = req.body;
-  if (!password) {
+  const { password, confirmText } = req.body;
+
+  if (confirmText !== CONFIRM_PHRASE) {
     return res
       .status(400)
-      .json({ message: "Password confirmation is required." });
+      .json({ message: `Type "${CONFIRM_PHRASE}" exactly to confirm.` });
   }
+
   try {
-    const result = await pool.query(
+    const adminResult = await pool.query(
       "SELECT password_hash FROM admins WHERE id = $1",
       [req.userId],
     );
-    if (result.rows.length === 0) {
-      return res.status(401).json({ message: "Not authorized." });
+
+    if (adminResult.rows.length > 0) {
+      if (!password) {
+        return res
+          .status(400)
+          .json({ message: "Password confirmation is required." });
+      }
+      const valid = await bcrypt.compare(
+        password,
+        adminResult.rows[0].password_hash,
+      );
+      if (!valid) {
+        return res.status(401).json({ message: "Incorrect password." });
+      }
+      return next();
     }
-    const valid = await bcrypt.compare(password, result.rows[0].password_hash);
-    if (!valid) {
-      return res.status(401).json({ message: "Incorrect password." });
+
+    const userResult = await pool.query(
+      "SELECT id FROM users WHERE id = $1 AND role = 'admin'",
+      [req.userId],
+    );
+
+    if (userResult.rows.length > 0) {
+      return next();
     }
-    next();
+
+    return res.status(401).json({ message: "Not authorized." });
   } catch (err) {
     console.error("Reauth check failed:", err);
     res.status(500).json({ message: "Server error." });
@@ -69,18 +97,6 @@ function pgArgs() {
     "--dbname",
     process.env.DB_NAME || "aurorastay",
   ];
-}
-
-async function logAdminAction(userId, action, ip, meta = {}) {
-  try {
-    await pool.query(
-      `INSERT INTO admin_audit_log (admin_id, action, ip_address, meta, created_at)
-       VALUES ($1, $2, $3, $4, NOW())`,
-      [userId, action, ip, JSON.stringify(meta)],
-    );
-  } catch (err) {
-    console.error("Failed to write audit log:", err);
-  }
 }
 
 function runPgDumpToFile(outPath) {
@@ -148,7 +164,16 @@ router.get("/download", authenticate, requireAdmin, async (req, res) => {
 
   dump.on("close", (code) => {
     if (code !== 0) console.error("pg_dump exited with code", code, stderr);
-    logAdminAction(req.userId, "backup_download", req.ip);
+    logActivity({
+      adminId: req.userId,
+      adminName: req.userUsername || null,
+      action: "backup_download",
+      targetType: "database",
+      targetId: null,
+      description: "Downloaded a full database backup.",
+      metadata: { filename },
+      ipAddress: req.ip,
+    });
   });
 });
 
@@ -177,9 +202,18 @@ router.post(
 
       await runPsqlRestore(uploadedPath);
 
-      await logAdminAction(req.userId, "restore", req.ip, {
-        originalFilename: req.file.originalname,
-        safetyBackupPath,
+      await logActivity({
+        adminId: req.userId,
+        adminName: req.userUsername || null,
+        action: "restore",
+        targetType: "database",
+        targetId: null,
+        description: "Restored the database from an uploaded backup file.",
+        metadata: {
+          originalFilename: req.file.originalname,
+          safetyBackupPath,
+        },
+        ipAddress: req.ip,
       });
 
       res.json({

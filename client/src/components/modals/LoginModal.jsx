@@ -76,8 +76,8 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
           </Link>
           <h1 id="lm-title">Log in</h1>
           <p className="lm-subtitle">
-            Sign in with Google to continue. New here? We'll set up your account
-            automatically.
+            Sign in with Google to continuess. New here? We'll set up your
+            account automatically.
           </p>
         </div>
 

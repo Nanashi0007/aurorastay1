@@ -2,6 +2,7 @@
 .on-page {
   flex: 1;
   min-width: 0;
+  width: 100%;
 }
 
 .on-main {
@@ -354,8 +355,16 @@
   font-size: 14px;
 }
 
-@media (max-width: 700px) {
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 800px) {
   .on-toolbar {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+
+  .on-toolbar-left {
     flex-wrap: wrap;
     gap: 10px;
   }
@@ -363,11 +372,86 @@
   .on-filters {
     width: 100%;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-left: 14px;
   }
 
-  .owner-layout {
+  .on-filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .on-filter-pill {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .on-page-header {
+    margin-bottom: 18px;
+  }
+
+  .on-page-header h1 {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 560px) {
+  .on-toolbar {
     flex-direction: column;
-    margin: 16px auto;
-    padding: 0 12px;
+    align-items: stretch;
+  }
+
+  .on-toolbar-left {
+    justify-content: space-between;
+  }
+
+  .on-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .on-item {
+    padding: 12px 14px;
+    gap: 10px;
+  }
+
+  .on-item-message {
+    font-size: 13px;
+  }
+
+  .on-empty {
+    padding: 40px 16px;
+  }
+
+  .on-empty svg {
+    font-size: 32px;
+  }
+
+  .on-empty h2 {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .on-page-header h1 {
+    font-size: 20px;
+  }
+
+  .on-modal {
+    padding: 18px;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .on-modal-overlay {
+    align-items: flex-end;
+    padding: 12px;
+  }
+
+  .on-modal-title {
+    font-size: 15px;
+  }
+
+  .on-modal-message {
+    font-size: 13.5px;
   }
 }

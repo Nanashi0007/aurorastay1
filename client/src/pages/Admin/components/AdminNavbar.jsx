@@ -1,6 +1,14 @@
+import { useState } from "react";
 import { FaBars } from "react-icons/fa";
+import AdminProfileModal from "./AdminProfileModal";
 
 export default function AdminNavbar({ currentAdmin, onMenuClick }) {
+  const [profileOpen, setProfileOpen] = useState(false);
+  const isGoogleAdmin = !!currentAdmin?.email;
+  const displayName = isGoogleAdmin
+    ? currentAdmin.firstName
+    : currentAdmin?.username;
+
   return (
     <header className="admin-navbar">
       <div className="admin-navbar-brand">
@@ -20,27 +28,33 @@ export default function AdminNavbar({ currentAdmin, onMenuClick }) {
       </div>
 
       {currentAdmin && (
-        <div className="admin-navbar-user">
+        <button
+          type="button"
+          className="admin-navbar-user admin-navbar-user-btn"
+          onClick={() => setProfileOpen(true)}
+        >
           {currentAdmin.picture ? (
             <img
               src={currentAdmin.picture}
-              alt={currentAdmin.firstName}
+              alt={displayName}
               className="admin-navbar-avatar"
             />
           ) : (
             <div className="admin-navbar-avatar-fallback">
-              {currentAdmin.firstName?.[0]}
-              {currentAdmin.lastName?.[0]}
+              {isGoogleAdmin
+                ? `${currentAdmin.firstName?.[0] || ""}${currentAdmin.lastName?.[0] || ""}`
+                : currentAdmin?.username?.[0]?.toUpperCase()}
             </div>
           )}
-          <div className="admin-navbar-user-text">
-            <div className="admin-navbar-user-name">
-              {currentAdmin.firstName} {currentAdmin.lastName}
-            </div>
-            <div className="admin-navbar-user-email">{currentAdmin.email}</div>
-          </div>
-        </div>
+          <span className="admin-navbar-user-name-inline">{displayName}</span>
+        </button>
       )}
+
+      <AdminProfileModal
+        isOpen={profileOpen}
+        onClose={() => setProfileOpen(false)}
+        currentAdmin={currentAdmin}
+      />
     </header>
   );
 }

@@ -60,3 +60,7 @@
     max-width: 100%;
   }
 }
+
+.admin-login-form button {
+  margin-bottom: 10px;
+}

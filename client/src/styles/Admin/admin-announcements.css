@@ -1,0 +1,512 @@
+/* =====================================================
+   AuroraStay Admin — Announcements
+   Self-contained: uses the shared admin tokens
+   (--color-primary, --color-surface, --color-border,
+   --color-text, --color-text-muted, --radius-sm/md/lg,
+   --space-*, --font-size-*) already used elsewhere in
+   the admin panel. Falls back gracefully if any are
+   unset.
+   ===================================================== */
+
+.ann-shell {
+  flex: 1;
+  padding: 28px;
+}
+
+.ann-page {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 20px;
+  align-items: start;
+  max-width: 1100px;
+}
+
+.ann-panel {
+  background: var(--color-surface, #fff);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--radius-lg, 14px);
+  padding: 22px;
+}
+
+.ann-panel-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.ann-panel-head-compact {
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.ann-panel-icon {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(
+    in srgb,
+    var(--color-primary, #2563eb) 12%,
+    transparent
+  );
+  color: var(--color-primary, #2563eb);
+  font-size: 15px;
+}
+
+.ann-panel-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-text, #111827);
+  margin: 0 0 3px;
+}
+
+.ann-panel-title-sm {
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.ann-panel-subtitle {
+  margin: 0;
+  font-size: var(--font-size-sm, 0.8125rem);
+  color: var(--color-text-muted, #6b7280);
+  line-height: 1.4;
+}
+
+.ann-count-pill {
+  background: color-mix(
+    in srgb,
+    var(--color-primary, #2563eb) 10%,
+    transparent
+  );
+  color: var(--color-primary, #2563eb);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: 999px;
+}
+
+/* ---------- Form ---------- */
+
+.ann-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ann-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ann-label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.ann-label {
+  font-size: var(--font-size-sm, 0.8125rem);
+  font-weight: 600;
+  color: var(--color-text, #111827);
+}
+
+.ann-char-count {
+  font-size: 0.72rem;
+  color: var(--color-text-muted, #6b7280);
+  font-variant-numeric: tabular-nums;
+}
+
+.ann-char-count.over {
+  color: var(--color-danger, #dc2626);
+  font-weight: 600;
+}
+
+.ann-input,
+.ann-textarea {
+  width: 100%;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--radius-sm, 8px);
+  background: var(--color-surface, #fff);
+  color: var(--color-text, #111827);
+  padding: 0.65rem 0.8rem;
+  font-size: var(--font-size-sm, 0.8125rem);
+  font-family: inherit;
+  box-sizing: border-box;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.ann-textarea {
+  resize: vertical;
+  min-height: 110px;
+  line-height: 1.5;
+}
+
+.ann-input:focus,
+.ann-textarea:focus {
+  outline: none;
+  border-color: var(--color-primary, #2563eb);
+  box-shadow: 0 0 0 3px
+    color-mix(in srgb, var(--color-primary, #2563eb) 15%, transparent);
+}
+
+/* ---------- Segmented audience control ---------- */
+
+.ann-segmented {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  background: color-mix(in srgb, var(--color-border, #e5e7eb) 40%, transparent);
+  padding: 4px;
+  border-radius: var(--radius-sm, 8px);
+}
+
+.ann-segment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted, #6b7280);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 8px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.ann-segment:hover {
+  color: var(--color-text, #111827);
+}
+
+.ann-segment.is-active {
+  background: var(--color-surface, #fff);
+  color: var(--color-primary, #2563eb);
+  box-shadow: 0 1px 3px color-mix(in srgb, #000 12%, transparent);
+}
+
+/* ---------- Form messages ---------- */
+
+.ann-message {
+  margin: 0;
+  font-size: var(--font-size-sm, 0.8125rem);
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.ann-message-error {
+  color: var(--color-danger, #dc2626);
+  background: color-mix(in srgb, var(--color-danger, #dc2626) 8%, transparent);
+}
+
+.ann-message-success {
+  color: var(--color-success, #16a34a);
+  background: color-mix(in srgb, var(--color-success, #16a34a) 8%, transparent);
+}
+
+.ann-submit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  border-radius: var(--radius-sm, 8px);
+  background: var(--color-primary, #2563eb);
+  color: #fff;
+  font-size: var(--font-size-sm, 0.8125rem);
+  font-weight: 700;
+  padding: 0.75rem 1.1rem;
+  cursor: pointer;
+  transition:
+    opacity 0.15s ease,
+    transform 0.1s ease;
+}
+
+.ann-submit-btn:hover:not(:disabled) {
+  opacity: 0.92;
+}
+
+.ann-submit-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.ann-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ---------- History states ---------- */
+
+.ann-state {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--color-text-muted, #6b7280);
+  font-size: var(--font-size-sm, 0.8125rem);
+  padding: 24px 4px;
+}
+
+.ann-state-error {
+  color: var(--color-danger, #dc2626);
+}
+
+.ann-spinner {
+  width: 15px;
+  height: 15px;
+  border: 2px solid var(--color-border, #e5e7eb);
+  border-top-color: var(--color-primary, #2563eb);
+  border-radius: 50%;
+  animation: ann-spin 0.7s linear infinite;
+}
+
+@keyframes ann-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.ann-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+  padding: 40px 20px;
+  color: var(--color-text-muted, #6b7280);
+}
+
+.ann-empty-icon {
+  font-size: 22px;
+  color: var(--color-border, #e5e7eb);
+  margin-bottom: 8px;
+}
+
+.ann-empty strong {
+  color: var(--color-text, #111827);
+  font-size: 0.9rem;
+}
+
+.ann-empty span {
+  font-size: var(--font-size-sm, 0.8125rem);
+}
+
+/* ---------- List items ---------- */
+
+.ann-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ann-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-left: 3px solid var(--color-primary, #2563eb);
+  border-radius: var(--radius-md, 10px);
+  transition:
+    box-shadow 0.15s ease,
+    transform 0.1s ease;
+}
+
+.ann-item:hover {
+  box-shadow: 0 2px 8px color-mix(in srgb, #000 6%, transparent);
+}
+
+.ann-item-all {
+  border-left-color: var(--color-primary, #2563eb);
+}
+
+.ann-item-guest {
+  border-left-color: var(--color-success, #16a34a);
+}
+
+.ann-item-owner {
+  border-left-color: #b45309;
+}
+
+.ann-item-icon {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-border, #e5e7eb);
+  color: var(--color-text-muted, #6b7280);
+  margin-top: 2px;
+}
+
+.ann-item-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ann-item-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ann-item-title {
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--color-text, #111827);
+}
+
+.ann-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.ann-badge-all {
+  background: color-mix(
+    in srgb,
+    var(--color-primary, #2563eb) 12%,
+    transparent
+  );
+  color: var(--color-primary, #2563eb);
+}
+
+.ann-badge-guest {
+  background: color-mix(
+    in srgb,
+    var(--color-success, #16a34a) 12%,
+    transparent
+  );
+  color: var(--color-success, #16a34a);
+}
+
+.ann-badge-owner {
+  background: color-mix(in srgb, #b45309 14%, transparent);
+  color: #b45309;
+}
+
+.ann-item-message {
+  margin: 0;
+  font-size: 0.83rem;
+  color: var(--color-text-muted, #6b7280);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.ann-item-time {
+  font-size: 0.72rem;
+  color: var(--color-text-muted, #6b7280);
+  margin-top: 2px;
+}
+
+.ann-item-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.ann-icon-btn {
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted, #6b7280);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  display: flex;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.ann-icon-btn:hover {
+  background: var(--color-border, #e5e7eb);
+  color: var(--color-text, #111827);
+}
+
+.ann-icon-btn-danger:hover {
+  background: color-mix(in srgb, var(--color-danger, #dc2626) 12%, transparent);
+  color: var(--color-danger, #dc2626);
+}
+
+/* ---------- Editing state ---------- */
+
+.ann-item-editing {
+  flex-direction: column;
+  align-items: stretch;
+  border-left-color: var(--color-primary, #2563eb);
+  gap: 12px;
+}
+
+.ann-item-actions-edit {
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.ann-save-btn {
+  border: none;
+  border-radius: var(--radius-sm, 8px);
+  background: var(--color-primary, #2563eb);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.ann-save-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ann-cancel-btn {
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--radius-sm, 8px);
+  background: transparent;
+  color: var(--color-text, #111827);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 900px) {
+  .ann-page {
+    grid-template-columns: 1fr;
+  }
+
+  .ann-shell {
+    padding: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ann-panel {
+    padding: 16px;
+  }
+
+  .ann-segment span {
+    display: none;
+  }
+}

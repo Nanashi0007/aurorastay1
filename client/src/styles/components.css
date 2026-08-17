@@ -637,3 +637,22 @@
 .announcement-inline-icon-btn:hover {
   color: var(--color-text);
 }
+
+.admin-navbar-user-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 4px 8px;
+  transition: background-color 0.15s ease;
+}
+
+.admin-navbar-user-btn:hover {
+  background: var(--theme-surface);
+}
+
+.admin-navbar-user-name-inline {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-text);
+}

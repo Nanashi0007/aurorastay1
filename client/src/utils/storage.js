@@ -42,3 +42,27 @@ export function clearAuth() {
   localStorage.removeItem(USER_KEY);
   window.dispatchEvent(new Event("aurora-auth-change"));
 }
+
+// utils/storage.js — add admin-specific keys, keep the public ones untouched
+const ADMIN_TOKEN_KEY = "admin_token";
+const ADMIN_USER_KEY = "admin_user";
+
+export function persistAdminAuth(token, user) {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(ADMIN_TOKEN_KEY, token);
+  localStorage.setItem(ADMIN_USER_KEY, JSON.stringify(user ?? {}));
+}
+
+export function getStoredAdminAuth() {
+  if (typeof window === "undefined") return { token: "", user: null };
+  return {
+    token: localStorage.getItem(ADMIN_TOKEN_KEY) || "",
+    user: safeJsonParse(localStorage.getItem(ADMIN_USER_KEY), null),
+  };
+}
+
+export function clearAdminAuth() {
+  if (typeof window === "undefined") return;
+  localStorage.removeItem(ADMIN_TOKEN_KEY);
+  localStorage.removeItem(ADMIN_USER_KEY);
+}
