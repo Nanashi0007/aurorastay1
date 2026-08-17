@@ -414,6 +414,13 @@
     order: 2;
     margin-left: auto;
   }
+
+  /* Prevent iOS Safari's forced zoom-on-focus for any tappable text field */
+  .ar-search-input,
+  .ar-select,
+  .ar-reject-textarea {
+    font-size: 16px;
+  }
 }
 
 @media (max-width: 520px) {
@@ -436,6 +443,7 @@
 
   .ar-select {
     width: 100%;
+    min-height: 44px; /* comfortable tap target once it's full-width */
   }
 
   .ar-search-btn,

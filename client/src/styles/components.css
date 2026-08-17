@@ -12,7 +12,9 @@
   line-height: 1;
   white-space: nowrap;
   cursor: pointer;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
 
 .btn:hover {
@@ -272,6 +274,7 @@
 
 .admin-main-layout {
   display: flex;
+  min-width: 0; /* let flex children shrink below content size */
 }
 
 .admin-user-page {
@@ -552,7 +555,9 @@
   padding: 0.7rem 0.8rem;
   font-size: var(--font-size-sm);
   box-sizing: border-box;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .announcement-textarea {

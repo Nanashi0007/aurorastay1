@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import { persistAuth } from "../../utils/storage";
 import "../../styles/LoginModal.css";
@@ -70,7 +71,9 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
         </button>
 
         <div className="lm-head">
-          <div className="lm-logo">AuroraStay</div>
+          <Link to="/" className="lm-logo">
+            <span className="lm-logo-mark">Aurora</span>Stay
+          </Link>
           <h1 id="lm-title">Log in</h1>
           <p className="lm-subtitle">
             Sign in with Google to continue. New here? We'll set up your account

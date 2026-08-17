@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { authFetch } from "../../../utils/api";
 import {
   FaSearch,
@@ -61,7 +61,6 @@ function buildCalendarDays(year, month) {
 }
 
 export default function Hero({ hotels }) {
-  const navigate = useNavigate();
   const [destination, setDestination] = useState("");
 
   const [checkIn, setCheckIn] = useState(null);
@@ -130,15 +129,6 @@ export default function Hero({ hotels }) {
       window.removeEventListener("resize", updateScrollButtons);
     };
   }, [recentlyViewedHotels]);
-
-  function handleSearch() {
-    const params = new URLSearchParams();
-    if (destination.trim()) params.set("search", destination.trim());
-    if (checkIn) params.set("checkIn", checkIn.toISOString().split("T")[0]);
-    if (checkOut) params.set("checkOut", checkOut.toISOString().split("T")[0]);
-    if (guestCount > 1) params.set("guests", guestCount);
-    navigate(`/hotels?${params.toString()}`);
-  }
 
   function scrollCarousel(direction) {
     const el = carouselRef.current;
@@ -399,11 +389,7 @@ export default function Hero({ hotels }) {
 
           <div className="divider"></div>
 
-          <button
-            className="btn btn-primary search-btn"
-            aria-label="Search"
-            onClick={handleSearch}
-          >
+          <button className="btn btn-primary search-btn" aria-label="Search">
             <FaSearch />
           </button>
         </div>
@@ -411,7 +397,7 @@ export default function Hero({ hotels }) {
 
       <div className="quickbook container">
         <div className="quickbook-head">
-          <h2>Recently Viewed</h2>
+          <h3>Recently Viewed</h3>
 
           <div className="t">
             <Link to="/bookings?tab=recentlyViewed" className="browse-link">

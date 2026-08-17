@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import { FaSlidersH } from "react-icons/fa";
 import { clearAuth } from "../../utils/storage";
 import { useHotels } from "../../hooks/useHotels";
 import FilterSidebar from "../../components/Hotels/FilterSidebar";
@@ -27,15 +26,8 @@ export default function HotelsPage() {
   const [user, setUser] = useState(null);
   const [authToken, setAuthToken] = useState(null);
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [filterOpen, setFilterOpen] = useState(false);
   const userMenuRef = useRef(null);
   const [authLoading, setAuthLoading] = useState(true);
-
-  const activeFilterCount =
-    (filters.types?.length || 0) +
-    (filters.amenities?.length || 0) +
-    (filters.minPrice ? 1 : 0) +
-    (filters.maxPrice ? 1 : 0);
 
   const chips = [
     ...(filters.types || []).map((t) => ({
@@ -69,25 +61,6 @@ export default function HotelsPage() {
       }
     }
     setAuthLoading(false);
-  }, []);
-
-  // Lock body scroll while mobile filter drawer is open
-  useEffect(() => {
-    if (!filterOpen) return undefined;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
-  }, [filterOpen]);
-
-  // Close drawer when resizing back to desktop
-  useEffect(() => {
-    function handleResize() {
-      if (window.innerWidth > 900) setFilterOpen(false);
-    }
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const handleProfileComplete = (updatedUser) => {
@@ -124,38 +97,11 @@ export default function HotelsPage() {
         onLogout={handleLogout}
       />
 
-      <div className={`hotels-page${filterOpen ? " filters-open" : ""}`}>
-        <div
-          className={`filter-backdrop${filterOpen ? " is-open" : ""}`}
-          onClick={() => setFilterOpen(false)}
-          aria-hidden={!filterOpen}
-        />
-
-        <FilterSidebar
-          filters={filters}
-          onChange={setFilters}
-          isOpen={filterOpen}
-          onClose={() => setFilterOpen(false)}
-        />
+      <div className="hotels-page">
+        <FilterSidebar filters={filters} onChange={setFilters} />
 
         <div className="hotels-results">
-          <div className="hotels-results-header">
-            <h1>Hotels, resorts, inns and homestays</h1>
-
-            <button
-              type="button"
-              className="hotels-filter-toggle"
-              onClick={() => setFilterOpen(true)}
-              aria-expanded={filterOpen}
-              aria-controls="hotels-filter-panel"
-            >
-              <FaSlidersH aria-hidden="true" />
-              <span>Filters</span>
-              {activeFilterCount > 0 && (
-                <span className="hotels-filter-count">{activeFilterCount}</span>
-              )}
-            </button>
-          </div>
+          <h1>Hotels, resorts, inns and homestays</h1>
 
           <div className="hotels-search-bar">
             <SearchBar onSearch={handleSearch} />

@@ -2,15 +2,8 @@
   box-sizing: border-box;
 }
 
-html {
-  scroll-behavior: smooth;
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
-}
-
 html,
 body {
-  max-width: 100%;
   overflow-x: hidden;
 }
 
@@ -34,16 +27,11 @@ input,
 textarea,
 select {
   font: inherit;
-  max-width: 100%;
 }
 
-img,
-video,
-canvas,
-svg {
+img {
   display: block;
   max-width: 100%;
-  height: auto;
 }
 
 a {
@@ -53,8 +41,6 @@ a {
 
 #root {
   min-height: 100vh;
-  min-width: 0;
-  overflow-x: hidden;
 }
 
 ::selection {
@@ -68,13 +54,4 @@ h4,
 p {
   margin-top: 0;
   margin-bottom: 0;
-  overflow-wrap: anywhere;
-}
-
-table {
-  max-width: 100%;
-}
-
-iframe {
-  max-width: 100%;
 }

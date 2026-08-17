@@ -4,7 +4,10 @@ import {
   FaFileAlt,
   FaBullhorn,
   FaDatabase,
+  FaChartBar,
   FaTimes,
+  FaFileDownload,
+  FaHistory,
 } from "react-icons/fa";
 
 export default function AdminSidebar({
@@ -38,6 +41,17 @@ export default function AdminSidebar({
         <nav className="admin-sidebar-nav">
           <button
             type="button"
+            className={`admin-sidebar-nav-item ${activeView === "analytics" ? "is-active" : ""}`}
+            onClick={() => {
+              onNavigate("analytics");
+              onClose?.();
+            }}
+          >
+            <FaChartBar /> Dashboard
+          </button>
+
+          <button
+            type="button"
             className={`admin-sidebar-nav-item ${activeView === "users" ? "is-active" : ""}`}
             onClick={() => {
               onNavigate("users");
@@ -67,15 +81,26 @@ export default function AdminSidebar({
           >
             <FaBullhorn /> Announcements
           </button>
+
+          <button
+            type="button"
+            className={`admin-sidebar-nav-item ${activeView === "activitylogs" ? "is-active" : ""}`}
+            onClick={() => {
+              onNavigate("activitylogs");
+              onClose?.();
+            }}
+          >
+            <FaHistory /> Activity Logs
+          </button>
         </nav>
 
         <div className="admin-sidebar-danger-zone">
           <div className="admin-sidebar-danger-label">Danger zone</div>
           <button
             type="button"
-            className={`admin-sidebar-nav-item admin-sidebar-nav-item-danger ${activeView === "BackupAndRestore" ? "is-active" : ""}`}
+            className={`admin-sidebar-nav-item admin-sidebar-nav-item-danger ${activeView === "backupandrestore" ? "is-active" : ""}`}
             onClick={() => {
-              onNavigate("BackupAndRestore");
+              onNavigate("backupandrestore");
               onClose?.();
             }}
           >

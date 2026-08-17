@@ -7,7 +7,6 @@ import {
   FaCheck,
 } from "react-icons/fa";
 import "../../../../../styles/Hotels/RoomCardDetails.css";
-import "../../../../../styles/Hotels/ReserveForm.css";
 
 import ReserveForm from "./ReserveForm"; // adjust path to match where you save it
 

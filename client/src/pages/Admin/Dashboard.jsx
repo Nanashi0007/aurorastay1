@@ -7,10 +7,12 @@ import ManageUsers from "./Pages/ManageUsers";
 import ApplicationsReview from "./Pages/ApplicationsReview";
 import AdminAnnouncements from "./components/AdminAnnouncements";
 import BackupAndRestore from "./Pages/BackupRestore";
+import AdminAnalytics from "./Pages/AdminAnalytics";
+import ActivityLogs from "./Pages/ActivityLogs";
 
 export default function AdminDashboard() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const activeView = searchParams.get("view") || "users";
+  const activeView = searchParams.get("view") || "analytics";
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const storedUser = localStorage.getItem("user");
@@ -52,10 +54,14 @@ export default function AdminDashboard() {
           <ApplicationsReview />
         ) : activeView === "announcements" ? (
           <AdminAnnouncements />
-        ) : activeView === "BackupAndRestore" ? (
+        ) : activeView === "backupandrestore" ? (
           <BackupAndRestore />
-        ) : (
+        ) : activeView === "users" ? (
           <ManageUsers />
+        ) : activeView === "activitylogs" ? (
+          <ActivityLogs />
+        ) : (
+          <AdminAnalytics />
         )}
       </div>
     </div>

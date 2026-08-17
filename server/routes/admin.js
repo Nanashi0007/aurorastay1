@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const db = require("../db");
 const { authenticate, requireAdmin } = require("../middleware/authenticate");
+const { logActivity } = require("../services/activityLogger");
 
 // Every route in this file requires a valid admin token
 router.use(authenticate, requireAdmin);
@@ -86,6 +87,22 @@ router.patch("/users/:id/role", async (req, res) => {
     if (updated.rows.length === 0) {
       return res.status(404).json({ message: "User not found." });
     }
+
+    const adminResult = await db.query(
+      `SELECT first_name, last_name FROM users WHERE id = $1`,
+      [req.userId],
+    );
+    const admin = adminResult.rows[0];
+
+    await logActivity({
+      adminId: req.userId,
+      adminName: admin ? `${admin.first_name} ${admin.last_name}` : null,
+      action: "user.role_changed",
+      targetType: "user",
+      targetId: id,
+      description: `Changed ${updated.rows[0].email}'s role to ${role}`,
+      ipAddress: req.ip,
+    });
 
     res.json({
       message: "Role updated.",
@@ -181,6 +198,23 @@ router.patch("/applications/:id/approve", async (req, res) => {
     );
 
     await client.query("COMMIT");
+
+    const adminResult = await db.query(
+      `SELECT first_name, last_name FROM users WHERE id = $1`,
+      [req.userId],
+    );
+    const admin = adminResult.rows[0];
+
+    await logActivity({
+      adminId: req.userId,
+      adminName: admin ? `${admin.first_name} ${admin.last_name}` : null,
+      action: "application.approved",
+      targetType: "host_application",
+      targetId: req.params.id,
+      description: `Approved host application #${req.params.id}`,
+      ipAddress: req.ip,
+    });
+
     res.json({ message: "Application approved." });
   } catch (err) {
     await client.query("ROLLBACK");
@@ -210,6 +244,22 @@ router.patch("/applications/:id/reject", async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ message: "Application not found." });
     }
+
+    const adminResult = await db.query(
+      `SELECT first_name, last_name FROM users WHERE id = $1`,
+      [req.userId],
+    );
+    const admin = adminResult.rows[0];
+
+    await logActivity({
+      adminId: req.userId,
+      adminName: admin ? `${admin.first_name} ${admin.last_name}` : null,
+      action: "application.rejected",
+      targetType: "host_application",
+      targetId: req.params.id,
+      description: `Rejected host application #${req.params.id}: ${reason.trim()}`,
+      ipAddress: req.ip,
+    });
 
     res.json({ message: "Application rejected." });
   } catch (err) {

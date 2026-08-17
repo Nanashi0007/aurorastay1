@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { authFetch } from "../../utils/api";
 import "../../styles/NotificationBell.css";
 
-const API_BASE = "/api/notifications";
+const API_BASE = "/api/notifications"; // adjust if you proxy differently
 
 function timeAgo(dateString) {
   const seconds = Math.floor((Date.now() - new Date(dateString)) / 1000);
@@ -26,12 +26,6 @@ export default function NotificationBell() {
 
   const navigate = useNavigate();
   const containerRef = useRef(null);
-
-  // Only a recent preview is shown in the bell dropdown; the full Gmail-style
-  // list lives on the /owner/notification page.
-  const RECENT_LIMIT = 1;
-  const visibleNotifications = notifications.slice(0, RECENT_LIMIT);
-  const remainingCount = notifications.length - RECENT_LIMIT;
 
   const fetchUnreadCount = useCallback(async () => {
     const result = await authFetch(`${API_BASE}/unread-count`);
@@ -60,9 +54,7 @@ export default function NotificationBell() {
   const toggleOpen = async () => {
     const next = !isOpen;
     setIsOpen(next);
-    if (!next) {
-      return;
-    }
+    if (!next) return;
 
     setLoading(true);
     try {
@@ -174,7 +166,7 @@ export default function NotificationBell() {
             )}
 
             {!loading &&
-              visibleNotifications.map((n) => {
+              notifications.map((n) => {
                 const isClickable = !!(
                   n.relatedBookingId || n.relatedAnnouncementId
                 );
@@ -184,7 +176,7 @@ export default function NotificationBell() {
                     onClick={async () => {
                       setIsOpen(false);
                       if (n.relatedAnnouncementId) {
-                        setViewingAnnouncement({ createdAt: n.createdAt });
+                        setViewingAnnouncement({ createdAt: n.createdAt }); // show modal immediately with a loading state
                         setLoadingAnnouncement(true);
                         try {
                           const result = await authFetch(
@@ -223,21 +215,6 @@ export default function NotificationBell() {
                 );
               })}
           </div>
-
-          {!loading && remainingCount > 0 && (
-            <div className="nb-dropdown-footer">
-              <button
-                type="button"
-                className="nb-view-all-btn"
-                onClick={() => {
-                  setIsOpen(false);
-                  navigate("/owner/notification");
-                }}
-              >
-                View All ({notifications.length})
-              </button>
-            </div>
-          )}
         </div>
       )}
     </div>

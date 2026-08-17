@@ -2,7 +2,6 @@
   color-scheme: light;
 
   --gold-deep: #b9861a;
-  --gold: #e6c24a;
   --navy-deep: #14335c;
 
   --color-bg: white;
@@ -20,8 +19,7 @@
   --color-danger: var(--gold-deep);
   --color-danger-soft: color-mix(in srgb, var(--gold-deep) 14%, white);
   --color-warning: var(--gold-deep);
-  --color-shadow: 0 18px 50px
-    color-mix(in srgb, var(--navy-deep) 16%, transparent);
+  --color-shadow: 0 18px 50px color-mix(in srgb, var(--navy-deep) 16%, transparent);
 
   --theme-ink: var(--navy-deep);
   --theme-muted: color-mix(in srgb, var(--navy-deep) 65%, white);
@@ -57,13 +55,4 @@
   --shadow-card: 0 12px 32px var(--theme-shadow);
 
   --container-max: 1200px;
-
-  /* Shared breakpoints (documentation / JS helpers) */
-  --bp-xs: 360px;
-  --bp-sm: 480px;
-  --bp-md: 640px;
-  --bp-lg: 768px;
-  --bp-xl: 900px;
-  --bp-2xl: 1024px;
-  --bp-3xl: 1200px;
 }

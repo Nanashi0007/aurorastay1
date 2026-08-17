@@ -1,8 +1,10 @@
 const express = require("express");
 const pool = require("../db");
-const { authenticate } = require("../middleware/authenticate");
+const { authenticate, requireAdmin } = require("../middleware/authenticate");
+const { logActivity } = require("../services/activityLogger");
 
 const router = express.Router();
+router.use(authenticate, requireAdmin);
 
 function mapApplicationRow(row) {
   return {
@@ -20,11 +22,9 @@ function mapApplicationRow(row) {
   };
 }
 
-// --- GET applications, filterable by status and search ---
-router.get("/", authenticate, async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const { status, search } = req.query;
-
     const conditions = [];
     const values = [];
     let paramIndex = 1;
@@ -59,8 +59,7 @@ router.get("/", authenticate, async (req, res) => {
   }
 });
 
-// --- PATCH approve an application ---
-router.patch("/:id/approve", authenticate, async (req, res) => {
+router.patch("/:id/approve", async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -76,6 +75,22 @@ router.patch("/:id/approve", authenticate, async (req, res) => {
       return res.status(404).json({ message: "Application not found." });
     }
 
+    const adminResult = await pool.query(
+      `SELECT first_name, last_name FROM users WHERE id = $1`,
+      [req.userId],
+    );
+    const admin = adminResult.rows[0];
+
+    await logActivity({
+      adminId: req.userId,
+      adminName: admin ? `${admin.first_name} ${admin.last_name}` : null,
+      action: "application.approved",
+      targetType: "host_application",
+      targetId: id,
+      description: `Approved host application #${id}`,
+      ipAddress: req.ip,
+    });
+
     res.json({
       message: "Application approved.",
       application: mapApplicationRow(updated.rows[0]),
@@ -86,8 +101,7 @@ router.patch("/:id/approve", authenticate, async (req, res) => {
   }
 });
 
-// --- PATCH reject an application ---
-router.patch("/:id/reject", authenticate, async (req, res) => {
+router.patch("/:id/reject", async (req, res) => {
   try {
     const { id } = req.params;
     const { reason } = req.body;
@@ -109,6 +123,22 @@ router.patch("/:id/reject", authenticate, async (req, res) => {
     if (updated.rows.length === 0) {
       return res.status(404).json({ message: "Application not found." });
     }
+
+    const adminResult = await pool.query(
+      `SELECT first_name, last_name FROM users WHERE id = $1`,
+      [req.userId],
+    );
+    const admin = adminResult.rows[0];
+
+    await logActivity({
+      adminId: req.userId,
+      adminName: admin ? `${admin.first_name} ${admin.last_name}` : null,
+      action: "application.rejected",
+      targetType: "host_application",
+      targetId: id,
+      description: `Rejected host application #${id}: ${reason.trim()}`,
+      ipAddress: req.ip,
+    });
 
     res.json({
       message: "Application rejected.",

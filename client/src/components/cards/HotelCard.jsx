@@ -1,4 +1,4 @@
-import { FaStar, FaArrowRight, FaHeart, FaRegHeart } from "react-icons/fa";
+import { FaStar, FaChevronRight, FaHeart, FaRegHeart } from "react-icons/fa";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { addRecentlyViewed } from "../../utils/recentlyViewed";
@@ -8,10 +8,6 @@ export default function HotelCard({ hotel, isSaved = false, onToggleSave }) {
   const navigate = useNavigate();
   const [saved, setSaved] = useState(isSaved);
   const [toggling, setToggling] = useState(false);
-  // Rating is out of 10 from the API, convert to stars out of 5
-  const rawRating = Number(hotel.rating ?? hotel.score);
-  const hasRating = Number.isFinite(rawRating) && rawRating > 0;
-  const starCount = hasRating ? Math.round(rawRating / 2) : 0;
 
   function handleView() {
     addRecentlyViewed(hotel.id);
@@ -60,9 +56,25 @@ export default function HotelCard({ hotel, isSaved = false, onToggleSave }) {
         </span>
         <button
           type="button"
-          className={`hotel-save-btn${saved ? " is-saved" : ""}`}
+          className="hotel-save-btn"
           onClick={handleToggleSave}
           aria-label={saved ? "Remove from saved" : "Save listing"}
+          style={{
+            position: "absolute",
+            top: 10,
+            right: 10,
+            background: "rgba(255,255,255,0.9)",
+            border: "none",
+            borderRadius: "50%",
+            width: 34,
+            height: 34,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
+            color: saved ? "#e11d48" : "#374151",
+            fontSize: 15,
+          }}
         >
           {saved ? <FaHeart /> : <FaRegHeart />}
         </button>
@@ -77,20 +89,12 @@ export default function HotelCard({ hotel, isSaved = false, onToggleSave }) {
             <p>{hotel.location}</p>
           </div>
 
-          <div
-            className="hotel-stars"
-            aria-label={`${starCount} out of 5 stars`}
-          >
-            {[1, 2, 3, 4, 5].map((s) => (
-              <FaStar
-                key={s}
-                className={s <= starCount ? "star-filled" : "star-empty"}
-              />
-            ))}
-            {hasRating && (
-              <span className="hotel-rating-score">{hotel.rating}</span>
-            )}
-          </div>
+          {hotel.rating != null && (
+            <div className="hotel-rating">
+              <FaStar />
+              {hotel.rating}
+            </div>
+          )}
         </div>
 
         <span className="reviews">{hotel.reviews}</span>
@@ -115,7 +119,7 @@ export default function HotelCard({ hotel, isSaved = false, onToggleSave }) {
             onClick={handleView}
             aria-label={`View ${hotel.name}`}
           >
-            {/* <FaArrowRight /> */}➜
+            <FaChevronRight />
           </button>
         </div>
       </div>

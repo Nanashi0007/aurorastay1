@@ -11,10 +11,7 @@ function getAuthUserIdFromHeader(req) {
   if (!token) return null;
 
   try {
-    const payload = jwt.verify(
-      token,
-      process.env.JWT_SECRET || "development-secret",
-    );
+    const payload = jwt.verify(token, process.env.JWT_SECRET || "development-secret");
     return payload.userId || null;
   } catch {
     return null;
@@ -66,16 +63,7 @@ router.get("/", async (req, res) => {
                 (SELECT lp.image_url FROM listing_photos lp
                  WHERE lp.listing_id = l.id ORDER BY lp.sort_order ASC LIMIT 1),
                 NULL
-              ) AS cover_image_url,
-              (SELECT MIN(r.price_per_night) FROM rooms r
-               WHERE r.property_id = l.id AND r.status = 'active')
-                AS min_price,
-              (SELECT COALESCE(AVG(rev.rating), 0) FROM reviews rev
-               WHERE rev.listing_id = l.id)
-                AS avg_rating,
-              (SELECT COUNT(*) FROM reviews rev
-               WHERE rev.listing_id = l.id)
-                AS review_count
+              ) AS cover_image_url
        FROM recently_viewed rv
        JOIN listings l ON l.id = rv.listing_id
        WHERE rv.user_id = $1 AND l.status = 'active'
@@ -91,20 +79,6 @@ router.get("/", async (req, res) => {
         image: row.cover_image_url,
         accommodationType: row.accommodation_type,
         location: [row.barangay, row.municipality].filter(Boolean).join(", "),
-        price: row.min_price != null ? Number(row.min_price) : null,
-        rating:
-          row.avg_rating != null && Number(row.avg_rating) > 0
-            ? Number(row.avg_rating)
-            : null,
-        score:
-          row.avg_rating != null && Number(row.avg_rating) > 0
-            ? Number(row.avg_rating)
-            : null,
-        type: row.accommodation_type,
-        icon: null,
-        reviews: row.review_count ? `${row.review_count} ratings` : null,
-        rooms: null,
-        amenities: [],
         viewedAt: row.viewed_at,
       })),
     });

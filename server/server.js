@@ -22,8 +22,9 @@ const adminAnnouncementsRoutes = require("./routes/adminAnnouncements");
 const announcementsRoutes = require("./routes/announcements");
 const recentlyViewedRoutes = require("./routes/recentlyViewed");
 const adminAnalyticsRoutes = require("./routes/admin/analytics");
-
+const adminReportsRoutes = require("./routes/admin/reports");
 const backupRoutes = require("./routes/backup");
+const adminActivityLogsRoutes = require("./routes/admin/activityLogs");
 
 const app = express();
 const port = Number(process.env.PORT || 5000);
@@ -225,6 +226,8 @@ app.use("/api/announcements", announcementsRoutes);
 app.use("/api/recently-viewed", recentlyViewedRoutes);
 app.use("/api/admin/backup", backupRoutes);
 app.use("/api/admin/analytics", adminAnalyticsRoutes);
+app.use("/api/admin/reports", adminReportsRoutes);
+app.use("/api/admin/activity-logs", adminActivityLogsRoutes);
 
 app.use((err, req, res, next) => {
   console.error("Unhandled error:", err);

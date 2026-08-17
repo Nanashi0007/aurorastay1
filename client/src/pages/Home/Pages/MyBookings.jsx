@@ -155,9 +155,7 @@ function RecentlyViewedRow({ hotel }) {
 
         {rating != null && (
           <div className="rv-row-rating">
-            <span className="rv-row-score">
-              <FaStar aria-hidden="true" /> {Number(rating).toFixed(1)}
-            </span>
+            <span className="rv-row-score">{Number(rating).toFixed(1)}</span>
             <span className="rv-row-score-label">{ratingLabel(rating)}</span>
             {reviewCount != null && (
               <span className="rv-row-review-count">
@@ -392,9 +390,7 @@ export default function MyBookings() {
 
       if (!result.ok) {
         setRecentlyViewedHotels([]);
-        setRecentError(
-          result.data?.message || "Failed to load recently viewed listings.",
-        );
+        setRecentError(result.data?.message || "Failed to load recently viewed listings.");
         return;
       }
 
@@ -600,17 +596,10 @@ export default function MyBookings() {
                         );
                         return (
                           <div
-                            className="mb-card mb-card-clickable"
+                            className="mb-card"
                             key={booking.id}
                             onClick={() => setSelectedBooking(booking)}
-                            role="button"
-                            tabIndex={0}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter" || e.key === " ") {
-                                e.preventDefault();
-                                setSelectedBooking(booking);
-                              }
-                            }}
+                            style={{ cursor: "pointer" }}
                           >
                             <div className="mb-card-photo">
                               {booking.coverPhotoUrl ? (

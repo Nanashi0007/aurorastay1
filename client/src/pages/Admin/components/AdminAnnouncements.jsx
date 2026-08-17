@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { FaBullhorn, FaTrash } from "react-icons/fa";
+import { FaBullhorn, FaTrash, FaEdit } from "react-icons/fa";
 import { authFetch } from "../../../utils/api";
 
 export default function AdminAnnouncements() {
@@ -12,6 +12,12 @@ export default function AdminAnnouncements() {
   const [sending, setSending] = useState(false);
   const [formError, setFormError] = useState(null);
   const [successMsg, setSuccessMsg] = useState(null);
+
+  const [editingId, setEditingId] = useState(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editMessage, setEditMessage] = useState("");
+  const [editSaving, setEditSaving] = useState(false);
+  const [editError, setEditError] = useState(null);
 
   const token = localStorage.getItem("token");
 
@@ -97,6 +103,52 @@ export default function AdminAnnouncements() {
     }
   }
 
+  function startEdit(announcement) {
+    setEditingId(announcement.id);
+    setEditTitle(announcement.title);
+    setEditMessage(announcement.message);
+    setEditError(null);
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    setEditTitle("");
+    setEditMessage("");
+    setEditError(null);
+  }
+
+  async function handleSaveEdit(id) {
+    setEditError(null);
+
+    if (!editTitle.trim() || !editMessage.trim()) {
+      setEditError("Title and message are required.");
+      return;
+    }
+
+    setEditSaving(true);
+    try {
+      const result = await authFetch(`/api/admin/announcements/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ title: editTitle, message: editMessage }),
+      });
+
+      if (!result.ok) {
+        setEditError(result.data?.message || "Failed to update.");
+        return;
+      }
+
+      setAnnouncements((prev) =>
+        prev.map((a) => (a.id === id ? result.data.announcement : a)),
+      );
+      cancelEdit();
+    } catch (err) {
+      console.error(err);
+      setEditError("Something went wrong.");
+    } finally {
+      setEditSaving(false);
+    }
+  }
+
   return (
     <div className="announcement-shell">
       <div className="announcement-page">
@@ -153,7 +205,11 @@ export default function AdminAnnouncements() {
               </p>
             )}
 
-            <button type="submit" className="announcement-btn" disabled={sending}>
+            <button
+              type="submit"
+              className="announcement-btn"
+              disabled={sending}
+            >
               <FaBullhorn size={12} />
               {sending ? "Sending…" : "Send Announcement"}
             </button>
@@ -161,45 +217,109 @@ export default function AdminAnnouncements() {
         </div>
 
         <div className="announcement-panel">
-          <h2 className="announcement-section-title" style={{ fontSize: "1.1rem" }}>
+          <h2
+            className="announcement-section-title"
+            style={{ fontSize: "1.1rem" }}
+          >
             Past Announcements
           </h2>
 
           {loading ? (
             <p className="announcement-loading">Loading…</p>
           ) : error ? (
-            <p className="announcement-status announcement-form-message--error">{error}</p>
+            <p className="announcement-status announcement-form-message--error">
+              {error}
+            </p>
           ) : announcements.length === 0 ? (
             <p className="announcement-empty">No announcements sent yet.</p>
           ) : (
             <div className="announcement-list">
-              {announcements.map((a) => (
-                <div key={a.id} className="announcement-item">
-                  <div className="announcement-item-body">
-                    <div className="announcement-item-header">
-                      <span>{a.title}</span>
-                      <span className="announcement-badge">
-                        {a.audience === "all" ? "everyone" : a.audience}
+              {announcements.map((a) =>
+                editingId === a.id ? (
+                  <div
+                    key={a.id}
+                    className="announcement-item announcement-item-editing"
+                  >
+                    <div className="announcement-field">
+                      <label className="announcement-label">Title</label>
+                      <input
+                        className="form-input announcement-input"
+                        type="text"
+                        value={editTitle}
+                        onChange={(e) => setEditTitle(e.target.value)}
+                      />
+                    </div>
+                    <div className="announcement-field">
+                      <label className="announcement-label">Message</label>
+                      <textarea
+                        className="form-textarea announcement-textarea"
+                        value={editMessage}
+                        onChange={(e) => setEditMessage(e.target.value)}
+                        rows={3}
+                      />
+                    </div>
+
+                    {editError && (
+                      <p className="announcement-form-message announcement-form-message--error">
+                        {editError}
+                      </p>
+                    )}
+
+                    <div className="announcement-item-actions">
+                      <button
+                        type="button"
+                        className="announcement-btn"
+                        onClick={() => handleSaveEdit(a.id)}
+                        disabled={editSaving}
+                      >
+                        {editSaving ? "Saving…" : "Save"}
+                      </button>
+                      <button
+                        type="button"
+                        className="announcement-inline-icon-btn"
+                        onClick={cancelEdit}
+                        disabled={editSaving}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div key={a.id} className="announcement-item">
+                    <div className="announcement-item-body">
+                      <div className="announcement-item-header">
+                        <span>{a.title}</span>
+                        <span className="announcement-badge">
+                          {a.audience === "all" ? "everyone" : a.audience}
+                        </span>
+                      </div>
+                      <p className="announcement-item-message">{a.message}</p>
+                      <span className="announcement-item-time">
+                        {new Date(a.createdAt).toLocaleString()}
                       </span>
                     </div>
-                    <p className="announcement-item-message">{a.message}</p>
-                    <span className="announcement-item-time">
-                      {new Date(a.createdAt).toLocaleString()}
-                    </span>
-                  </div>
 
-                  <div className="announcement-item-actions">
-                    <button
-                      type="button"
-                      className="announcement-inline-icon-btn"
-                      onClick={() => handleDelete(a.id)}
-                      aria-label="Delete"
-                    >
-                      <FaTrash size={13} />
-                    </button>
+                    <div className="announcement-item-actions">
+                      <button
+                        type="button"
+                        className="announcement-inline-icon-btn"
+                        onClick={() => startEdit(a)}
+                        aria-label="Edit"
+                      >
+                        <FaEdit size={13} />
+                      </button>
+                      <button
+                        type="button"
+                        className="announcement-inline-icon-btn"
+                        onClick={() => handleDelete(a.id)}
+                        aria-label="Delete"
+                      >
+                        <FaTrash size={13} />
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ),
+              )}
             </div>
           )}
         </div>

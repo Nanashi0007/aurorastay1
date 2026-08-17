@@ -111,4 +111,39 @@ router.delete("/:id", authenticate, async (req, res) => {
   }
 });
 
+// --- PATCH edit an announcement's title/message (does not re-notify) ---
+router.patch("/:id", authenticate, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, message } = req.body;
+
+    if (!title || !title.trim()) {
+      return res.status(400).json({ message: "Title is required." });
+    }
+    if (!message || !message.trim()) {
+      return res.status(400).json({ message: "Message is required." });
+    }
+
+    const result = await db.query(
+      `UPDATE announcements
+       SET title = $1, message = $2
+       WHERE id = $3
+       RETURNING *`,
+      [title.trim(), message.trim(), id],
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Announcement not found." });
+    }
+
+    res.json({
+      message: "Announcement updated.",
+      announcement: mapAnnouncementRow(result.rows[0]),
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to update announcement." });
+  }
+});
+
 module.exports = router;

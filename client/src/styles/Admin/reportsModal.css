@@ -1,0 +1,90 @@
+.reports-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: color-mix(in srgb, var(--navy-deep) 45%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+}
+
+.reports-modal {
+  background: var(--paper);
+  border-radius: 14px;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: var(--shadow-md);
+}
+
+.reports-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.reports-modal-header h2 {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.reports-modal-close-btn {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  color: var(--ink-soft);
+  padding: 6px;
+  border-radius: 6px;
+}
+
+.reports-modal-close-btn:hover {
+  background: var(--bg-soft);
+  color: var(--ink);
+}
+
+.reports-modal-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.reports-date-row {
+  display: flex;
+  gap: 12px;
+}
+
+.reports-date-row .reports-field {
+  flex: 1;
+}
+
+.reports-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.reports-field select,
+.reports-field input {
+  font-weight: 400;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.reports-modal-footer {
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px 20px;
+}
+
+.reports-modal-footer .btn {
+  flex: 1;
+}

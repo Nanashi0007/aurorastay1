@@ -6,7 +6,6 @@
   width: min(100%, var(--container-max));
   margin-inline: auto;
   padding-inline: var(--space-4);
-  box-sizing: border-box;
 }
 
 .announcement-shell {
@@ -120,4 +119,15 @@
   .announcement-item-actions {
     align-self: flex-end;
   }
+}
+
+.announcement-item-editing {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+}
+
+.announcement-item-editing .announcement-item-actions {
+  justify-content: flex-end;
+  gap: 8px;
 }

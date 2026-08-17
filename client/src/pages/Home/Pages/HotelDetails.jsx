@@ -440,12 +440,12 @@ export default function HotelDetails() {
           {/* --- Sticky price card --- */}
           <aside className="hd-price-card">
             <span className="hd-price-label">You can book as low as</span>
-            <div className="hd-price-value">
-              {hotel.minPricePerNight
-                ? `₱${hotel.minPricePerNight} / per night`
-                : "—"}
-            </div>
+            <div className="hd-price-value">₱{hotel.price}</div>
+            <span className="hd-price-sub">per night</span>
 
+            <div className="hd-price-value">
+              {hotel.minPricePerNight ? `₱${hotel.minPricePerNight}` : "—"}
+            </div>
             <div className="hd-price-facts">
               <span>Up to {hotel.maxGuestsAcrossRooms ?? "—"} guests</span>
               <span>{hotel.totalRoomsAvailable ?? 0} rooms available</span>
