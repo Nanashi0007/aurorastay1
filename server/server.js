@@ -37,11 +37,11 @@ app.disable("x-powered-by");
 app.use(
   cors({
     origin: (origin, callback) => {
+      console.log("Request origin:", origin, "| Allowed:", allowedOrigins);
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
         return;
       }
-
       callback(new Error("Not allowed by CORS"));
     },
     credentials: true,

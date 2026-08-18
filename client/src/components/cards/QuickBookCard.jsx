@@ -4,8 +4,14 @@ import { FaStar } from "react-icons/fa";
 export default function QuickBookCard({ hotel }) {
   const rating = Number(hotel.rating ?? hotel.score);
   const hasRating = Number.isFinite(rating) && rating > 0;
-  const numericPrice = Number(hotel.price);
+
+  // hotel.price may arrive as a raw number, a numeric string, or an
+  // already-formatted string like "1,000" — strip non-numeric chars first
+  const numericPrice = Number(
+    String(hotel.price ?? "").replace(/[^0-9.-]/g, ""),
+  );
   const hasPrice = Number.isFinite(numericPrice) && numericPrice > 0;
+
   // Rating is out of 10 from the API, convert to stars out of 5
   const starCount = hasRating ? Math.round(rating / 2) : 0;
 

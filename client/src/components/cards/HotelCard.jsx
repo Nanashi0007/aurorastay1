@@ -14,6 +14,13 @@ export default function HotelCard({ hotel, isSaved = false, onToggleSave }) {
     navigate(`/hotels/${hotel.id}`);
   }
 
+  function handleCardKeyDown(e) {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      handleView();
+    }
+  }
+
   async function handleToggleSave(e) {
     e.stopPropagation(); // don't trigger card navigation
     if (toggling) return;
@@ -47,9 +54,16 @@ export default function HotelCard({ hotel, isSaved = false, onToggleSave }) {
   }
 
   return (
-    <div className="hotel-card">
+    <div
+      className="hotel-card"
+      role="button"
+      tabIndex={0}
+      onClick={handleView}
+      onKeyDown={handleCardKeyDown}
+      aria-label={`View ${hotel.name}`}
+    >
       <div className="hotel-image">
-        <img src={hotel.image} alt={hotel.name} />
+        <img src={hotel.image} alt={hotel.name || "Hotel"} loading="lazy" />
         <span className="hotel-type">
           {hotel.icon}
           {hotel.type}
@@ -58,23 +72,9 @@ export default function HotelCard({ hotel, isSaved = false, onToggleSave }) {
           type="button"
           className="hotel-save-btn"
           onClick={handleToggleSave}
+          disabled={toggling}
           aria-label={saved ? "Remove from saved" : "Save listing"}
-          style={{
-            position: "absolute",
-            top: 10,
-            right: 10,
-            background: "rgba(255,255,255,0.9)",
-            border: "none",
-            borderRadius: "50%",
-            width: 34,
-            height: 34,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            cursor: "pointer",
-            color: saved ? "#e11d48" : "#374151",
-            fontSize: 15,
-          }}
+          aria-pressed={saved}
         >
           {saved ? <FaHeart /> : <FaRegHeart />}
         </button>
@@ -115,9 +115,14 @@ export default function HotelCard({ hotel, isSaved = false, onToggleSave }) {
           </div>
 
           <button
+            type="button"
             className="btn btn-primary hotel-card-view-btn"
-            onClick={handleView}
+            onClick={(e) => {
+              e.stopPropagation(); // avoid double navigation from card + button
+              handleView();
+            }}
             aria-label={`View ${hotel.name}`}
+            tabIndex={-1}
           >
             <FaChevronRight />
           </button>

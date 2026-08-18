@@ -390,7 +390,9 @@ export default function MyBookings() {
 
       if (!result.ok) {
         setRecentlyViewedHotels([]);
-        setRecentError(result.data?.message || "Failed to load recently viewed listings.");
+        setRecentError(
+          result.data?.message || "Failed to load recently viewed listings.",
+        );
         return;
       }
 

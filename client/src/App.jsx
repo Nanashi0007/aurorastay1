@@ -28,6 +28,10 @@ import OwnerNotifications from "./pages/Owner/OwnerNotifications";
 import RequireAdmin from "./pages/Admin/components/RequireAdmin";
 import RequireAuth from "./components/auth/RequireAuth";
 
+import ProfilePage from "./components/modals/ProfilePage";
+
+import ScrollToTop from "./pages/Home/components/ScrollToTop";
+
 function App() {
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -52,6 +56,7 @@ function App() {
     <GoogleOAuthProvider clientId={googleClientId || ""}>
       <AuthProvider>
         <BrowserRouter>
+          <ScrollToTop />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
@@ -132,6 +137,8 @@ function App() {
                 </RequireAuth>
               }
             />
+
+            <Route path="/profile" element={<ProfilePage />} />
 
             <Route path="/admin/backup" element={<BackupRestore />} />
           </Routes>

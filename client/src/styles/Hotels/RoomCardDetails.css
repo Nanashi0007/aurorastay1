@@ -192,6 +192,8 @@
   align-items: center;
   justify-content: center;
   padding: 24px;
+  overscroll-behavior: contain; /* NEW — stops scroll chaining to the page behind it */
+  touch-action: none;
 }
 
 .rd-modal {
@@ -489,25 +491,53 @@
   .rd-overlay {
     padding: 12px;
     align-items: flex-end;
+    overscroll-behavior: contain;
   }
 
   .rd-modal {
     max-height: 92dvh;
     border-radius: 16px 16px 0 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* modal no longer scrolls itself — rd-body does */
+  }
+
+  .rd-topbar {
+    flex-shrink: 0; /* stays fixed at top, never scrolls away */
   }
 
   .rd-body {
     grid-template-columns: 1fr;
     padding: 0 16px 16px;
+    overflow-y: auto; /* THIS is now the scroll container */
+    flex: 1;
+    min-height: 0; /* required for flex child to actually scroll */
   }
 
   .rd-details-col {
     max-height: none;
   }
 
+  .rd-main-photo {
+    aspect-ratio: 16 / 9; /* slightly shorter than desktop's 16/10, less vertical space eaten */
+  }
+
+  .rd-footer {
+    position: sticky;
+    bottom: 0;
+    background: white;
+    margin: 0 -16px -16px; /* extend to modal's edges, covering the rd-body padding */
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.06);
+  }
+
   .rd-photos-grid {
     grid-template-columns: repeat(2, 1fr);
     padding: 0 16px 16px;
+  }
+
+  .rd-photo-col {
+    max-width: 342px;
   }
 }
 
@@ -591,6 +621,15 @@
   }
 }
 
+@media (max-width: 360px) {
+  .rd-thumb-strip {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    width: 300px;
+  }
+}
+
 .rd-reserve-sub {
   font-size: 13.5px;
   color: var(--navy-deep);
@@ -612,4 +651,11 @@
   font-size: 14px;
   line-height: 1.6;
   margin: 10px 0 20px;
+}
+
+.rd-modal-content {
+  touch-action: pan-y; /* allow vertical scroll inside the modal */
+  overscroll-behavior: contain; /* but don't let it chain into the body */
+  overflow-y: auto;
+  max-height: 90vh;
 }

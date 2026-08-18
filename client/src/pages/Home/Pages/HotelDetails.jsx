@@ -8,6 +8,7 @@ import {
   FaMapMarkerAlt,
   FaArrowLeft,
   FaHeart,
+  FaRegHeart,
   FaShareAlt,
   FaWifi,
   FaSwimmingPool,
@@ -18,12 +19,13 @@ import {
   FaTimes,
   FaChevronLeft,
   FaChevronRight,
+  FaExpand,
 } from "react-icons/fa";
 import "../../../styles/Hotels/HotelDetails.css";
 import Navbar from "../../../components/layout/Navbar";
 import RoomCard from "../../Owner/components/card/GuestRoomCard";
 import RoomDetailModal from "../../Owner/components/pages/components/GuestRoomDetailModal.jsx";
-import ReserveModal from "../../Owner/components/pages/components/ReserveModal.jsx"; //hhhh
+import ReserveModal from "../../Owner/components/pages/components/ReserveModal.jsx";
 import { GoogleMap, MarkerF, useJsApiLoader } from "@react-google-maps/api";
 import LoginModal from "../../../components/modals/LoginModal";
 import EditRoomModal from "../../Owner/components/pages/components/EditRoomModal.jsx";
@@ -59,8 +61,8 @@ export default function HotelDetails() {
   const [reservingRoom, setReservingRoom] = useState(null);
 
   // Gallery modal state
-  const [showAllPhotos, setShowAllPhotos] = useState(false); // grid modal
-  const [fullViewIndex, setFullViewIndex] = useState(null); // single full-view index, null = closed
+  const [showAllPhotos, setShowAllPhotos] = useState(false);
+  const [fullViewIndex, setFullViewIndex] = useState(null);
 
   //nav bar
   const [showLogin, setShowLogin] = useState(false);
@@ -80,6 +82,10 @@ export default function HotelDetails() {
   const [loadingMoreReviews, setLoadingMoreReviews] = useState(false);
   const [hasMoreReviews, setHasMoreReviews] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
+
+  const [saved, setSaved] = useState(false);
+  const [savingToggle, setSavingToggle] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
 
   const REVIEWS_PAGE_SIZE = 5;
 
@@ -101,27 +107,6 @@ export default function HotelDetails() {
     });
   }
 
-  useEffect(() => {
-    async function fetchReviews() {
-      try {
-        const res = await fetch(
-          `/api/listings/public/${id}/reviews?limit=${REVIEWS_PAGE_SIZE}&offset=0`,
-        );
-        const data = await res.json();
-        if (res.ok) {
-          setReviewSummary(data);
-          setReviews(data.reviews);
-          setHasMoreReviews(data.reviews.length < data.reviewCount);
-        }
-      } catch (err) {
-        console.error("Failed to fetch reviews:", err);
-      } finally {
-        setReviewsLoading(false);
-      }
-    }
-    fetchReviews();
-  }, [id]);
-
   async function loadMoreReviews() {
     setLoadingMoreReviews(true);
     try {
@@ -142,26 +127,24 @@ export default function HotelDetails() {
   }
 
   useEffect(() => {
-    async function checkPendingBookings() {
-      if (!authToken) return;
+    async function checkSaved() {
+      if (!authToken || !hotel?.id) return;
       try {
-        const res = await fetch("/api/bookings/me", {
+        const res = await fetch("/api/saved/ids", {
           headers: { Authorization: `Bearer ${authToken}` },
         });
         const data = await res.json();
         if (res.ok) {
-          const pending = (data.bookings || []).some(
-            (b) => b.status === "pending",
-          );
-          setHasPendingBooking(pending);
+          setSaved(data.listingIds.includes(hotel.id));
         }
       } catch (err) {
-        console.error("Failed to check pending bookings:", err);
+        console.error("Failed to check saved status:", err);
       }
     }
 
-    checkPendingBookings();
-  }, [authToken]);
+    checkSaved();
+  }, [authToken, hotel?.id]);
+
   useEffect(() => {
     async function fetchRooms() {
       try {
@@ -191,7 +174,7 @@ export default function HotelDetails() {
           return;
         }
 
-        setHotel(data.listing); // note: response key is "listing", not "hotel"
+        setHotel(data.listing);
       } catch (err) {
         console.error(err);
         setError("Something went wrong loading this listing.");
@@ -229,7 +212,6 @@ export default function HotelDetails() {
     setAuthLoading(false);
   }, []);
 
-  // Keyboard navigation while in full view (left/right arrows, Escape to close)
   useEffect(() => {
     if (fullViewIndex === null) return;
 
@@ -250,8 +232,7 @@ export default function HotelDetails() {
 
   const images = hotel.photos?.length ? hotel.photos.map((p) => p.url) : [];
   const mainImage = images[0];
-  const thumbnails = images.slice(1, 9); // was slice(1, 4) — now grabs up to 8 thumbnails
-  const extraCount = images.length - 9; // was - 4 — main + 8 thumbnails = 9 shown
+  const thumbnails = images.slice(1, 9);
 
   function openFullView(index) {
     setFullViewIndex(index);
@@ -265,7 +246,6 @@ export default function HotelDetails() {
     setFullViewIndex((i) => (i === images.length - 1 ? 0 : i + 1));
   }
 
-  //navbar
   const handleLogout = () => {
     clearAuth();
     setUser(null);
@@ -274,11 +254,66 @@ export default function HotelDetails() {
   };
 
   function handleLoginSuccess(loggedInUser, isNewUser, token) {
-    console.log("login success", { loggedInUser, isNewUser, token });
     setUser(loggedInUser);
     setAuthToken(token);
     if (isNewUser) {
       setShowCompleteProfile(true);
+    }
+  }
+
+  async function handleToggleSave() {
+    if (savingToggle) return;
+
+    if (!authToken) {
+      setShowLogin(true);
+      return;
+    }
+
+    setSavingToggle(true);
+    const next = !saved;
+    setSaved(next); // optimistic, same as HotelCard
+
+    try {
+      const res = await fetch(`/api/saved/${hotel.id}`, {
+        method: next ? "POST" : "DELETE",
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+      if (!res.ok) {
+        setSaved(!next); // revert on failure
+      }
+    } catch (err) {
+      console.error("Failed to toggle save:", err);
+      setSaved(!next);
+    } finally {
+      setSavingToggle(false);
+    }
+  }
+
+  async function handleShare() {
+    const shareData = {
+      title: hotel.title,
+      text: `Check out ${hotel.title} on our site`,
+      url: window.location.href,
+    };
+
+    console.log("Attempting share with:", shareData); // TEMP
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+        console.log("Share succeeded"); // TEMP
+        return;
+      } catch (err) {
+        console.log("Share failed:", err.name, err.message); // TEMP — no filtering
+      }
+    }
+
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2000);
+    } catch (err) {
+      console.error("Clipboard copy failed:", err);
     }
   }
 
@@ -316,11 +351,17 @@ export default function HotelDetails() {
             </div>
           </div>
           <div className="hd-header-actions">
-            <button className="hd-icon-btn">
-              <FaHeart /> Save
+            <button
+              type="button"
+              className="hd-icon-btn"
+              onClick={handleToggleSave}
+              disabled={savingToggle}
+              aria-pressed={saved}
+            >
+              {saved ? <FaHeart /> : <FaRegHeart />} {saved ? "Saved" : "Save"}
             </button>
-            <button className="hd-icon-btn">
-              <FaShareAlt /> Share
+            <button type="button" className="hd-icon-btn" onClick={handleShare}>
+              <FaShareAlt /> {shareCopied ? "Link copied!" : "Share"}
             </button>
           </div>
         </div>
@@ -332,7 +373,7 @@ export default function HotelDetails() {
             className="hd-gallery-main"
             onClick={() => openFullView(0)}
           >
-            <img src={mainImage} alt={hotel.title} />
+            <img src={mainImage} alt={hotel.title} loading="eager" />
           </button>
           <div className="hd-gallery-grid">
             {thumbnails.map((src, idx) => (
@@ -342,21 +383,25 @@ export default function HotelDetails() {
                 key={idx}
                 onClick={() => openFullView(idx + 1)}
               >
-                <img src={src} alt={`${hotel.name} ${idx + 2}`} />
-                {idx === thumbnails.length - 1 && extraCount > 0 && (
-                  <span
-                    className="hd-gallery-more"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowAllPhotos(true);
-                    }}
-                  >
-                    View all ({images.length})
-                  </span>
-                )}
+                <img
+                  src={src}
+                  alt={`${hotel.title} photo ${idx + 2}`}
+                  loading="lazy"
+                />
               </button>
             ))}
           </div>
+
+          {images.length > 1 && (
+            <button
+              type="button"
+              className="hd-gallery-viewall"
+              onClick={() => setShowAllPhotos(true)}
+            >
+              <FaExpand />
+              View all {images.length} photos
+            </button>
+          )}
         </div>
 
         <div className="hd-body">
@@ -386,21 +431,6 @@ export default function HotelDetails() {
                 </div>
               </div>
             )}
-
-            {/* <div className="hd-section">
-              <h3>Amenities</h3>
-              <div className="hd-amenities-full">
-                {hotel.amenities.map((a) => {
-                  const Icon = AMENITY_ICONS[a] || FaWifi;
-                  return (
-                    <div className="hd-amenity-item" key={a}>
-                      <Icon />
-                      <span>{a}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div> */}
 
             {hotel.latitude && hotel.longitude && (
               <div className="hd-section">
@@ -437,15 +467,18 @@ export default function HotelDetails() {
             )}
           </div>
 
-          {/* --- Sticky price card --- */}
+          {/* --- Sticky price card (fixed bottom bar on mobile) --- */}
           <aside className="hd-price-card">
-            <span className="hd-price-label">You can book as low as</span>
-            <div className="hd-price-value">₱{hotel.price}</div>
-            <span className="hd-price-sub">per night</span>
-
-            <div className="hd-price-value">
-              {hotel.minPricePerNight ? `₱${hotel.minPricePerNight}` : "—"}
+            <div className="hd-price-info">
+              <span className="hd-price-label">You can book as low as</span>
+              <div className="hd-price-value">
+                {hotel.minPricePerNight
+                  ? `₱${hotel.minPricePerNight}`
+                  : `₱${hotel.price}`}
+              </div>
+              <span className="hd-price-sub">per night</span>
             </div>
+
             <div className="hd-price-facts">
               <span>Up to {hotel.maxGuestsAcrossRooms ?? "—"} guests</span>
               <span>{hotel.totalRoomsAvailable ?? 0} rooms available</span>
@@ -466,34 +499,12 @@ export default function HotelDetails() {
           <div className="hd-section hd-reviews-section">
             <h3>Guest Reviews</h3>
 
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 16,
-                marginBottom: 20,
-                padding: "16px 20px",
-                background: "#f9fafb",
-                borderRadius: 12,
-                border: "1px solid #f0f0f0",
-              }}
-            >
-              <div
-                style={{
-                  background: "#111827",
-                  color: "white",
-                  fontWeight: 700,
-                  fontSize: 20,
-                  borderRadius: 8,
-                  padding: "8px 14px",
-                  minWidth: 52,
-                  textAlign: "center",
-                }}
-              >
+            <div className="hd-review-summary">
+              <div className="hd-review-summary-score">
                 {reviewSummary.scoreOutOf10}
               </div>
               <div>
-                <div style={{ fontWeight: 600, fontSize: 15 }}>
+                <div className="hd-review-summary-label">
                   {reviewSummary.scoreOutOf10 >= 9
                     ? "Exceptional"
                     : reviewSummary.scoreOutOf10 >= 8
@@ -504,60 +515,32 @@ export default function HotelDetails() {
                           ? "Good"
                           : "Fair"}
                 </div>
-                <div style={{ fontSize: 13, color: "#6b7280" }}>
+                <div className="hd-review-summary-count">
                   {reviewSummary.reviewCount} review
                   {reviewSummary.reviewCount > 1 ? "s" : ""}
                 </div>
               </div>
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <div className="hd-review-list">
               {reviews.map((r, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    paddingBottom: 16,
-                    borderBottom:
-                      idx < reviews.length - 1 ? "1px solid #f0f0f0" : "none",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 10,
-                      marginBottom: 6,
-                    }}
-                  >
+                <div className="hd-review-item" key={idx}>
+                  <div className="hd-review-header">
                     {r.guestPicture ? (
                       <img
                         src={r.guestPicture}
                         alt={r.guestFirstName}
-                        style={{ width: 32, height: 32, borderRadius: "50%" }}
+                        className="hd-review-avatar"
+                        loading="lazy"
                       />
                     ) : (
-                      <div
-                        style={{
-                          width: 32,
-                          height: 32,
-                          borderRadius: "50%",
-                          background: "#e5e7eb",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontSize: 13,
-                          fontWeight: 600,
-                          color: "#374151",
-                        }}
-                      >
+                      <div className="hd-review-avatar hd-review-avatar-fallback">
                         {r.guestFirstName?.[0]}
                       </div>
                     )}
                     <div>
-                      <div style={{ fontWeight: 600, fontSize: 13.5 }}>
-                        {r.guestFirstName}
-                      </div>
-                      <div style={{ fontSize: 11, color: "#9ca3af" }}>
+                      <div className="hd-review-author">{r.guestFirstName}</div>
+                      <div className="hd-review-date">
                         {new Date(r.createdAt).toLocaleDateString("en-US", {
                           month: "short",
                           year: "numeric",
@@ -565,16 +548,12 @@ export default function HotelDetails() {
                       </div>
                     </div>
                   </div>
-                  <div
-                    style={{ color: "#f59e0b", fontSize: 13, marginBottom: 4 }}
-                  >
+                  <div className="hd-review-stars">
                     {"★".repeat(r.rating)}
                     {"☆".repeat(5 - r.rating)}
                   </div>
                   {r.comment && (
-                    <p style={{ fontSize: 13.5, color: "#374151", margin: 0 }}>
-                      {r.comment}
-                    </p>
+                    <p className="hd-review-comment">{r.comment}</p>
                   )}
                 </div>
               ))}
@@ -583,19 +562,9 @@ export default function HotelDetails() {
             {hasMoreReviews && (
               <button
                 type="button"
+                className="hd-review-more-btn"
                 onClick={loadMoreReviews}
                 disabled={loadingMoreReviews}
-                style={{
-                  marginTop: 16,
-                  padding: "10px 20px",
-                  border: "1px solid #d1d5db",
-                  borderRadius: 8,
-                  background: "white",
-                  fontSize: 13.5,
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  color: "#374151",
-                }}
               >
                 {loadingMoreReviews
                   ? "Loading…"
@@ -605,7 +574,7 @@ export default function HotelDetails() {
           </div>
         )}
 
-        {/* --- Rooms (full width, outside the grid) --- */}
+        {/* --- Rooms --- */}
         <div className="hd-section hd-rooms-section" ref={roomsSectionRef}>
           <h3>Choose Your Rooms</h3>
           {roomsLoading ? (
@@ -662,7 +631,11 @@ export default function HotelDetails() {
                       openFullView(idx);
                     }}
                   >
-                    <img src={src} alt={`${hotel.name} ${idx + 1}`} />
+                    <img
+                      src={src}
+                      alt={`${hotel.title} photo ${idx + 1}`}
+                      loading="lazy"
+                    />
                   </button>
                 ))}
               </div>
@@ -670,7 +643,7 @@ export default function HotelDetails() {
           </div>
         )}
 
-        {/* --- Single full-view lightbox with next/prev --- */}
+        {/* --- Single full-view lightbox --- */}
         {fullViewIndex !== null && (
           <div
             className="hd-fullview"
@@ -701,7 +674,7 @@ export default function HotelDetails() {
 
             <img
               src={images[fullViewIndex]}
-              alt={`${hotel.name} ${fullViewIndex + 1}`}
+              alt={`${hotel.title} photo ${fullViewIndex + 1}`}
               className="hd-fullview-image"
               onClick={(e) => e.stopPropagation()}
             />
@@ -740,8 +713,8 @@ export default function HotelDetails() {
           wiseDetails={hotel.wiseDetails}
           ownerId={hotel.ownerId}
           onManage={(room) => {
-            setSelectedRoom(null); // close the view modal
-            setEditingRoom(room); // open the edit modal
+            setSelectedRoom(null);
+            setEditingRoom(room);
           }}
           onClose={() => setSelectedRoom(null)}
           isLoggedIn={!!authToken}
@@ -762,7 +735,6 @@ export default function HotelDetails() {
           onClose={() => setEditingRoom(null)}
           onSaved={(updatedRoom) => {
             setEditingRoom(null);
-            // update the room in your `rooms` list so the UI reflects the edit
             setRooms((prev) =>
               prev.map((r) => (r.id === updatedRoom.id ? updatedRoom : r)),
             );
@@ -784,11 +756,10 @@ export default function HotelDetails() {
             setReservingRoom(null);
             setShowLogin(true);
           }}
-          onSuccess={() => {
-            // booking created — nothing else required right now
-          }}
+          onSuccess={() => {}}
         />
       )}
+
       <LoginModal
         isOpen={showLogin}
         onClose={() => setShowLogin(false)}

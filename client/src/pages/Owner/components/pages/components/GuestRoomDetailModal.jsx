@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   FaTimes,
   FaArrowLeft,
@@ -7,6 +7,7 @@ import {
   FaCheck,
 } from "react-icons/fa";
 import "../../../../../styles/Hotels/RoomCardDetails.css";
+import { useBodyScrollLock } from "../../../../../hooks/useBodyScrollLock";
 
 import ReserveForm from "./ReserveForm"; // adjust path to match where you save it
 
@@ -41,6 +42,14 @@ export default function RoomDetailModal({
 
   const photos = room.photos || [];
   const hasPhotos = photos.length > 0;
+
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, []);
 
   const isOwner = isLoggedIn && user?.id != null && user.id === ownerId;
 

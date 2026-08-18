@@ -4,16 +4,19 @@ import { QRCodeCanvas } from "qrcode.react";
 import { FaQrcode, FaDownload } from "react-icons/fa";
 import { useState, useRef } from "react";
 import "../../styles/NavBarQr.css";
+import ProfileModal from "../modals/ProfilePage";
 
 import {
   FaChevronDown,
   FaSignOutAlt,
   FaSuitcaseRolling,
   FaHotel,
+  FaUser, // moved here — imported, not a prop
 } from "react-icons/fa";
 
 export default function Navbar({
   user,
+  setUser,
   showUserMenu,
   setShowUserMenu,
   userMenuRef,
@@ -24,6 +27,7 @@ export default function Navbar({
   authLoading = false,
 }) {
   const [showQrModal, setShowQrModal] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const qrCanvasWrapperRef = useRef(null);
 
@@ -114,6 +118,17 @@ export default function Navbar({
               {/* User Dropdown */}
               {showUserMenu && (
                 <div className="nav-user-dropdown">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowProfileModal(true);
+                      setShowUserMenu(false);
+                    }}
+                  >
+                    <FaUser />
+                    My Profile
+                  </button>
+
                   <Link to="/owner-dashboard">
                     <FaHotel />
                     Host Your Property
@@ -239,6 +254,17 @@ export default function Navbar({
                     </div>
                   </div>
                 </div>
+              )}
+
+              {showProfileModal && (
+                <ProfileModal
+                  user={user}
+                  onClose={() => setShowProfileModal(false)}
+                  onUpdated={(updatedUser) => {
+                    setUser?.(updatedUser);
+                    localStorage.setItem("user", JSON.stringify(updatedUser));
+                  }}
+                />
               )}
             </div>
           ) : (

@@ -1,0 +1,134 @@
+/* Base shimmer effect */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background-color: #e9ecef;
+  border-radius: 8px;
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after {
+    animation: none;
+  }
+}
+
+/* Hero skeleton */
+.skeleton-hero {
+  padding: 80px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.skeleton-hero-title {
+  width: 60%;
+  max-width: 480px;
+  height: 44px;
+}
+
+.skeleton-hero-subtitle {
+  width: 40%;
+  max-width: 320px;
+  height: 20px;
+}
+
+.skeleton-hero-search {
+  width: 100%;
+  max-width: 640px;
+  height: 56px;
+  border-radius: 12px;
+  margin-top: 16px;
+}
+
+/* Hotel grid skeleton */
+.skeleton-hotels-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+  padding: 40px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.skeleton-hotel-card {
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.skeleton-card-image {
+  width: 100%;
+  height: 180px;
+  border-radius: 0;
+}
+
+.skeleton-card-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.skeleton-card-title {
+  width: 80%;
+  height: 18px;
+}
+
+.skeleton-card-location {
+  width: 55%;
+  height: 14px;
+}
+
+.skeleton-card-price {
+  width: 35%;
+  height: 16px;
+  margin-top: 4px;
+}
+
+/* Error state */
+.hotels-error-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 80px 24px;
+  text-align: center;
+  color: #6c757d;
+}
+
+.retry-btn {
+  padding: 10px 20px;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.15s ease;
+}
+
+.retry-btn:hover {
+  background: #f8f9fa;
+}

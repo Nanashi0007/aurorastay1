@@ -11,6 +11,7 @@ import DestinationsSection from "./components/DestinationsSection";
 import FeaturesSection from "./components/FeaturesSection";
 import HotelsSection from "./components/Hotelsection";
 import CTASection from "./components/CTASection";
+import HomeSkeleton from "./components/HomeSkeleton";
 
 export default function Home() {
   const [showLogin, setShowLogin] = useState(false);
@@ -115,9 +116,17 @@ export default function Home() {
       />
 
       {hotelsLoading ? (
-        <div className="hotels-loading-placeholder">Loading stays…</div>
+        <HomeSkeleton />
       ) : hotelsError ? (
-        <div className="hotels-error-placeholder">{hotelsError}</div>
+        <div className="hotels-error-placeholder">
+          <p>{hotelsError}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="retry-btn"
+          >
+            Try again
+          </button>
+        </div>
       ) : (
         <>
           <Hero hotels={hotels} />

@@ -13,3 +13,50 @@
   flex-shrink: 0;
   fill: currentColor;
 }
+
+.hotel-card {
+  cursor: pointer;
+}
+
+.hotel-card:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.hotel-image {
+  position: relative;
+}
+
+.hotel-save-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #374151;
+  font-size: 15px;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.hotel-save-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.hotel-save-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.hotel-save-btn[aria-pressed="true"] {
+  color: #e11d48;
+}

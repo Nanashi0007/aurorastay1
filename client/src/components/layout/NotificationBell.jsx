@@ -211,7 +211,9 @@ export default function NotificationBell() {
                           setLoadingAnnouncement(false);
                         }
                       } else if (n.relatedBookingId) {
-                        navigate(`/bookings?bookingId=${n.relatedBookingId}`);
+                        navigate(
+                          `/owner/bookings?bookingId=${n.relatedBookingId}`,
+                        );
                       }
                     }}
                     className={`nb-item ${n.read ? "" : "unread"} ${

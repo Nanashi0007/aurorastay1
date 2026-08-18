@@ -122,7 +122,7 @@ export default function RoomCard({ room, onManage }) {
             className="rc-detail-link"
             onClick={() => setShowDetail(true)}
           >
-            View more details
+            {/* View more details */}
           </button>
         </div>
 

@@ -47,6 +47,11 @@
   transform: translateX(-2px);
 }
 
+.hd-back-btn:focus-visible {
+  outline: 2px solid var(--hd-navy);
+  outline-offset: 2px;
+}
+
 .hd-loading,
 .hd-error {
   text-align: center;
@@ -65,9 +70,10 @@
 }
 
 .hd-header-left h1 {
-  font-size: 30px;
+  font-size: clamp(20px, 3.2vw, 30px);
   font-weight: 800;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 12px;
   margin: 0 0 8px 0;
@@ -96,6 +102,7 @@
 
 .hd-location svg {
   color: var(--hd-accent);
+  flex-shrink: 0;
 }
 
 .hd-header-actions {
@@ -127,8 +134,14 @@
   box-shadow: var(--hd-shadow-md);
 }
 
+.hd-icon-btn:focus-visible {
+  outline: 2px solid var(--hd-navy);
+  outline-offset: 2px;
+}
+
 /* --- Gallery --- */
 .hd-gallery {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   grid-template-rows: repeat(2, 1fr);
@@ -149,6 +162,13 @@
   display: block;
   overflow: hidden;
   position: relative;
+}
+
+.hd-gallery-main:focus-visible,
+.hd-gallery-thumb:focus-visible {
+  outline: 3px solid var(--hd-accent);
+  outline-offset: -3px;
+  z-index: 2;
 }
 
 .hd-gallery-main {
@@ -178,24 +198,37 @@
   gap: 6px;
 }
 
-.hd-gallery-more {
+/* Persistent "view all" trigger — always visible regardless of how many
+   thumbnails are hidden at a given breakpoint, unlike a badge tied to a
+   specific thumbnail. */
+.hd-gallery-viewall {
   position: absolute;
-  bottom: 12px;
-  right: 12px;
-  background: color-mix(in srgb, var(--navy-deep) 88%, transparent);
-  backdrop-filter: blur(4px);
-  color: white;
-  border: none;
-  font-size: 12px;
+  bottom: 16px;
+  right: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  color: var(--hd-ink);
+  border: 1px solid var(--hd-line);
+  font-size: 12.5px;
   font-weight: 700;
-  padding: 8px 16px;
+  padding: 9px 16px;
   border-radius: 999px;
   cursor: pointer;
-  transition: background 0.18s ease;
+  box-shadow: var(--hd-shadow-md);
+  transition: all 0.18s ease;
+  z-index: 3;
 }
 
-.hd-gallery-more:hover {
-  background: var(--hd-accent-deep);
+.hd-gallery-viewall:hover {
+  background: var(--hd-ink);
+  color: white;
+}
+
+.hd-gallery-viewall:focus-visible {
+  outline: 2px solid var(--hd-accent);
+  outline-offset: 2px;
 }
 
 /* --- Body layout --- */
@@ -223,6 +256,7 @@
   font-size: 12px;
   font-weight: 600;
   color: var(--hd-ink-soft);
+  text-align: center;
 }
 
 .hd-amenity-pill svg {
@@ -256,6 +290,7 @@
   font-size: 17px;
   padding: 10px 14px;
   border-radius: 10px;
+  flex-shrink: 0;
 }
 
 .hd-review-score svg {
@@ -289,34 +324,12 @@
   line-height: 1.6;
 }
 
-.hd-amenities-full {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
-}
-
-.hd-amenity-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--hd-ink);
-  padding: 12px 14px;
-  background: var(--hd-bg-soft);
-  border-radius: 10px;
-}
-
-.hd-amenity-item svg {
-  color: var(--hd-accent);
-  font-size: 16px;
-  flex-shrink: 0;
-}
-
 /* --- Price card --- */
 .hd-price-card {
   position: sticky;
   top: 24px;
+  display: flex;
+  flex-direction: column;
   border: 1px solid var(--hd-line);
   border-radius: var(--hd-radius-lg);
   padding: 26px;
@@ -324,7 +337,12 @@
   background: white;
 }
 
+.hd-price-info {
+  margin-bottom: 18px;
+}
+
 .hd-price-label {
+  display: block;
   font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
@@ -333,10 +351,17 @@
 }
 
 .hd-price-value {
-  font-size: 32px;
+  font-size: clamp(24px, 3vw, 32px);
   font-weight: 800;
-  margin: 6px 0 18px 0;
+  margin: 6px 0 2px;
   color: var(--hd-ink);
+  line-height: 1.1;
+}
+
+.hd-price-sub {
+  display: block;
+  font-size: 12.5px;
+  color: var(--hd-ink-soft);
 }
 
 .hd-price-facts {
@@ -371,6 +396,138 @@
 .hd-book-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 28px color-mix(in srgb, var(--navy-deep) 35%, transparent);
+}
+
+.hd-book-btn:focus-visible {
+  outline: 2px solid var(--hd-accent);
+  outline-offset: 2px;
+}
+
+/* --- Reviews (converted from inline styles) --- */
+.hd-review-summary {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding: 16px 20px;
+  background: var(--hd-bg-soft);
+  border-radius: 12px;
+  border: 1px solid var(--hd-line);
+}
+
+.hd-review-summary-score {
+  background: var(--hd-navy);
+  color: white;
+  font-weight: 700;
+  font-size: 20px;
+  border-radius: 8px;
+  padding: 8px 14px;
+  min-width: 52px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.hd-review-summary-label {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--hd-ink);
+}
+
+.hd-review-summary-count {
+  font-size: 13px;
+  color: var(--hd-ink-soft);
+}
+
+.hd-review-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.hd-review-item {
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--hd-line);
+}
+
+.hd-review-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.hd-review-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.hd-review-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  object-fit: cover;
+}
+
+.hd-review-avatar-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--hd-bg-soft);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--hd-ink);
+}
+
+.hd-review-author {
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--hd-ink);
+}
+
+.hd-review-date {
+  font-size: 11px;
+  color: var(--hd-ink-soft);
+}
+
+.hd-review-stars {
+  color: var(--hd-accent-deep);
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.hd-review-comment {
+  font-size: 13.5px;
+  color: var(--hd-ink);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.hd-review-more-btn {
+  margin-top: 16px;
+  padding: 10px 20px;
+  border: 1px solid var(--hd-line);
+  border-radius: 8px;
+  background: white;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--hd-ink);
+  transition: all 0.18s ease;
+}
+
+.hd-review-more-btn:hover {
+  border-color: var(--hd-navy);
+}
+
+.hd-review-more-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.hd-review-more-btn:focus-visible {
+  outline: 2px solid var(--hd-navy);
+  outline-offset: 2px;
 }
 
 /* --- "View all" grid modal --- */
@@ -419,6 +576,11 @@
   background: var(--hd-line);
 }
 
+.hd-lightbox-close:focus-visible {
+  outline: 2px solid var(--hd-navy);
+  outline-offset: 2px;
+}
+
 .hd-lightbox-grid-photos {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -444,6 +606,11 @@
 
 .hd-lightbox-grid-item:hover img {
   transform: scale(1.08);
+}
+
+.hd-lightbox-grid-item:focus-visible {
+  outline: 3px solid var(--hd-accent);
+  outline-offset: -3px;
 }
 
 /* --- Single full-view lightbox --- */
@@ -502,6 +669,12 @@
 .hd-fullview-nav:hover {
   background: var(--hd-accent);
   color: var(--hd-navy);
+}
+
+.hd-fullview-close:focus-visible,
+.hd-fullview-nav:focus-visible {
+  outline: 2px solid var(--hd-accent);
+  outline-offset: 2px;
 }
 
 .hd-fullview-prev {
@@ -563,6 +736,13 @@
     display: none;
   }
 
+  .hd-gallery-viewall {
+    bottom: 10px;
+    right: 10px;
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+
   .hd-header {
     flex-direction: column;
     align-items: stretch;
@@ -577,11 +757,6 @@
 @media (max-width: 640px) {
   .hd-page {
     padding: 16px 14px 48px;
-  }
-
-  .hd-header-left h1 {
-    font-size: 22px;
-    flex-wrap: wrap;
   }
 
   .hd-lightbox {
@@ -610,10 +785,6 @@
     right: 10px;
   }
 
-  .hd-amenities-full {
-    grid-template-columns: 1fr;
-  }
-
   .hd-amenities-strip {
     gap: 16px;
   }
@@ -623,16 +794,59 @@
     justify-content: center;
   }
 
+  /* Turn the price card into a fixed bottom bar — matches the pattern
+     used by professional booking sites so the CTA is always reachable. */
+  .hd-price-card {
+    /* position: fixed;
+    bottom: 90;
+    left: 1;
+    right: 0; */
+    z-index: 300;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-radius: 0;
+    /* border-radius: 16px 16px 0 0;
+    border-left: none;
+    border-right: none; */
+    padding: 14px 16px calc(14px + env(safe-area-inset-bottom));
+    box-shadow: 0 -8px 30px
+      color-mix(in srgb, var(--navy-deep) 15%, transparent);
+    margin-bottom: 15px;
+  }
+
+  .hd-price-info {
+    margin-bottom: 0;
+  }
+
+  .hd-price-label,
+  .hd-price-facts {
+    display: none;
+  }
+
   .hd-price-value {
-    font-size: 26px;
+    font-size: 20px;
+    margin: 0;
+  }
+
+  .hd-book-btn {
+    width: auto;
+    padding: 12px 22px;
+    flex-shrink: 0;
+  }
+
+  /* Leave room so page content isn't hidden behind the fixed bar */
+  .hd-page {
+    padding-bottom: 110px;
+  }
+
+  .rc-price-col button {
+    width: 90px;
   }
 }
 
 @media (max-width: 480px) {
-  .hd-header-left h1 {
-    font-size: 20px;
-  }
-
   .hd-lightbox-grid-photos {
     grid-template-columns: 1fr;
   }
@@ -643,6 +857,10 @@
 
   .hd-pending-modal-actions .btn {
     width: 100%;
+  }
+
+  .hd-gallery-viewall span {
+    display: none;
   }
 }
 
@@ -709,4 +927,20 @@
   display: flex;
   justify-content: flex-end;
   gap: 12px;
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .hd-back-btn,
+  .hd-icon-btn,
+  .hd-gallery-main img,
+  .hd-gallery-thumb img,
+  .hd-gallery-viewall,
+  .hd-book-btn,
+  .hd-lightbox-grid-item img,
+  .hd-fullview-close,
+  .hd-fullview-nav,
+  .hd-review-more-btn {
+    transition: none;
+  }
 }

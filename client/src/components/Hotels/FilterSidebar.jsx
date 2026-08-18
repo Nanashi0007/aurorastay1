@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
+import { FaTimes } from "react-icons/fa";
 
-export default function FilterSidebar({ filters, onChange }) {
+export default function FilterSidebar({ filters, onChange, isOpen, onClose }) {
   const [meta, setMeta] = useState({
     types: [],
     amenities: [],
@@ -14,6 +15,26 @@ export default function FilterSidebar({ filters, onChange }) {
       .catch(() => {});
   }, []);
 
+  // Close on Escape
+  useEffect(() => {
+    if (!isOpen) return;
+    function handleKeyDown(e) {
+      if (e.key === "Escape") onClose?.();
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
+
+  // Lock body scroll while the drawer is open
+  useEffect(() => {
+    if (!isOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [isOpen]);
+
   function toggleArrayValue(key, value) {
     const current = filters[key] || [];
     const next = current.includes(value)
@@ -22,55 +43,106 @@ export default function FilterSidebar({ filters, onChange }) {
     onChange({ ...filters, [key]: next });
   }
 
+  function handleClearAll() {
+    onChange({ minPrice: "", maxPrice: "", types: [], amenities: [] });
+  }
+
   return (
-    <aside className="filter-sidebar">
-      <div className="filter-group">
-        <h4>Price per night</h4>
-        <div className="filter-price-row">
-          <input
-            type="number"
-            placeholder={`₱${meta.priceRange.min}`}
-            value={filters.minPrice || ""}
-            onChange={(e) => onChange({ ...filters, minPrice: e.target.value })}
-          />
-          <input
-            type="number"
-            placeholder={`₱${meta.priceRange.max}`}
-            value={filters.maxPrice || ""}
-            onChange={(e) => onChange({ ...filters, maxPrice: e.target.value })}
-          />
+    <>
+      <div
+        className={`filter-backdrop ${isOpen ? "is-open" : ""}`}
+        onClick={onClose}
+        aria-hidden="true"
+      />
+
+      <aside
+        className={`filter-sidebar ${isOpen ? "is-open" : ""}`}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Filter hotels"
+        aria-hidden={!isOpen}
+      >
+        <div className="filter-sidebar-header">
+          <h3>Filters</h3>
+          <button
+            type="button"
+            className="filter-sidebar-close"
+            onClick={onClose}
+            aria-label="Close filters"
+          >
+            <FaTimes />
+          </button>
         </div>
-      </div>
 
-      <div className="filter-group">
-        <h4>Accommodation type</h4>
-        {meta.types.map((t) => (
-          <label className="stamp-checkbox" key={t}>
-            <input
-              type="checkbox"
-              checked={(filters.types || []).includes(t)}
-              onChange={() => toggleArrayValue("types", t)}
-            />
-            <span className="mark" aria-hidden="true"></span>
-            {t}
-          </label>
-        ))}
-      </div>
+        <div className="filter-sidebar-body">
+          <div className="filter-group">
+            <h4>Price per night</h4>
+            <div className="filter-price-row">
+              <input
+                type="number"
+                placeholder={`₱${meta.priceRange.min}`}
+                value={filters.minPrice || ""}
+                onChange={(e) =>
+                  onChange({ ...filters, minPrice: e.target.value })
+                }
+                aria-label="Minimum price per night"
+              />
+              <input
+                type="number"
+                placeholder={`₱${meta.priceRange.max}`}
+                value={filters.maxPrice || ""}
+                onChange={(e) =>
+                  onChange({ ...filters, maxPrice: e.target.value })
+                }
+                aria-label="Maximum price per night"
+              />
+            </div>
+          </div>
 
-      <div className="filter-group">
-        <h4>Amenities</h4>
-        {meta.amenities.map((a) => (
-          <label className="stamp-checkbox" key={a}>
-            <input
-              type="checkbox"
-              checked={(filters.amenities || []).includes(a)}
-              onChange={() => toggleArrayValue("amenities", a)}
-            />
-            <span className="mark" aria-hidden="true"></span>
-            {a}
-          </label>
-        ))}
-      </div>
-    </aside>
+          <div className="filter-group">
+            <h4>Accommodation type</h4>
+            {meta.types.map((t) => (
+              <label className="stamp-checkbox" key={t}>
+                <input
+                  type="checkbox"
+                  checked={(filters.types || []).includes(t)}
+                  onChange={() => toggleArrayValue("types", t)}
+                />
+                <span className="mark" aria-hidden="true"></span>
+                {t}
+              </label>
+            ))}
+          </div>
+
+          <div className="filter-group">
+            <h4>Amenities</h4>
+            {meta.amenities.map((a) => (
+              <label className="stamp-checkbox" key={a}>
+                <input
+                  type="checkbox"
+                  checked={(filters.amenities || []).includes(a)}
+                  onChange={() => toggleArrayValue("amenities", a)}
+                />
+                <span className="mark" aria-hidden="true"></span>
+                {a}
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div className="filter-sidebar-footer">
+          <button
+            type="button"
+            className="filter-clear-btn"
+            onClick={handleClearAll}
+          >
+            Clear all
+          </button>
+          <button type="button" className="filter-apply-btn" onClick={onClose}>
+            Show results
+          </button>
+        </div>
+      </aside>
+    </>
   );
 }

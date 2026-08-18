@@ -45,6 +45,8 @@ export default function ReserveModal({
   const totalPrice = nights * Number(room.pricePerNight || 0);
   const depositAmount = Math.round(totalPrice * DEPOSIT_RATE);
 
+  useBodyScrollLock(true);
+
   function handleProofSelect(e) {
     const file = e.target.files?.[0];
     if (!file) return;

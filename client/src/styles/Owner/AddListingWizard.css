@@ -176,9 +176,14 @@
 }
 
 .wizard-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-wrap: wrap;
   gap: 14px;
+}
+
+.wizard-row .wizard-field {
+  flex: 1 1 140px; /* grow to fill row, wrap below ~140px */
+  min-width: 0; /* stops inputs from overflowing their flex item */
 }
 
 .wizard-hint {
@@ -435,6 +440,60 @@
   border-radius: 999px;
 }
 
+.amenity-category {
+  margin-bottom: 18px;
+}
+
+.amenity-category-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 10px;
+}
+
+.amenity-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.amenity-chip-sm {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg-soft);
+  color: var(--ink);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.amenity-chip-sm:hover {
+  border-color: var(--navy-mid);
+}
+
+.amenity-chip-sm.active {
+  border-color: var(--gold-deep);
+  background: var(--paper);
+  color: var(--gold-deep);
+}
+
+.amenity-chip-sm svg {
+  font-size: 11px;
+  color: var(--gold-deep);
+}
+
 /* --- Responsiveness --- */
 @media (max-width: 768px) {
   .wizard-overlay {
@@ -454,7 +513,6 @@
     border-radius: 14px 14px 0 0;
   }
 
-  .wizard-row,
   .property-type-grid,
   .amenities-grid,
   .photo-grid {
