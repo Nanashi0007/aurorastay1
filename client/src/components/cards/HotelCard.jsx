@@ -116,9 +116,9 @@ export default function HotelCard({ hotel, isSaved = false, onToggleSave }) {
 
           <button
             type="button"
-            className="btn btn-primary hotel-card-view-btn"
+            className="hotel-card-view-btn"
             onClick={(e) => {
-              e.stopPropagation(); // avoid double navigation from card + button
+              e.stopPropagation();
               handleView();
             }}
             aria-label={`View ${hotel.name}`}

@@ -138,19 +138,18 @@ export default function RoomCard({ room, onManage }) {
         <div className="rc-price-col">
           <div className="rc-price">
             ₱{Number(room.pricePerNight).toLocaleString()}
+            <small className="rc-price-note">per night</small>
+            {isAvailable ? (
+              <div className="rc-availability">
+                {room.roomsAvailable} room{room.roomsAvailable > 1 ? "s" : ""}{" "}
+                available
+              </div>
+            ) : (
+              <div className="rc-availability rc-availability-none">
+                No rooms left
+              </div>
+            )}
           </div>
-          <small className="rc-price-note">per night</small>
-
-          {isAvailable ? (
-            <div className="rc-availability">
-              {room.roomsAvailable} room{room.roomsAvailable > 1 ? "s" : ""}{" "}
-              available
-            </div>
-          ) : (
-            <div className="rc-availability rc-availability-none">
-              No rooms left
-            </div>
-          )}
 
           <button
             type="button"

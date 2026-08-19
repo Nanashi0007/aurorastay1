@@ -9,7 +9,7 @@ import Navbar from "../../components/layout/Navbar";
 import Hero from "./components/Hero";
 import DestinationsSection from "./components/DestinationsSection";
 import FeaturesSection from "./components/FeaturesSection";
-import HotelsSection from "./components/Hotelsection";
+import HotelsSection from "./components/Hotelsection"; // correct casing
 import CTASection from "./components/CTASection";
 import HomeSkeleton from "./components/HomeSkeleton";
 
@@ -133,6 +133,8 @@ export default function Home() {
           <HotelsSection hotels={hotels} />
         </>
       )}
+
+      <FeaturesSection />
 
       <CTASection />
 

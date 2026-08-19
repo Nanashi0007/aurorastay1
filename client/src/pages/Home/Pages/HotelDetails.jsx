@@ -477,11 +477,11 @@ export default function HotelDetails() {
                   : `₱${hotel.price}`}
               </div>
               <span className="hd-price-sub">per night</span>
-            </div>
 
-            <div className="hd-price-facts">
-              <span>Up to {hotel.maxGuestsAcrossRooms ?? "—"} guests</span>
-              <span>{hotel.totalRoomsAvailable ?? 0} rooms available</span>
+              <div className="hd-price-facts">
+                <span>Up to {hotel.maxGuestsAcrossRooms ?? "—"} guests</span>
+                <span>{hotel.totalRoomsAvailable ?? 0} rooms available</span>
+              </div>
             </div>
 
             <button

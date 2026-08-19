@@ -5,8 +5,10 @@
   gap: 20px;
   background: var(--paper);
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: 5px;
   padding: 16px;
+  margin-bottom: 20px;
+  margin-top: 20px;
 }
 
 .rc-image {

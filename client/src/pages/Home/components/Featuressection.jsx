@@ -1,24 +1,23 @@
-import { FaWifi, FaSwimmingPool, FaParking } from "react-icons/fa";
-import FeatureCard from "../../../components/cards/FeatureCard";
+import { FaWifi, FaSwimmingPool, FaCar } from "react-icons/fa";
 
 const features = [
   {
     icon: <FaWifi />,
-    colorClass: "navy",
-    title: "Free WiFi",
-    description: "Stay connected during your vacation.",
+    code: "WIFI",
+    title: "Always connected",
+    description: "Fast WiFi at every listing, verified before it's listed.",
   },
   {
     icon: <FaSwimmingPool />,
-    colorClass: "gold",
-    title: "Best Resorts",
-    description: "Verified accommodations across Aurora.",
+    code: "STAY",
+    title: "Verified stays only",
+    description: "Every hotel, inn, and homestay is checked in person.",
   },
   {
-    icon: <FaParking />,
-    colorClass: "green",
-    title: "Free Parking",
-    description: "Convenient parking for your vehicle.",
+    icon: <FaCar />,
+    code: "PARK",
+    title: "Free parking",
+    description: "Arriving by car? Most listings have you covered.",
   },
 ];
 
@@ -26,11 +25,22 @@ export default function FeaturesSection() {
   return (
     <section className="features">
       <div className="container">
-        <h2>Why Book with AuroraStay?</h2>
+        <div className="features-eyebrow">Trip essentials · No. 001</div>
+        <h2>Why book with AuroraStay</h2>
 
-        <div className="feature-grid">
-          {features.map((feature) => (
-            <FeatureCard {...feature} key={feature.title} />
+        <div className="boarding-strip">
+          {features.map((feature, i) => (
+            <div className="boarding-item" key={feature.code}>
+              <div className="boarding-icon">{feature.icon}</div>
+              <div className="boarding-text">
+                <span className="boarding-code">{feature.code}</span>
+                <h3>{feature.title}</h3>
+                <p>{feature.description}</p>
+              </div>
+              {i < features.length - 1 && (
+                <div className="boarding-perf" aria-hidden="true" />
+              )}
+            </div>
           ))}
         </div>
       </div>
