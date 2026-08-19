@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { FaSearch } from "react-icons/fa";
+import { getStoredAdminAuth } from "../../../utils/storage";
 
 export default function ManageUsers() {
   const [users, setUsers] = useState([]);
@@ -11,7 +12,7 @@ export default function ManageUsers() {
   const [pendingRole, setPendingRole] = useState("");
   const [savingId, setSavingId] = useState(null);
 
-  const token = localStorage.getItem("token");
+  const { token } = getStoredAdminAuth();
 
   async function fetchUsers() {
     setLoading(true);
@@ -143,7 +144,11 @@ export default function ManageUsers() {
               <div key={u.id} className="admin-user-row">
                 <div className="admin-user-row-main">
                   {u.picture ? (
-                    <img src={u.picture} alt={u.firstName} className="admin-user-avatar" />
+                    <img
+                      src={u.picture}
+                      alt={u.firstName}
+                      className="admin-user-avatar"
+                    />
                   ) : (
                     <div className="admin-user-avatar-fallback">
                       {u.firstName?.[0]}

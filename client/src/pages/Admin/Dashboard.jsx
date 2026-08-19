@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { clearAuth } from "../../utils/storage";
+import { clearAdminAuth, getStoredAdminAuth } from "../../utils/storage";
 import AdminSidebar from "./components/AdminSidebar";
 import AdminNavbar from "./components/AdminNavbar";
 import ManageUsers from "./Pages/ManageUsers";
@@ -15,21 +15,25 @@ export default function AdminDashboard() {
   const activeView = searchParams.get("view") || "analytics";
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const storedUser = localStorage.getItem("user");
-  const currentAdmin = (() => {
-    try {
-      return storedUser ? JSON.parse(storedUser) : null;
-    } catch {
-      return null;
+  const { user: currentAdmin } = getStoredAdminAuth();
+
+  useEffect(() => {
+    if (sidebarOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
     }
-  })();
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [sidebarOpen]);
 
   function setActiveView(view) {
     setSearchParams({ view }, { replace: true });
   }
 
   function handleLogout() {
-    clearAuth();
+    clearAdminAuth();
     window.location.href = "/";
   }
 
@@ -50,19 +54,21 @@ export default function AdminDashboard() {
           onClose={() => setSidebarOpen(false)}
         />
 
-        {activeView === "applications" ? (
-          <ApplicationsReview />
-        ) : activeView === "announcements" ? (
-          <AdminAnnouncements />
-        ) : activeView === "backupandrestore" ? (
-          <BackupAndRestore />
-        ) : activeView === "users" ? (
-          <ManageUsers />
-        ) : activeView === "activitylogs" ? (
-          <ActivityLogs />
-        ) : (
-          <AdminAnalytics />
-        )}
+        <div className="admin-content">
+          {activeView === "applications" ? (
+            <ApplicationsReview />
+          ) : activeView === "announcements" ? (
+            <AdminAnnouncements />
+          ) : activeView === "backupandrestore" ? (
+            <BackupRestore />
+          ) : activeView === "users" ? (
+            <ManageUsers />
+          ) : activeView === "activitylogs" ? (
+            <ActivityLogs />
+          ) : (
+            <AdminAnalytics />
+          )}
+        </div>
       </div>
     </div>
   );

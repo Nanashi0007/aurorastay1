@@ -13,13 +13,14 @@ import {
   FaSyncAlt,
   FaCopy,
 } from "react-icons/fa";
+import { getStoredAdminAuth } from "../../../utils/storage";
 import "../../../styles/backupRestore.css";
 
 const API_BASE = "/api/admin/backup";
 const CONFIRM_PHRASE = "RESTORE DATABASE";
 
 export default function BackupRestore() {
-  const token = localStorage.getItem("token");
+  const { token } = getStoredAdminAuth();
 
   const [downloading, setDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState("");
@@ -518,7 +519,7 @@ export default function BackupRestore() {
             <input
               ref={fileInputRef}
               type="file"
-              accept=".sql"
+              accept=".sql,application/sql,text/plain,text/x-sql,.txt"
               onChange={handleFileChange}
               className="backup-hidden-file-input"
             />

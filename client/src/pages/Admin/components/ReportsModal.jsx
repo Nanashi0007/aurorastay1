@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { FaTimes } from "react-icons/fa";
+import { getStoredAdminAuth } from "../../../utils/storage";
 import "../../../styles/Admin/reportsModal.css";
+
+const ALL_TYPES_VALUE = "__all__";
 
 export default function ReportsModal({ isOpen, onClose }) {
   const [types, setTypes] = useState([]);
@@ -13,7 +16,7 @@ export default function ReportsModal({ isOpen, onClose }) {
   useEffect(() => {
     if (!isOpen) return;
 
-    const token = localStorage.getItem("token");
+    const { token } = getStoredAdminAuth();
     fetch("/api/admin/reports/types", {
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -35,40 +38,53 @@ export default function ReportsModal({ isOpen, onClose }) {
 
   if (!isOpen) return null;
 
+  async function downloadOne(typeKey, format) {
+    const { token } = getStoredAdminAuth();
+    const params = new URLSearchParams();
+    if (startDate) params.set("startDate", startDate);
+    if (endDate) params.set("endDate", endDate);
+
+    const res = await fetch(
+      `/api/admin/reports/${typeKey}/${format}?${params.toString()}`,
+      { headers: { Authorization: `Bearer ${token}` } },
+    );
+
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.message || `Export failed for ${typeKey}.`);
+    }
+
+    const blob = await res.blob();
+    const disposition = res.headers.get("Content-Disposition") || "";
+    const match = disposition.match(/filename="?([^"]+)"?/);
+    const filename = match ? match[1] : `${typeKey}-report.${format}`;
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
   async function handleDownload(format) {
     if (!selectedType) return;
     setDownloading(true);
     setError("");
 
     try {
-      const token = localStorage.getItem("token");
-      const params = new URLSearchParams();
-      if (startDate) params.set("startDate", startDate);
-      if (endDate) params.set("endDate", endDate);
-
-      const res = await fetch(
-        `/api/admin/reports/${selectedType}/${format}?${params.toString()}`,
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.message || "Export failed.");
+      if (selectedType === ALL_TYPES_VALUE) {
+        // Download each report type as a separate file, one after another.
+        // Sequential (not parallel) so browsers don't block multiple
+        // simultaneous downloads as a popup-spam risk.
+        for (const type of types) {
+          await downloadOne(type.key, format);
+        }
+      } else {
+        await downloadOne(selectedType, format);
       }
-
-      const blob = await res.blob();
-      const disposition = res.headers.get("Content-Disposition") || "";
-      const match = disposition.match(/filename="?([^"]+)"?/);
-      const filename = match ? match[1] : `${selectedType}-report.${format}`;
-
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
     } catch (err) {
       setError(err.message || "Export failed.");
     } finally {
@@ -98,6 +114,9 @@ export default function ReportsModal({ isOpen, onClose }) {
               value={selectedType}
               onChange={(e) => setSelectedType(e.target.value)}
             >
+              {types.length > 1 && (
+                <option value={ALL_TYPES_VALUE}>All Reports</option>
+              )}
               {types.map((type) => (
                 <option key={type.key} value={type.key}>
                   {type.title}

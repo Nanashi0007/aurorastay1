@@ -86,11 +86,16 @@
   padding: 1.5rem 1rem;
   display: flex;
   flex-direction: column;
-  position: sticky;
-  top: 64px;
-  height: calc(100vh - 64px);
-  align-self: flex-start;
+  height: 100%; /* CHANGED from calc(100vh - 64px) */
   overflow-y: auto;
+
+  /* position: sticky; top: 64px; align-self: flex-start;  <- REMOVE these three lines */
+}
+
+.admin-content {
+  flex: 1; /* NEW */
+  overflow-y: auto; /* NEW — this is now the ONLY thing that scrolls */
+  min-height: 0; /* NEW */
 }
 
 .admin-sidebar-backdrop {
@@ -187,11 +192,10 @@
   padding: 0.875rem 1.5rem;
   background: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
-  position: sticky;
-  top: 0;
   height: 64px;
   box-sizing: border-box;
-  z-index: 100;
+  flex-shrink: 0; /* CHANGED — no longer sticky, just a fixed-height flex item */
+  /* position: sticky; top: 0; z-index: 100;  <- REMOVE these two lines */
 }
 
 .admin-navbar-brand {
@@ -268,13 +272,19 @@
 }
 
 .admin-shell {
-  min-height: 100vh;
+  height: 100vh; /* CHANGED from min-height — fixed, not growing */
+  overflow: hidden; /* NEW — the shell itself never scrolls */
+  display: flex; /* NEW */
+  flex-direction: column; /* NEW */
   background: white;
 }
 
 .admin-main-layout {
   display: flex;
-  min-width: 0; /* let flex children shrink below content size */
+  flex: 1; /* NEW — fills remaining height below the navbar */
+  min-height: 0; /* NEW — required so children can scroll instead of overflowing */
+  min-width: 0;
+  overflow: hidden; /* NEW */
 }
 
 .admin-user-page {

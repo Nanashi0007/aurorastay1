@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { FaCheck, FaTimes, FaSyncAlt, FaSearch } from "react-icons/fa";
-import "../../../styles/Admin/ApplicationsReview.css"; // adjust path to where you save it
+import { getStoredAdminAuth } from "../../../utils/storage";
+import "../../../styles/Admin/ApplicationsReview.css";
 
 function initials(name) {
   if (!name) return "?";
@@ -24,7 +25,7 @@ export default function ApplicationsReview() {
   const [search, setSearch] = useState("");
   const [approvingId, setApprovingId] = useState(null);
 
-  const token = localStorage.getItem("token");
+  const { token } = getStoredAdminAuth();
 
   async function fetchApplications() {
     setLoading(true);

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { getStoredAdminAuth } from "../../../../utils/storage"; // adjust path to match your structure
 
 export function useAnalytics(endpoint) {
   const [data, setData] = useState(null);
@@ -7,7 +8,7 @@ export function useAnalytics(endpoint) {
 
   useEffect(() => {
     let cancelled = false;
-    const token = localStorage.getItem("token");
+    const { token } = getStoredAdminAuth();
 
     async function load() {
       setLoading(true);

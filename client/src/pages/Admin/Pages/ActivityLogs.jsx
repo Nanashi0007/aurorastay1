@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { FaSync } from "react-icons/fa";
+import { getStoredAdminAuth } from "../../../utils/storage";
 import "../../../styles/Admin/activityLogs.css";
 
 const ACTIONS = [
@@ -37,7 +38,7 @@ export default function ActivityLogs() {
     setLoading(true);
     setError("");
     try {
-      const token = localStorage.getItem("token");
+      const { token } = getStoredAdminAuth(); // CHANGED
       const params = new URLSearchParams({ page, limit });
       if (action) params.set("action", action);
       const res = await fetch(`/api/admin/activity-logs?${params}`, {

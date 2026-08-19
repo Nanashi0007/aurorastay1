@@ -104,7 +104,7 @@ function runPgDumpToFile(outPath) {
     const out = fs.createWriteStream(outPath);
     const dump = spawn(
       PG_DUMP,
-      [...pgArgs(), "--no-owner", "--no-privileges"],
+      [...pgArgs(), "--no-owner", "--no-privileges", "--clean", "--if-exists"],
       { env: pgEnv() },
     );
     dump.stdout.pipe(out);
@@ -148,9 +148,11 @@ router.get("/download", authenticate, requireAdmin, async (req, res) => {
   res.setHeader("Content-Type", "application/sql");
   res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
 
-  const dump = spawn(PG_DUMP, [...pgArgs(), "--no-owner", "--no-privileges"], {
-    env: pgEnv(),
-  });
+  const dump = spawn(
+    PG_DUMP,
+    [...pgArgs(), "--no-owner", "--no-privileges", "--clean", "--if-exists"],
+    { env: pgEnv() },
+  );
 
   dump.stdout.pipe(res);
 

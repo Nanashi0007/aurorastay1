@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { getStoredAdminAuth } from "../../../../utils/storage";
 import { useAnalytics } from "./useAnalytics";
 
 const CARD_CONFIGS = {
@@ -208,7 +209,7 @@ export default function OverviewTab() {
 
     try {
       const config = CARD_CONFIGS[cardKey];
-      const token = localStorage.getItem("token");
+      const { token } = getStoredAdminAuth();
       const res = await fetch(`/api/admin/analytics/${config.endpoint}`, {
         headers: { Authorization: `Bearer ${token}` },
       });

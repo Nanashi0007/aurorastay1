@@ -1,8 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import "../../styles/Admin/admin-login.css";
 import { GoogleLogin } from "@react-oauth/google";
-import { persistAuth } from "../../utils/storage";
-import { persistAdminAuth } from "../../utils/storage";
+import {
+  persistAdminAuth,
+  getStoredAdminAuth,
+  clearAdminAuth,
+} from "../../utils/storage";
 import Navbar from "../Home/components/Navbar";
 
 export default function AdminLogin({ onLoginSuccess }) {
@@ -71,12 +74,16 @@ export default function AdminLogin({ onLoginSuccess }) {
         return;
       }
 
-      persistAuth(data.token, data.user);
-      onLoginSuccess?.(data.user, data.isNewUser, data.token);
+      if (data.user.role !== "admin") {
+        setError(
+          "This Google account doesn't have admin access. Contact an administrator if you believe this is a mistake.",
+        );
+        setSubmitting(false);
+        return;
+      }
 
-      await new Promise((resolve) => setTimeout(resolve, 400));
-      onClose?.();
-      window.location.reload();
+      persistAdminAuth(data.token, data.user);
+      onLoginSuccess?.();
     } catch (err) {
       console.error("Google login request failed:", err);
       setError("Something went wrong. Please try again.");
@@ -90,28 +97,20 @@ export default function AdminLogin({ onLoginSuccess }) {
 
   // Restore the logged-in state on page load / refresh.
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    const storedUser = localStorage.getItem("user");
-
-    if (storedToken && storedUser) {
-      try {
-        setAuthToken(storedToken);
-        setUser(JSON.parse(storedUser));
-      } catch {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-      }
+    const stored = getStoredAdminAuth();
+    if (stored.token && stored.user) {
+      setAuthToken(stored.token);
+      setUser(stored.user);
     }
     setAuthLoading(false);
   }, []);
 
   const handleLogout = () => {
-    clearAuth();
+    clearAdminAuth();
     setUser(null);
     setAuthToken(null);
     setShowUserMenu(false);
   };
-
   return (
     <>
       <Navbar
