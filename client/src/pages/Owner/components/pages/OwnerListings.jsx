@@ -255,7 +255,7 @@ export default function OwnerListings() {
               className="btn btn-primary owner-listings-add-btn"
               onClick={() => setShowWizard(true)}
             >
-              <FaPlus /> Add Room / Accommodation
+              <FaPlus /> Add Accommodation
             </button>
           </div>
 

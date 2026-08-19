@@ -179,16 +179,16 @@ export default function AccommodationDetails() {
         <button className="ad-back-btn" onClick={() => navigate(-1)}>
           <FaArrowLeft /> Back to My Listings
         </button>
-        <button
-          className="btn btn-primary"
-          onClick={() => setShowAddRoom(true)}
-        >
-          Add Rooms
-        </button>
+
         {/* --- Header --- */}
         <div className="ad-header">
-          <div>
-            <h1>{listing.title}</h1>
+          <div className="ad-header-info">
+            <div className="ad-header-title-row">
+              <h1>{listing.title}</h1>
+              <span className={`ad-status-badge ad-status-${listing.status}`}>
+                {listing.status}
+              </span>
+            </div>
             <div className="ad-location">
               <FaMapMarkerAlt />
               <span>
@@ -198,9 +198,14 @@ export default function AccommodationDetails() {
               </span>
             </div>
           </div>
-          <span className={`ad-status-badge ad-status-${listing.status}`}>
-            {listing.status}
-          </span>
+
+          <button
+            type="button"
+            className="btn btn-primary ad-add-room-btn"
+            onClick={() => setShowAddRoom(true)}
+          >
+            Add Rooms
+          </button>
         </div>
 
         {/* --- Media carousel --- */}
@@ -247,33 +252,17 @@ export default function AccommodationDetails() {
           </div>
         )}
 
-        {media.length > 1 && (
-          <div className="ad-media-thumbs">
-            {media.map((item, idx) => (
-              <button
-                type="button"
-                key={item.url}
-                className={`ad-media-thumb-btn ${idx === mediaIndex ? "active" : ""}`}
-                onClick={() => setMediaIndex(idx)}
-              >
-                <img src={item.url} alt="" />
-              </button>
-            ))}
-          </div>
-        )}
-
         <div className="ad-body">
-          {/* --- Main content --- */}
-          <div className="ad-section-no-margin">
-            <div className="ad-room-card-header">
+          <div className="ad-main-col">
+            <section className="ad-card">
               <h3>Details</h3>
-              <p>{listing.description || "No description provided."}</p>
-            </div>
-
-            <div className="dividers"></div>
+              <p className="ad-description">
+                {listing.description || "No description provided."}
+              </p>
+            </section>
 
             {listing.amenities && listing.amenities.length > 0 && (
-              <div className="ad-section">
+              <section className="ad-card">
                 <h3>Amenities</h3>
                 <div className="ad-amenities">
                   {listing.amenities.map((a) => (
@@ -282,12 +271,10 @@ export default function AccommodationDetails() {
                     </span>
                   ))}
                 </div>
-              </div>
+              </section>
             )}
 
-            <div className="dividers"></div>
-
-            <div className="ad-section">
+            <section className="ad-card">
               <h3>Contact</h3>
               <div className="ad-grid">
                 <div className="ad-grid-item">
@@ -305,22 +292,19 @@ export default function AccommodationDetails() {
                   </div>
                 </div>
               </div>
-            </div>
+            </section>
           </div>
 
-          <div className="dividerss"></div>
           {hasLocation && (
-            <div className="ad-section ">
-              <div className="ad-grid">
-                <h3>Map Location</h3>
-                <div className="ad-grid-item">
-                  <FaMapMarkerAlt />
-                  <div>
-                    <small>Location</small>
-                    <span>
-                      {listing.barangay}, {listing.municipality}
-                    </span>
-                  </div>
+            <aside className="ad-card ad-map-card">
+              <h3>Map Location</h3>
+              <div className="ad-grid-item ad-map-location">
+                <FaMapMarkerAlt />
+                <div>
+                  <small>Location</small>
+                  <span>
+                    {listing.barangay}, {listing.municipality}
+                  </span>
                 </div>
               </div>
               {mapLoaded ? (
@@ -351,16 +335,14 @@ export default function AccommodationDetails() {
               ) : (
                 <div className="map-loading">Loading map…</div>
               )}
-            </div>
+            </aside>
           )}
         </div>
 
-        <div className="dividers"></div>
-
-        <div className="ad-section ">
+        <section className="ad-card ad-rooms-card">
           <h3>Rooms</h3>
           {roomsLoading ? (
-            <p>Loading rooms…</p>
+            <p className="ad-rooms-empty">Loading rooms…</p>
           ) : rooms.length === 0 ? (
             <p className="ad-rooms-empty">
               No rooms added yet. Click "Add Rooms" above to create one.
@@ -376,7 +358,7 @@ export default function AccommodationDetails() {
               ))}
             </div>
           )}
-        </div>
+        </section>
       </div>
 
       {showAddRoom && (

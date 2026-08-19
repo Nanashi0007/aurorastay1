@@ -334,7 +334,7 @@ export default function ReserveForm({
           className="btn btn-primary rf-submit"
           disabled={submitting || (!hasGcash && !hasWise)}
         >
-          {submitting ? "Submitting…" : "Submit Reservation"}
+          {submitting ? "Submitting…" : "Reserve"}
         </button>
       </div>
     </form>

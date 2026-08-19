@@ -267,7 +267,7 @@ export default function RoomDetailModal({
                       className="btn btn-primary rd-select-btn"
                       onClick={handleReserveClick}
                     >
-                      Reserve
+                      Next
                     </button>
                   )}
                 </div>

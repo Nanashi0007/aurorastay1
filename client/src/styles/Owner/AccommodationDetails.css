@@ -1,8 +1,23 @@
+/* ============ Spacing & type scale ============ */
+:root {
+  --ad-space-1: 4px;
+  --ad-space-2: 8px;
+  --ad-space-3: 12px;
+  --ad-space-4: 16px;
+  --ad-space-5: 24px;
+  --ad-space-6: 32px;
+  --ad-radius: 12px;
+  --ad-radius-lg: 16px;
+  --ad-shadow:
+    0 1px 3px color-mix(in srgb, var(--navy-deep) 6%, transparent),
+    0 1px 2px color-mix(in srgb, var(--navy-deep) 4%, transparent);
+}
+
 .ad-page {
   width: min(100%, 1100px);
   max-width: 1100px;
   margin: 0 auto;
-  padding: 24px;
+  padding: var(--ad-space-5);
   box-sizing: border-box;
 }
 
@@ -13,50 +28,70 @@
   color: var(--theme-muted);
 }
 
+/* ============ Back button ============ */
 .ad-back-btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--ad-space-2);
   border: none;
   background: none;
-  font-size: 14px;
+  font-size: 13.5px;
+  font-weight: 600;
   color: var(--navy-deep);
   cursor: pointer;
-  margin-bottom: 16px;
-  padding: 0;
+  margin-bottom: var(--ad-space-4);
+  padding: var(--ad-space-1) 0;
 }
 
+.ad-back-btn:hover {
+  opacity: 0.75;
+}
+
+/* ============ Header ============ */
 .ad-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 20px;
+  gap: var(--ad-space-4);
+  margin-bottom: var(--ad-space-5);
+}
+
+.ad-header-title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--ad-space-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--ad-space-2);
 }
 
 .ad-header h1 {
-  font-size: 26px;
-  margin: 0 0 6px 0;
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0;
+  color: var(--navy-deep);
+  letter-spacing: -0.01em;
 }
 
 .ad-location {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--ad-space-2);
   color: var(--theme-muted);
   font-size: 14px;
 }
 
 .ad-status-badge {
-  font-size: 12px;
-  font-weight: 600;
-  padding: 5px 12px;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 4px 12px;
   border-radius: 999px;
   text-transform: capitalize;
+  letter-spacing: 0.02em;
 }
 
 .ad-status-active {
-  background: var(--theme-surface);
-  color: var(--gold-deep);
+  background: color-mix(in srgb, #1a8a4a 12%, transparent);
+  color: #1a8a4a;
 }
 
 .ad-status-hidden {
@@ -66,16 +101,26 @@
 
 .ad-status-archived {
   background: var(--theme-surface);
-  color: var(--navy-deep);
+  color: var(--theme-muted);
 }
 
-/* --- Media carousel --- */
+.ad-add-room-btn {
+  flex-shrink: 0;
+  padding: 11px 22px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+/* ============ Media carousel ============ */
 .ad-media-carousel {
   position: relative;
   height: 380px;
-  border-radius: 7px;
+  border-radius: var(--ad-radius);
   overflow: hidden;
-  margin-bottom: 12px;
+  margin-bottom: var(--ad-space-3);
+  background: var(--theme-surface);
 }
 
 .ad-media-frame {
@@ -88,12 +133,21 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: color-mix(in srgb, white 90%, transparent);
+  background: color-mix(in srgb, white 92%, transparent);
   border: none;
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--ad-shadow);
+  transition: transform 0.15s ease;
+}
+
+.ad-media-nav:hover {
+  transform: translateY(-50%) scale(1.06);
 }
 
 .ad-media-nav-prev {
@@ -108,33 +162,48 @@
   position: absolute;
   bottom: 12px;
   right: 12px;
-  background: color-mix(in srgb, var(--navy-deep) 60%, transparent);
+  background: color-mix(in srgb, var(--navy-deep) 65%, transparent);
   color: white;
   font-size: 12px;
-  padding: 4px 10px;
+  font-weight: 600;
+  padding: 4px 11px;
   border-radius: 999px;
 }
 
 .ad-media-thumbs {
   display: flex;
-  gap: 8px;
-  margin-bottom: 28px;
+  gap: var(--ad-space-2);
+  margin-bottom: var(--ad-space-6);
   overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.ad-media-thumbs::-webkit-scrollbar {
+  display: none;
 }
 
 .ad-media-thumb-btn {
   border: 2px solid transparent;
   border-radius: 8px;
   overflow: hidden;
-  width: 70px;
-  height: 56px;
+  width: 72px;
+  height: 58px;
   flex-shrink: 0;
   padding: 0;
   cursor: pointer;
+  opacity: 0.6;
+  transition:
+    opacity 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.ad-media-thumb-btn:hover {
+  opacity: 0.85;
 }
 
 .ad-media-thumb-btn.active {
   border-color: var(--navy-deep);
+  opacity: 1;
 }
 
 .ad-media-thumb-btn img {
@@ -143,161 +212,152 @@
   object-fit: cover;
 }
 
-/* --- Body layout --- */
+/* ============ Card system ============ */
+.ad-card {
+  background: white;
+  border: 1px solid var(--theme-line);
+  border-radius: var(--ad-radius-lg);
+  box-shadow: var(--ad-shadow);
+  padding: var(--ad-space-5);
+  margin-bottom: var(--ad-space-4);
+}
+
+.ad-card h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--navy-deep);
+  margin: 0 0 var(--ad-space-4) 0;
+}
+
+.ad-description {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--theme-muted);
+  margin: 0;
+}
+
+/* ============ Body layout ============ */
 .ad-body {
   display: grid;
-  grid-template-columns: 1fr 300px;
-  /* gap: 32px; */
+  grid-template-columns: 1fr 320px;
+  gap: var(--ad-space-4);
   align-items: start;
 }
 
-.ad-section {
-  margin-bottom: 24px;
+.ad-main-col {
+  min-width: 0;
 }
 
-.ad-section h3 {
-  margin-bottom: 10px;
+.ad-main-col .ad-card:last-child,
+.ad-map-card {
+  margin-bottom: 0;
 }
 
 .ad-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-  margin-bottom: 24px;
+  gap: var(--ad-space-4);
 }
 
 .ad-grid-item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--ad-space-3);
   font-size: 14px;
 }
 
 .ad-grid-item svg {
   color: var(--navy-deep);
-  font-size: 16px;
+  font-size: 15px;
+  flex-shrink: 0;
 }
 
 .ad-grid-item small {
   display: block;
   color: var(--theme-muted);
   font-size: 11px;
+  margin-bottom: 2px;
+}
+
+.ad-grid-item span {
+  font-weight: 600;
+  color: var(--navy-deep);
+  word-break: break-word;
 }
 
 .ad-amenities {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--ad-space-2);
 }
 
 .ad-amenity-chip {
   background: var(--theme-surface);
-  padding: 6px 12px;
+  color: var(--navy-deep);
+  padding: 6px 13px;
   border-radius: 999px;
-  font-size: 13px;
+  font-size: 12.5px;
+  font-weight: 600;
 }
 
-/* --- Price card --- */
-.ad-price-card {
+/* ============ Map card ============ */
+.ad-map-card {
   position: sticky;
   top: 24px;
-  border: 1px solid var(--theme-line);
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 4px 20px color-mix(in srgb, var(--navy-deep) 6%, transparent);
 }
 
-.ad-price-label {
-  font-size: 12px;
-  color: var(--theme-muted);
+.ad-map-location {
+  margin-bottom: var(--ad-space-4);
 }
 
-.ad-price-value {
-  font-size: 26px;
-  font-weight: 700;
-  margin: 4px 0 16px 0;
-}
-
-.ad-price-facts {
+.map-loading {
+  height: 260px;
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  background: var(--theme-surface);
+  border-radius: var(--ad-radius);
+  color: var(--theme-muted);
   font-size: 13px;
-  color: var(--navy-deep);
 }
 
-.ad-section-no-margin {
-  margin-right: 15px !important;
+/* ============ Rooms section ============ */
+.ad-rooms-card h3 {
+  margin-bottom: var(--ad-space-4);
 }
 
-@media (max-width: 800px) {
-  .ad-page {
-    padding: 20px 16px 48px;
-  }
-
-  .ad-body {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-
-  .ad-price-card {
-    position: static;
-  }
-
-  .ad-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .ad-header {
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .ad-section-no-margin {
-    margin-bottom: 0 !important;
-  }
-
-  .dividerss {
-    display: block;
-    width: 100%;
-    height: 1px;
-    background: var(--line);
-    flex-shrink: 0;
-  }
-}
-
-.dividerss {
-  display: none;
-}
-
-/* --- Rooms section --- */
 .ad-rooms-empty {
   color: var(--theme-muted);
   font-size: 14px;
+  padding: var(--ad-space-4) 0;
 }
 
 .ad-rooms-list {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: var(--ad-space-4);
 }
 
+/* ============ Room card ============ */
 .rc-card {
   display: grid;
   grid-template-columns: 200px 1fr 160px;
-  gap: 20px;
+  gap: var(--ad-space-5);
   border: 1px solid var(--theme-line);
-  border-radius: 12px;
-  padding: 18px;
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--navy-deep) 4%, transparent);
+  border-radius: var(--ad-radius);
+  padding: var(--ad-space-4);
+  transition: box-shadow 0.15s ease;
 }
 
-/* --- Image column --- */
+.rc-card:hover {
+  box-shadow: var(--ad-shadow);
+}
+
 .rc-image {
   position: relative;
   width: 200px;
   height: 150px;
-  border-radius: 8px;
+  border-radius: 10px;
   overflow: hidden;
   background: var(--theme-surface);
 }
@@ -322,10 +382,10 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: color-mix(in srgb, white 90%, transparent);
+  background: color-mix(in srgb, white 92%, transparent);
   border: none;
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   cursor: pointer;
   font-size: 11px;
@@ -349,26 +409,28 @@
   background: color-mix(in srgb, var(--navy-deep) 65%, transparent);
   color: white;
   font-size: 11px;
-  padding: 3px 8px;
+  font-weight: 600;
+  padding: 3px 9px;
   border-radius: 999px;
   display: flex;
   align-items: center;
   gap: 4px;
 }
 
-/* --- Info column --- */
 .rc-room-name {
-  margin: 0 0 10px 0;
+  margin: 0 0 var(--ad-space-3) 0;
   font-size: 16px;
+  font-weight: 700;
+  color: var(--navy-deep);
 }
 
 .rc-specs {
   display: flex;
   flex-wrap: wrap;
-  gap: 14px;
-  font-size: 12px;
-  color: var(--navy-deep);
-  margin-bottom: 10px;
+  gap: var(--ad-space-4);
+  font-size: 12.5px;
+  color: var(--theme-muted);
+  margin-bottom: var(--ad-space-3);
 }
 
 .rc-spec {
@@ -384,28 +446,31 @@
 
 .rc-amenity-row {
   display: flex;
-  gap: 18px;
+  gap: var(--ad-space-4);
   font-size: 12px;
   color: var(--theme-muted);
-  margin-bottom: 4px;
+  margin-bottom: var(--ad-space-1);
 }
 
 .rc-description {
   font-size: 13px;
+  line-height: 1.5;
   color: var(--theme-muted);
-  margin-top: 10px;
+  margin-top: var(--ad-space-3);
 }
 
-/* --- Price column --- */
 .rc-price-col {
   text-align: right;
   border-left: 1px solid var(--theme-line);
-  padding-left: 16px;
+  padding-left: var(--ad-space-4);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .rc-price {
-  font-size: 20px;
-  font-weight: 700;
+  font-size: 21px;
+  font-weight: 800;
   color: var(--navy-deep);
 }
 
@@ -413,17 +478,46 @@
   display: block;
   color: var(--theme-muted);
   font-size: 11px;
-  margin-bottom: 12px;
+  margin-bottom: var(--ad-space-3);
 }
 
 .rc-availability {
   font-size: 12px;
+  font-weight: 600;
   color: var(--gold-deep);
-  margin-bottom: 12px;
+  margin-bottom: var(--ad-space-3);
 }
 
 .rc-manage-btn {
   width: 100%;
+}
+
+/* ============ Responsive ============ */
+@media (max-width: 800px) {
+  .ad-page {
+    padding: var(--ad-space-4) var(--ad-space-4) 48px;
+  }
+
+  .ad-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ad-add-room-btn {
+    width: 100%;
+  }
+
+  .ad-body {
+    grid-template-columns: 1fr;
+  }
+
+  .ad-map-card {
+    position: static;
+  }
+
+  .ad-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 700px) {
@@ -442,114 +536,28 @@
     border-left: none;
     padding-left: 0;
     border-top: 1px solid var(--theme-line);
-    padding-top: 12px;
-  }
-
-  .dividerss {
-    display: block;
-    width: 100%;
-    height: 1px;
-    background: var(--line);
-    flex-shrink: 0;
-  }
-
-  .rc-manage-btn {
-    width: 100%;
+    padding-top: var(--ad-space-3);
   }
 
   .ad-media-carousel {
-    height: 200px;
-  }
-
-  .ad-room-card-header {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-  }
-
-  .ad-add-room-btn {
-    width: 100%;
+    height: 220px;
   }
 }
 
 @media (max-width: 480px) {
   .ad-page {
-    padding: 16px 12px 40px;
+    padding: var(--ad-space-3) var(--ad-space-3) 40px;
+  }
+
+  .ad-card {
+    padding: var(--ad-space-4);
   }
 
   .ad-header h1 {
     font-size: 22px;
   }
 
-  .ad-price-value {
-    font-size: 22px;
+  .rc-price {
+    font-size: 19px;
   }
-}
-
-.ad-room-card {
-  background: white;
-  border-radius: 8px;
-  padding: 24px 15px;
-  border: 1px solid var(--theme-line);
-}
-
-.ad-room-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.ad-room-card-header h3 {
-  margin: 0;
-}
-
-.ad-room-card-header p {
-  margin: 4px 0 0;
-  color: var(--theme-muted);
-  font-size: 14px;
-}
-
-.ad-add-room-btn {
-  padding: 10px 18px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.ad-room-summary {
-  margin-bottom: 16px;
-  font-size: 14px;
-  color: var(--theme-muted);
-}
-
-.ad-room-empty {
-  border: 2px dashed var(--theme-line);
-  border-radius: 14px;
-  padding: 40px 20px;
-  text-align: center;
-}
-
-.ad-room-empty-icon {
-  font-size: 42px;
-  margin-bottom: 16px;
-  color: var(--theme-muted);
-}
-
-.ad-room-empty h4 {
-  margin-bottom: 10px;
-}
-
-.ad-room-empty p {
-  max-width: 420px;
-  margin: 0 auto 20px;
-  color: var(--theme-muted);
-}
-
-.dividers {
-  width: 100%;
-  height: 1px;
-  background: var(--line);
-  flex-shrink: 0;
 }
