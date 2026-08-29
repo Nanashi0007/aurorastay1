@@ -30,7 +30,7 @@ export default function Home() {
 
   useEffect(() => {
     async function fetchHotels() {
-      const { data, error } = await supabase.from("hotels").select("*");
+      const { data, error } = await supabase.from("listings").select("*");
       if (error) console.error(error);
       else setHotels(data);
     }
