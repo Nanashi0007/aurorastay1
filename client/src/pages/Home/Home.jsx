@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { clearAuth } from "../../utils/storage";
 import "../../styles/Home.css";
 import "../../styles/Navbar.css";
-import "../../styles/hotelsection.css";
+import "../../styles/Hotelsection.css";
 import LoginModal from "../../components/modals/LoginModal";
 import CompleteProfileModal from "../../components/modals/ProfileModal";
 import Navbar from "../../components/layout/Navbar";

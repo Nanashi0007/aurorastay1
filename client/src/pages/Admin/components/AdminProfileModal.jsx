@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import "../../../styles/Admin/adminProfileModal.css";
+import "../../../styles/Admin/AdminProfileModal.css";
 
 export default function AdminProfileModal({ isOpen, onClose, currentAdmin }) {
   const isGoogleAdmin = !!currentAdmin?.email;
