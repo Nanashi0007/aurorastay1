@@ -12,6 +12,7 @@ import FeaturesSection from "./components/Featuressection";
 import HotelsSection from "./components/Hotelsection"; // correct casing
 import CTASection from "./components/Ctasection";
 import HomeSkeleton from "./components/HomeSkeleton";
+import { supabase } from "../../lib/supabaseClient";
 
 export default function Home() {
   const [showLogin, setShowLogin] = useState(false);
@@ -26,6 +27,15 @@ export default function Home() {
   const [hotelsLoading, setHotelsLoading] = useState(true);
   const [hotelsError, setHotelsError] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchHotels() {
+      const { data, error } = await supabase.from("hotels").select("*");
+      if (error) console.error(error);
+      else setHotels(data);
+    }
+    fetchHotels();
+  }, []);
 
   useEffect(() => {
     async function fetchHotels() {
