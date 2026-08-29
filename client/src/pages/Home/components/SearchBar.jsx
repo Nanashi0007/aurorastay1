@@ -9,10 +9,21 @@ import {
   FaChevronLeft,
   FaChevronRight,
 } from "react-icons/fa";
-import "../../../styles/Hero.css";
+import "../../../styles/searchbar.css";
 
 const MIN_GUESTS = 1;
 const MAX_GUESTS = 10;
+
+const AURORA_MUNICIPALITIES = [
+  "Baler",
+  "Casiguran",
+  "Dilasag",
+  "Dinalungan",
+  "Dingalan",
+  "Dipaculao",
+  "Maria Aurora",
+  "San Luis",
+];
 
 const MONTH_NAMES = [
   "January",
@@ -57,6 +68,9 @@ function buildCalendarDays(year, month) {
 
 export default function SearchBar({ onSearch, initialDestination = "" }) {
   const [destination, setDestination] = useState(initialDestination);
+  const [showDestSuggestions, setShowDestSuggestions] = useState(false);
+  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
+  const destRef = useRef(null);
 
   const [checkIn, setCheckIn] = useState(null);
   const [checkOut, setCheckOut] = useState(null);
@@ -68,6 +82,13 @@ export default function SearchBar({ onSearch, initialDestination = "" }) {
   const [showGuestModal, setShowGuestModal] = useState(false);
   const guestRef = useRef(null);
 
+  const destSuggestions =
+    destination.trim() === ""
+      ? []
+      : AURORA_MUNICIPALITIES.filter((m) =>
+          m.toLowerCase().startsWith(destination.trim().toLowerCase()),
+        );
+
   useEffect(() => {
     function handleClickOutside(e) {
       if (dateRef.current && !dateRef.current.contains(e.target)) {
@@ -76,10 +97,48 @@ export default function SearchBar({ onSearch, initialDestination = "" }) {
       if (guestRef.current && !guestRef.current.contains(e.target)) {
         setShowGuestModal(false);
       }
+      if (destRef.current && !destRef.current.contains(e.target)) {
+        setShowDestSuggestions(false);
+      }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  function handleDestinationChange(e) {
+    setDestination(e.target.value);
+    setShowDestSuggestions(true);
+    setActiveSuggestionIndex(-1);
+  }
+
+  function selectDestination(name) {
+    setDestination(name);
+    setShowDestSuggestions(false);
+    setActiveSuggestionIndex(-1);
+  }
+
+  function handleDestinationKeyDown(e) {
+    if (!showDestSuggestions || destSuggestions.length === 0) return;
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveSuggestionIndex((prev) =>
+        prev < destSuggestions.length - 1 ? prev + 1 : 0,
+      );
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveSuggestionIndex((prev) =>
+        prev > 0 ? prev - 1 : destSuggestions.length - 1,
+      );
+    } else if (e.key === "Enter") {
+      if (activeSuggestionIndex >= 0) {
+        e.preventDefault();
+        selectDestination(destSuggestions[activeSuggestionIndex]);
+      }
+    } else if (e.key === "Escape") {
+      setShowDestSuggestions(false);
+    }
+  }
 
   function handleDayClick(day) {
     if (!day) return;
@@ -155,7 +214,7 @@ export default function SearchBar({ onSearch, initialDestination = "" }) {
 
   return (
     <div className="search-card">
-      <div className="search-item">
+      <div className="search-item" ref={destRef}>
         <FaMapMarkerAlt />
         <div>
           <small>Destination</small>
@@ -163,9 +222,31 @@ export default function SearchBar({ onSearch, initialDestination = "" }) {
             type="text"
             placeholder="Where are you going?"
             value={destination}
-            onChange={(e) => setDestination(e.target.value)}
+            onChange={handleDestinationChange}
+            onFocus={() => setShowDestSuggestions(true)}
+            onKeyDown={handleDestinationKeyDown}
+            autoComplete="off"
           />
         </div>
+
+        {showDestSuggestions && destSuggestions.length > 0 && (
+          <div className="dropdown-modal destination-suggestions">
+            {destSuggestions.map((name, idx) => (
+              <button
+                type="button"
+                key={name}
+                className={`destination-suggestion-item ${
+                  idx === activeSuggestionIndex ? "active" : ""
+                }`}
+                onMouseDown={(e) => e.preventDefault()} // keep input focus
+                onClick={() => selectDestination(name)}
+              >
+                <FaMapMarkerAlt size={12} />
+                <span>{name}</span>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="divider"></div>
@@ -177,6 +258,7 @@ export default function SearchBar({ onSearch, initialDestination = "" }) {
           onClick={() => {
             setShowDateModal((prev) => !prev);
             setShowGuestModal(false);
+            setShowDestSuggestions(false);
           }}
         >
           <FaCalendarAlt />
@@ -265,6 +347,7 @@ export default function SearchBar({ onSearch, initialDestination = "" }) {
           onClick={() => {
             setShowGuestModal((prev) => !prev);
             setShowDateModal(false);
+            setShowDestSuggestions(false);
           }}
         >
           <FaUserFriends />

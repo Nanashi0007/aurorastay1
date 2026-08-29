@@ -21,6 +21,7 @@ function authenticate(req, res, next) {
     req.userRole = payload.role || "guest";
     next();
   } catch (err) {
+    console.error("JWT verify failed:", err.name, "-", err.message);
     return res.status(401).json({ message: "Invalid or expired token." });
   }
 }

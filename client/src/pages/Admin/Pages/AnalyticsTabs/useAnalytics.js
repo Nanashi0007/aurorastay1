@@ -9,7 +9,6 @@ export function useAnalytics(endpoint) {
   useEffect(() => {
     let cancelled = false;
     const { token } = getStoredAdminAuth();
-
     async function load() {
       setLoading(true);
       setError("");

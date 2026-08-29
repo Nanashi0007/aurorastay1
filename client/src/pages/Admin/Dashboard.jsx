@@ -9,6 +9,9 @@ import AdminAnnouncements from "./components/AdminAnnouncements";
 import BackupAndRestore from "./Pages/BackupRestore";
 import AdminAnalytics from "./Pages/AdminAnalytics";
 import ActivityLogs from "./Pages/ActivityLogs";
+import BackupRestore from "./Pages/BackupRestore";
+
+import { scheduleAutoLogout } from "../../utils/sessionTimer";
 
 export default function AdminDashboard() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -36,6 +39,11 @@ export default function AdminDashboard() {
     clearAdminAuth();
     window.location.href = "/";
   }
+
+  useEffect(() => {
+    const cleanup = scheduleAutoLogout();
+    return cleanup;
+  }, []);
 
   return (
     <div className="admin-shell">
