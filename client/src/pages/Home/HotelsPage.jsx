@@ -30,6 +30,7 @@ export default function HotelsPage() {
     maxPrice: "",
     types: [],
     amenities: [],
+    municipalities: [], // ADD for consistency
   });
 
   // Combine URL-driven search fields + sidebar filters for the actual query

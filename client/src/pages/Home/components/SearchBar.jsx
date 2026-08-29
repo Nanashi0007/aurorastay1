@@ -214,7 +214,7 @@ export default function SearchBar({ onSearch, initialDestination = "" }) {
 
   return (
     <div className="search-card">
-      <div className="search-item" ref={destRef}>
+      <div className="search-item search-item-destination" ref={destRef}>
         <FaMapMarkerAlt />
         <div>
           <small>Destination</small>

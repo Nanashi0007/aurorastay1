@@ -1,3 +1,8 @@
+/* Always the positioning anchor — not just on mobile */
+.search-card {
+  position: relative;
+}
+
 .destination-suggestions {
   position: absolute;
   top: 100%;
@@ -6,6 +11,10 @@
   max-height: 220px;
   overflow-y: auto;
   z-index: 20;
+  margin-top: 4px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  background: #fff;
 }
 
 .destination-suggestion-item {
@@ -23,4 +32,21 @@
 .destination-suggestion-item:hover,
 .destination-suggestion-item.active {
   background-color: #f5f5f5;
+}
+
+@media (max-width: 600px) {
+  /* Explicit class instead of :has() — guaranteed to work everywhere */
+  .search-item-destination {
+    position: static;
+  }
+
+  .destination-suggestions {
+    top: 100%;
+    left: 0;
+    right: 0;
+    width: 100%;
+    margin-top: 8px;
+    max-height: 50vh;
+    z-index: 50;
+  }
 }

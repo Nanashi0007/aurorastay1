@@ -13,6 +13,7 @@ export function useHotels(filters) {
       maxPrice: filters.maxPrice,
       types: filters.types?.join(",") ?? "",
       amenities: filters.amenities?.join(",") ?? "",
+      municipalities: filters.municipalities?.join(",") ?? "", // ADD
       destination: filters.destination,
       checkIn: filters.checkIn,
       checkOut: filters.checkOut,
@@ -23,6 +24,7 @@ export function useHotels(filters) {
       filters.maxPrice,
       filters.types,
       filters.amenities,
+      filters.municipalities, // ADD to dep array
       filters.destination,
       filters.checkIn,
       filters.checkOut,
@@ -42,9 +44,12 @@ export function useHotels(filters) {
           params.set("minPrice", normalizedFilters.minPrice);
         if (normalizedFilters.maxPrice)
           params.set("maxPrice", normalizedFilters.maxPrice);
-        if (normalizedFilters.types) params.set("type", normalizedFilters.types);
+        if (normalizedFilters.types)
+          params.set("type", normalizedFilters.types);
         if (normalizedFilters.amenities)
           params.set("amenities", normalizedFilters.amenities);
+        if (normalizedFilters.municipalities)
+          params.set("municipality", normalizedFilters.municipalities);
         if (normalizedFilters.destination)
           params.set("destination", normalizedFilters.destination);
         if (normalizedFilters.checkIn)

@@ -52,6 +52,7 @@ router.get("/", async (req, res) => {
       amenities,
       destination,
       guests,
+      municipality,
       // checkIn, checkOut — see note below the route
     } = req.query;
 
@@ -68,6 +69,18 @@ router.get("/", async (req, res) => {
       if (types.length > 0) {
         conditions.push(`l.accommodation_type = ANY($${paramIndex})`);
         values.push(types);
+        paramIndex++;
+      }
+    }
+
+    if (municipality) {
+      const municipalities = municipality
+        .split(",")
+        .map((m) => m.trim())
+        .filter(Boolean);
+      if (municipalities.length > 0) {
+        conditions.push(`l.municipality = ANY($${paramIndex})`);
+        values.push(municipalities);
         paramIndex++;
       }
     }
@@ -190,6 +203,13 @@ router.get("/filters/meta", async (req, res) => {
        ORDER BY amenity`,
     );
 
+    const municipalitiesResult = await db.query(
+      `SELECT DISTINCT municipality
+       FROM listings
+       WHERE status = 'active'
+       ORDER BY municipality`,
+    );
+
     const priceResult = await db.query(
       `SELECT MIN(r.price_per_night) AS min_price, MAX(r.price_per_night) AS max_price
        FROM rooms r
@@ -200,6 +220,7 @@ router.get("/filters/meta", async (req, res) => {
     res.json({
       types: typesResult.rows.map((r) => r.accommodation_type),
       amenities: amenitiesResult.rows.map((r) => r.amenity),
+      municipalities: municipalitiesResult.rows.map((r) => r.municipality),
       priceRange: {
         min: Number(priceResult.rows[0]?.min_price ?? 0),
         max: Number(priceResult.rows[0]?.max_price ?? 0),

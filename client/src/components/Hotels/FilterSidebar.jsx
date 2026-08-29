@@ -1,6 +1,17 @@
 import { useEffect, useState } from "react";
 import { FaTimes } from "react-icons/fa";
 
+const AURORA_MUNICIPALITIES = [
+  "Baler",
+  "Casiguran",
+  "Dilasag",
+  "Dinalungan",
+  "Dingalan",
+  "Dipaculao",
+  "Maria Aurora",
+  "San Luis",
+];
+
 export default function FilterSidebar({ filters, onChange, isOpen, onClose }) {
   const [meta, setMeta] = useState({
     types: [],
@@ -44,7 +55,13 @@ export default function FilterSidebar({ filters, onChange, isOpen, onClose }) {
   }
 
   function handleClearAll() {
-    onChange({ minPrice: "", maxPrice: "", types: [], amenities: [] });
+    onChange({
+      minPrice: "",
+      maxPrice: "",
+      types: [],
+      amenities: [],
+      municipalities: [],
+    });
   }
 
   return (
@@ -97,6 +114,21 @@ export default function FilterSidebar({ filters, onChange, isOpen, onClose }) {
                 aria-label="Maximum price per night"
               />
             </div>
+          </div>
+
+          <div className="filter-group">
+            <h4>Municipality (LGU)</h4>
+            {AURORA_MUNICIPALITIES.map((lgu) => (
+              <label className="stamp-checkbox" key={lgu}>
+                <input
+                  type="checkbox"
+                  checked={(filters.municipalities || []).includes(lgu)}
+                  onChange={() => toggleArrayValue("municipalities", lgu)}
+                />
+                <span className="mark" aria-hidden="true"></span>
+                {lgu}
+              </label>
+            ))}
           </div>
 
           <div className="filter-group">
