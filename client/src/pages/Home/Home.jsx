@@ -8,9 +8,9 @@ import CompleteProfileModal from "../../components/modals/ProfileModal";
 import Navbar from "../../components/layout/Navbar";
 import Hero from "./components/Hero";
 import DestinationsSection from "./components/DestinationsSection";
-import FeaturesSection from "./components/FeaturesSection";
+import FeaturesSection from "./components/Featuressection";
 import HotelsSection from "./components/Hotelsection"; // correct casing
-import CTASection from "./components/CTASection";
+import CTASection from "./components/Ctasection";
 import HomeSkeleton from "./components/HomeSkeleton";
 
 export default function Home() {
