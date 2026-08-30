@@ -20,7 +20,7 @@ export default function FilterSidebar({ filters, onChange, isOpen, onClose }) {
   });
 
   useEffect(() => {
-    fetch("/api/hotels/filters/meta")
+    fetch("https://aurorastay-server.onrender.com/api/hotels/filters/meta")
       .then((res) => res.json())
       .then(setMeta)
       .catch(() => {});
