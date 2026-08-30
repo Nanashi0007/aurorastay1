@@ -31,6 +31,18 @@ function authenticate(req, res, next) {
  * isn't "admin" — used to protect admin-only routes server-side.
  */
 function requireAdmin(req, res, next) {
+  console.log(
+    "requireAdmin check — userId:",
+    req.userId,
+    "| userRole:",
+    req.userRole,
+    "| path:",
+    req.path,
+    "| originalUrl:",
+    req.originalUrl,
+    "| baseUrl:",
+    req.baseUrl,
+  );
   if (req.userRole !== "admin") {
     return res.status(403).json({ message: "Admin access required." });
   }
