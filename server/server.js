@@ -221,13 +221,13 @@ app.use("/api/saved", savedListingsRoutes);
 app.use("/api/admin/auth", adminAuthRoutes);
 app.use("/api/admin/applications", adminApplicationsRoutes);
 app.use("/api/admin/announcements", adminAnnouncementsRoutes);
-app.use("/api/admin", adminRoutes);
-app.use("/api/announcements", announcementsRoutes);
-app.use("/api/recently-viewed", recentlyViewedRoutes);
 app.use("/api/admin/backup", backupRoutes);
 app.use("/api/admin/analytics", adminAnalyticsRoutes);
 app.use("/api/admin/reports", adminReportsRoutes);
 app.use("/api/admin/activity-logs", adminActivityLogsRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/announcements", announcementsRoutes);
+app.use("/api/recently-viewed", recentlyViewedRoutes);
 
 app.use((err, req, res, next) => {
   console.error("Unhandled error:", err);
