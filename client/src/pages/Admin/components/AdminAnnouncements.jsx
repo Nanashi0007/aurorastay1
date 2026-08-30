@@ -9,6 +9,7 @@ import {
 } from "react-icons/fa";
 import { authFetch } from "../../../utils/api";
 import "../../../styles/Admin/admin-announcements.css";
+import { getStoredAdminAuth } from "../../../utils/storage";
 import { API_BASE } from "../../../config"; // adjust relative path per file
 
 const AUDIENCES = [
@@ -52,28 +53,31 @@ export default function AdminAnnouncements() {
   const token = localStorage.getItem("token");
 
   const fetchAnnouncements = useCallback(async () => {
+    const { token } = getStoredAdminAuth();
     if (!token) {
       setAnnouncements([]);
       setLoading(false);
       return;
     }
-
     setLoading(true);
     setError(null);
     try {
-      const result = await authFetch(`${API_BASE}/api/admin/announcements`);
-      if (!result.ok) {
-        setError(result.data?.message || "Failed to load announcements.");
+      const res = await fetch(`${API_BASE}/api/admin/announcements`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(data.message || "Failed to load announcements.");
         return;
       }
-      setAnnouncements(result.data?.announcements || []);
+      setAnnouncements(data.announcements || []);
     } catch (err) {
       console.error(err);
       setError("Something went wrong.");
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, []);
 
   useEffect(() => {
     fetchAnnouncements();
