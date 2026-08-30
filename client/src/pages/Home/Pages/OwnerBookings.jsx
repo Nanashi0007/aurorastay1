@@ -18,6 +18,7 @@ import Navbar from "../../../components/layout/Navbar";
 import CompleteProfileModal from "../../../components/modals/ProfileModal";
 import BookingDetailModal from "../../../components/modals/BookingDetailModal";
 import "../../../styles/Owner/OwnerListings.css";
+import { API_BASE } from "../../../config"; // adjust relative path per file
 
 const NAV_ITEMS = [
   {
@@ -138,7 +139,7 @@ export default function OwnerBookings() {
       }
 
       try {
-        const res = await fetch("/api/bookings/owner", {
+        const res = await fetch(`${API_BASE}/api/bookings/owner`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();

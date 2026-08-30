@@ -18,6 +18,7 @@ import CompleteProfileModal from "../../components/modals/ProfileModal";
 import "../../styles/Owner/OwnerListings.css";
 import "../../styles/Owner/OwnerNotifications.css";
 import "../../styles/NotificationBell.css";
+import { API_BASE } from "../../config"; // adjust relative path per file
 
 const NAV_ITEMS = [
   {
@@ -89,7 +90,7 @@ export default function OwnerNotifications() {
   const fetchNotifications = useCallback(async () => {
     setLoading(true);
     try {
-      const result = await authFetch("/api/notifications");
+      const result = await authFetch(`${API_BASE}/api/notifications`);
       if (!result.ok) {
         setError(result.data?.message || "Failed to load notifications.");
         return;
@@ -108,7 +109,9 @@ export default function OwnerNotifications() {
   // thread when it becomes visible).
   useEffect(() => {
     async function load() {
-      await authFetch("/api/notifications/read-all", { method: "PATCH" });
+      await authFetch(`${API_BASE}/api/notifications/read-all`, {
+        method: "PATCH",
+      });
       await fetchNotifications();
     }
     load();
@@ -164,7 +167,9 @@ export default function OwnerNotifications() {
 
   const markAllAsRead = async () => {
     try {
-      await authFetch("/api/notifications/read-all", { method: "PATCH" });
+      await authFetch(`${API_BASE}/api/notifications/read-all`, {
+        method: "PATCH",
+      });
       setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
     } catch (err) {
       console.error("Failed to mark all notifications as read:", err);

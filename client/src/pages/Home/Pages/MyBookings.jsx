@@ -9,6 +9,7 @@ import CompleteProfileModal from "../../../components/modals/ProfileModal";
 // import { getRecentlyViewedIds } from "../../../utils/recentlyViewed";
 import GuestBookingDetailModal from "../../../components/modals/GuestBookingDetailModal";
 import HotelCard from "../../../components/cards/HotelCard";
+import { API_BASE } from "../../../config"; // adjust relative path per file
 
 import {
   FaCalendarAlt,
@@ -284,7 +285,7 @@ export default function MyBookings() {
     setSavedError(null);
 
     try {
-      const res = await fetch("/api/saved", {
+      const res = await fetch(`${API_BASE}/api/saved`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -335,10 +336,10 @@ export default function MyBookings() {
 
       try {
         const [upcomingRes, historyRes] = await Promise.all([
-          fetch("/api/bookings/upcoming", {
+          fetch(`${API_BASE}/api/bookings/upcoming`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch("/api/bookings/history", {
+          fetch(`${API_BASE}/api/bookings/history`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
@@ -386,7 +387,7 @@ export default function MyBookings() {
     setRecentError(null);
 
     try {
-      const result = await authFetch("/api/recently-viewed");
+      const result = await authFetch(`${API_BASE}/api/recently-viewed`);
 
       if (!result.ok) {
         setRecentlyViewedHotels([]);

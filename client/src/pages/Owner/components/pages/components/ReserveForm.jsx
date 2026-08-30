@@ -99,7 +99,7 @@ export default function ReserveForm({
       body.append("paymentMethod", paymentMethod);
       body.append("depositProof", proofFile);
 
-      const res = await fetch("/api/bookings", {
+      const res = await fetch(`${API_BASE}/api/bookings`, {
         method: "POST",
         headers: { Authorization: `Bearer ${authToken}` },
         body,

@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { authFetch } from "../../utils/api";
 import "../../styles/NotificationBell.css";
+import { API_BASE } from "../../config";
 
 const API_BASE = "/api/notifications"; // adjust if you proxy differently
 const DROPDOWN_LIMIT = 4;

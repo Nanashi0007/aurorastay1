@@ -10,6 +10,7 @@ import {
   FaExclamationTriangle,
 } from "react-icons/fa";
 import "../../../styles/Owner/OwnerDashboard.css";
+import { API_BASE } from "../../../config"; // adjust relative path per file
 
 function todayDateOnly() {
   const d = new Date();
@@ -64,7 +65,7 @@ export default function OwnerDashboardOverview({ bookings, authToken }) {
     async function fetchListings() {
       if (!authToken) return;
       try {
-        const res = await fetch("/api/listings/mine", {
+        const res = await fetch(`${API_BASE}/api/listings/mine`, {
           headers: { Authorization: `Bearer ${authToken}` },
         });
         const data = await res.json();

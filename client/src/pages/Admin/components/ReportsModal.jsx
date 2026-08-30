@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { FaTimes } from "react-icons/fa";
 import { getStoredAdminAuth } from "../../../utils/storage";
 import "../../../styles/Admin/reportsModal.css";
+import { API_BASE } from "../../../config"; // adjust relative path per file
 
 const ALL_TYPES_VALUE = "__all__";
 
@@ -17,7 +18,7 @@ export default function ReportsModal({ isOpen, onClose }) {
     if (!isOpen) return;
 
     const { token } = getStoredAdminAuth();
-    fetch("/api/admin/reports/types", {
+    fetch(`${API_BASE}/api/admin/reports/types`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())

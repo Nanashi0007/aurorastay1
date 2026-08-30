@@ -29,6 +29,7 @@ import ReserveModal from "../../Owner/components/pages/components/ReserveModal.j
 import { GoogleMap, MarkerF, useJsApiLoader } from "@react-google-maps/api";
 import LoginModal from "../../../components/modals/LoginModal";
 import EditRoomModal from "../../Owner/components/pages/components/EditRoomModal.jsx";
+import { API_BASE } from "../../../config.js"; // adjust relative path per file
 
 const AMENITY_ICONS = {
   WiFi: FaWifi,
@@ -130,7 +131,7 @@ export default function HotelDetails() {
     async function checkSaved() {
       if (!authToken || !hotel?.id) return;
       try {
-        const res = await fetch("/api/saved/ids", {
+        const res = await fetch(`${API_BASE}/api/saved/ids`, {
           headers: { Authorization: `Bearer ${authToken}` },
         });
         const data = await res.json();
@@ -188,7 +189,7 @@ export default function HotelDetails() {
 
   useEffect(() => {
     if (!authToken || !hotel?.id) return;
-    authFetch("/api/recently-viewed", {
+    authFetch(`${API_BASE}/api/recently-viewed`, {
       method: "POST",
       body: JSON.stringify({ listingId: hotel.id }),
     }).catch((err) => console.error("Failed to record view:", err));

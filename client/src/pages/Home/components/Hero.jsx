@@ -6,6 +6,7 @@ import QuickBookCard from "../../../components/cards/QuickBookCard";
 import SearchBar from "./SearchBar";
 import "../../../styles/Hero.css";
 import "../../../styles/recent.css";
+import { API_BASE } from "../../../config"; // adjust relative path per file
 
 export default function Hero({ hotels }) {
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ export default function Hero({ hotels }) {
 
   useEffect(() => {
     async function fetchRecentlyViewed() {
-      const result = await authFetch("/api/recently-viewed");
+      const result = await authFetch(`${API_BASE}/api/recently-viewed`);
 
       if (!result.ok) {
         setRecentlyViewedHotels([]);

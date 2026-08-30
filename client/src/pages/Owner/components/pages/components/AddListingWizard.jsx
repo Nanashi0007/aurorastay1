@@ -25,6 +25,7 @@ import {
   FaShieldAlt,
 } from "react-icons/fa";
 import "../../../../../styles/Owner/AddListingWizard.css";
+import { API_BASE } from "../../../../../config"; // adjust relative path per file
 
 import LocationMapPicker from "./LocationMapPicker";
 
@@ -690,7 +691,7 @@ export default function AddListingWizard({ authToken, onClose, onSuccess }) {
         body.append("qrCode", gcashQrFile);
       }
 
-      const res = await fetch("/api/listings", {
+      const res = await fetch(`${API_BASE}/api/listings`, {
         method: "POST",
         headers: { Authorization: `Bearer ${authToken}` },
         body,

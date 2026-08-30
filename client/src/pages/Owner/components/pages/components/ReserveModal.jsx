@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { FaTimes, FaCamera } from "react-icons/fa";
 import "../../../../../styles/ReserveModal.css";
+import { API_BASE } from "../../../../../config"; // adjust relative path per file
 
 const DEPOSIT_RATE = 0.2; // 20% down payment
 
@@ -93,7 +94,7 @@ export default function ReserveModal({
       body.append("specialRequests", specialRequests.trim());
       body.append("depositProof", proofFile);
 
-      const res = await fetch("/api/bookings", {
+      const res = await fetch(`${API_BASE}/api/bookings`, {
         method: "POST",
         headers: { Authorization: `Bearer ${authToken}` },
         body,

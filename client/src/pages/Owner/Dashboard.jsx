@@ -19,6 +19,7 @@ import {
 import "../../styles/Owner/Dashboard.css";
 import Navbar from "../Home/components/Navbar";
 import "../../styles/Navbar.css";
+import { API_BASE } from "../../config";
 
 const ACCOMMODATION_TYPES = ["Hotel", "Resort", "Inn", "Homestay"];
 
@@ -170,7 +171,7 @@ export default function Dashboard() {
         return;
       }
       try {
-        const res = await fetch("/api/host-applications/me", {
+        const res = await fetch(`${API_BASE}/api/host-applications/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
@@ -244,7 +245,7 @@ export default function Dashboard() {
       body.append("govIdFront", govIdFront);
       body.append("govIdBack", govIdBack);
 
-      const res = await fetch("/api/host-applications", {
+      const res = await fetch(`${API_BASE}/api/host-applications`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body,

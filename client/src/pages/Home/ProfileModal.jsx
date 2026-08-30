@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "../../styles/ProfileModal.css";
+import { API_BASE } from "../../config"; // adjust relative path per file
 
 export default function CompleteProfileModal({
   isOpen,
@@ -27,7 +28,7 @@ export default function CompleteProfileModal({
     setSubmitting(true);
 
     try {
-      const res = await fetch("/api/users/me", {
+      const res = await fetch(`${API_BASE}/api/users/me`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

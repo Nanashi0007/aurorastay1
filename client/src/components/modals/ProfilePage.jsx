@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FaTimes, FaUser } from "react-icons/fa";
 import { authFetch } from "../../utils/api";
 import "../../styles/Profile.css";
+import { API_BASE } from "../../config";
 
 export default function ProfileModal({ user, onClose, onUpdated }) {
   const [editing, setEditing] = useState(false);
@@ -20,7 +21,7 @@ export default function ProfileModal({ user, onClose, onUpdated }) {
     setError(null);
 
     try {
-      const result = await authFetch("/api/users/me", {
+      const result = await authFetch(`${API_BASE}/api/users/me`, {
         method: "PATCH",
         body: JSON.stringify({
           firstName: firstName.trim(),

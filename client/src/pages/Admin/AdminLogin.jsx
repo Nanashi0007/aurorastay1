@@ -7,6 +7,7 @@ import {
   clearAdminAuth,
 } from "../../utils/storage";
 import Navbar from "../Home/components/Navbar";
+import { API_BASE } from "../../config";
 
 export default function AdminLogin({ onLoginSuccess }) {
   const [username, setUsername] = useState("");
@@ -30,7 +31,7 @@ export default function AdminLogin({ onLoginSuccess }) {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/admin/auth/login", {
+      const res = await fetch(`${API_BASE}/api/admin/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
@@ -58,7 +59,7 @@ export default function AdminLogin({ onLoginSuccess }) {
     setSubmitting(true);
 
     try {
-      const res = await fetch("/api/auth/google", {
+      const res = await fetch(`${API_BASE}/api/auth/google`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

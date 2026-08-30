@@ -9,6 +9,7 @@ import {
 } from "react-icons/fa";
 import { authFetch } from "../../../utils/api";
 import "../../../styles/Admin/admin-announcements.css";
+import { API_BASE } from "../../../config"; // adjust relative path per file
 
 const AUDIENCES = [
   { value: "all", label: "Everyone", icon: FaGlobeAmericas },
@@ -60,7 +61,7 @@ export default function AdminAnnouncements() {
     setLoading(true);
     setError(null);
     try {
-      const result = await authFetch("/api/admin/announcements");
+      const result = await authFetch(`${API_BASE}/api/admin/announcements`);
       if (!result.ok) {
         setError(result.data?.message || "Failed to load announcements.");
         return;
@@ -90,7 +91,7 @@ export default function AdminAnnouncements() {
 
     setSending(true);
     try {
-      const result = await authFetch("/api/admin/announcements", {
+      const result = await authFetch(`${API_BASE}/api/admin/announcements`, {
         method: "POST",
         body: JSON.stringify({ title, message, audience }),
       });

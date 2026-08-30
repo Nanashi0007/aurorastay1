@@ -20,6 +20,7 @@ import SuccessModal from "./components/SuccessModal";
 import "../../../../styles/Owner/OwnerListings.css";
 import Navbar from "../../../../components/layout/Navbar";
 import CompleteProfileModal from "../../../../components/modals/ProfileModal";
+import { API_BASE } from "../../../../config"; // adjust relative path per file
 
 const NAV_ITEMS = [
   {
@@ -80,7 +81,7 @@ export default function OwnerListings() {
 
   async function fetchListings() {
     try {
-      const result = await authFetch("/api/listings/mine");
+      const result = await authFetch(`${API_BASE}/api/listings/mine`);
 
       if (!result.ok) {
         setError(result.data?.message || "Failed to load your listings.");

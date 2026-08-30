@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import "../../../styles/Admin/AdminProfileModal.css";
+import { API_BASE } from "../../../config"; // adjust relative path per file
 
 export default function AdminProfileModal({ isOpen, onClose, currentAdmin }) {
   const isGoogleAdmin = !!currentAdmin?.email;
@@ -34,7 +35,7 @@ export default function AdminProfileModal({ isOpen, onClose, currentAdmin }) {
     setSaving(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("/api/users/me", {
+      const res = await fetch(`${API_BASE}/api/users/me`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

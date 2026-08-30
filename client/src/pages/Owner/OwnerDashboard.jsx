@@ -14,7 +14,7 @@ import Navbar from "../../components/layout/Navbar";
 import CompleteProfileModal from "../../components/modals/ProfileModal";
 import OwnerDashboardOverview from "../Home/Pages/OwnerDashboardOverview"; // adjust path to match where you save it
 import "../../styles/Owner/OwnerListings.css";
-
+import { API_BASE } from "../../config"; // adjust relative path per file
 const NAV_ITEMS = [
   {
     id: "dashboard",
@@ -70,7 +70,7 @@ export default function OwnerDashboard() {
 
   async function fetchListings() {
     try {
-      const result = await authFetch("/api/listings/mine");
+      const result = await authFetch(`${API_BASE}/api/listings/mine`);
 
       if (!result.ok) {
         setError(result.data?.message || "Failed to load your listings.");
@@ -89,7 +89,7 @@ export default function OwnerDashboard() {
 
   useEffect(() => {
     async function fetchOwnerBookings() {
-      const result = await authFetch("/api/bookings/owner");
+      const result = await authFetch(`${API_BASE}/api/bookings/owner`);
       if (!result.ok) {
         if (result.status === 401) {
           navigate("/");
