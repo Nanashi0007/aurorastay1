@@ -31,37 +31,18 @@ export default function Home() {
   useEffect(() => {
     async function fetchHotels() {
       const { data, error } = await supabase.from("listings").select("*");
-      if (error) console.error(error);
-      else setHotels(data);
-    }
-    fetchHotels();
-  }, []);
-
-  useEffect(() => {
-    async function fetchHotels() {
-      try {
-        const res = await fetch("/api/hotels");
-        const data = await res.json();
-
-        if (!res.ok) {
-          setHotelsError(data.message || "Failed to load listings.");
-          return;
-        }
-
-        setHotels(data.hotels || []);
-        setHotelsError(null);
-      } catch (err) {
-        console.error("Failed to fetch hotels:", err);
+      if (error) {
+        console.error(error);
         setHotelsError("Something went wrong loading listings.");
-      } finally {
-        setHotelsLoading(false);
+      } else {
+        setHotels(data);
+        setHotelsError(null);
       }
+      setHotelsLoading(false);
     }
-
     fetchHotels();
   }, []);
 
-  // Restore the logged-in state on page load / refresh.
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
