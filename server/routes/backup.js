@@ -123,7 +123,14 @@ router.get("/download", authenticate, requireAdmin, async (req, res) => {
 
   const dump = spawn(
     PG_DUMP,
-    [...pgArgs(), "--no-owner", "--no-privileges", "--clean", "--if-exists"],
+    [
+      ...pgArgs(),
+      "--schema=public",
+      "--no-owner",
+      "--no-privileges",
+      "--clean",
+      "--if-exists",
+    ],
     { env: pgEnv() },
   );
 
