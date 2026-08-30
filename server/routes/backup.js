@@ -12,7 +12,6 @@ const { authenticate, requireAdmin } = require("../middleware/authenticate");
 const { logActivity } = require("../services/activityLogger"); // ADJUST path if it lives elsewhere
 
 const PG_DUMP = process.env.PG_DUMP_PATH || "pg_dump";
-const PSQL = process.env.PSQL_PATH || "psql";
 
 const CONFIRM_PHRASE = "RESTORE DATABASE";
 
@@ -98,45 +97,20 @@ function pgArgs() {
   ];
 }
 
-function runPgDumpToFile(outPath) {
-  return new Promise((resolve, reject) => {
-    const out = fs.createWriteStream(outPath);
-    const dump = spawn(
-      PG_DUMP,
-      [...pgArgs(), "--no-owner", "--no-privileges", "--clean", "--if-exists"],
-      { env: pgEnv() },
-    );
-    dump.stdout.pipe(out);
-    dump.on("error", reject);
-    dump.on("close", (code) =>
-      code === 0 ? resolve() : reject(new Error(`pg_dump exited ${code}`)),
-    );
-  });
-}
-
-function runPsqlRestore(sqlFilePath) {
-  return new Promise((resolve, reject) => {
-    const restore = spawn(
-      PSQL,
-      [
-        ...pgArgs(),
-        "--single-transaction",
-        "--set",
-        "ON_ERROR_STOP=on",
-        "--file",
-        sqlFilePath,
-      ],
-      { env: pgEnv() },
-    );
-    let stderr = "";
-    restore.stderr.on("data", (chunk) => (stderr += chunk.toString()));
-    restore.on("error", reject);
-    restore.on("close", (code) =>
-      code === 0
-        ? resolve()
-        : reject(new Error(stderr || `psql exited ${code}`)),
-    );
-  });
+// --- Restore via the pg pool directly (no psql binary required) ---
+async function runSqlRestore(sqlFilePath) {
+  const sql = fs.readFileSync(sqlFilePath, "utf8");
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    await client.query(sql);
+    await client.query("COMMIT");
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    client.release();
+  }
 }
 
 // --- GET /api/admin/backup/download ---
@@ -195,13 +169,7 @@ router.post(
     const uploadedPath = req.file.path;
 
     try {
-      const safetyBackupPath = path.join(
-        os.tmpdir(),
-        `pre-restore-safety-${Date.now()}.sql`,
-      );
-      await runPgDumpToFile(safetyBackupPath);
-
-      await runPsqlRestore(uploadedPath);
+      await runSqlRestore(uploadedPath);
 
       await logActivity({
         adminId: req.userId,
@@ -212,14 +180,12 @@ router.post(
         description: "Restored the database from an uploaded backup file.",
         metadata: {
           originalFilename: req.file.originalname,
-          safetyBackupPath,
         },
         ipAddress: req.ip,
       });
 
       res.json({
-        message:
-          "Database restored successfully. A safety backup of the prior state was saved on the server.",
+        message: "Database restored successfully.",
       });
     } catch (err) {
       console.error("Restore failed:", err);
