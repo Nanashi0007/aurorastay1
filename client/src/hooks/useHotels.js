@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-const API_BASE = "/api/hotels";
+const API_BASE = "https://aurorastay-server.onrender.com/api/hotels";
 
 export function useHotels(filters) {
   const [hotels, setHotels] = useState([]);
