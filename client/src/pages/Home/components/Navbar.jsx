@@ -199,7 +199,7 @@ export default function Navbar({
                         />
                       </div>
 
-                      <span className="qr-hotel-url">/hotels</span>
+                      {/* <span className="qr-hotel-url">/hotels</span> */}
 
                       {/* QR Actions */}
                       <div
