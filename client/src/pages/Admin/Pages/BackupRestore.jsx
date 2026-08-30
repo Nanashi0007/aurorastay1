@@ -17,7 +17,6 @@ import { getStoredAdminAuth } from "../../../utils/storage";
 import "../../../styles/backupRestore.css";
 import { API_BASE } from "../../../config";
 
-const API_BASE = "/api/admin/backup";
 const CONFIRM_PHRASE = "RESTORE DATABASE";
 const BACKUP_ENDPOINT = `${API_BASE}/api/admin/backup`;
 
