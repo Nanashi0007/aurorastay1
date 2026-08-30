@@ -11,9 +11,8 @@ const pool = require("../db");
 const { authenticate, requireAdmin } = require("../middleware/authenticate");
 const { logActivity } = require("../services/activityLogger"); // ADJUST path if it lives elsewhere
 
-const PG_BIN = "C:\\Program Files\\PostgreSQL\\18\\bin";
-const PG_DUMP = path.join(PG_BIN, "pg_dump.exe");
-const PSQL = path.join(PG_BIN, "psql.exe");
+const PG_DUMP = process.env.PG_DUMP_PATH || "pg_dump";
+const PSQL = process.env.PSQL_PATH || "psql";
 
 const CONFIRM_PHRASE = "RESTORE DATABASE";
 
