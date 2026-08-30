@@ -30,12 +30,35 @@ export default function Home() {
 
   useEffect(() => {
     async function fetchHotels() {
-      const { data, error } = await supabase.from("listings").select("*");
+      const { data, error } = await supabase
+        .from("listings")
+        .select("*, listing_photos(image_url, sort_order)");
+
       if (error) {
         console.error(error);
         setHotelsError("Something went wrong loading listings.");
       } else {
-        setHotels(data);
+        const shaped = data.map((row) => {
+          const photos = row.listing_photos || [];
+          const cover =
+            photos.find((p) => p.sort_order === 0)?.image_url ||
+            photos[0]?.image_url ||
+            null;
+
+          return {
+            id: row.id,
+            type: row.accommodation_type,
+            name: row.title,
+            location: `${row.barangay}, ${row.municipality}`,
+            image: cover,
+            amenities: row.amenities || [],
+            price: null, // no rooms joined yet — see note below
+            rating: null,
+            reviews: null,
+            rooms: null,
+          };
+        });
+        setHotels(shaped);
         setHotelsError(null);
       }
       setHotelsLoading(false);
