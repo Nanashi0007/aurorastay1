@@ -15,9 +15,11 @@ import {
 } from "react-icons/fa";
 import { getStoredAdminAuth } from "../../../utils/storage";
 import "../../../styles/backupRestore.css";
+import { API_BASE } from "../../../config";
 
 const API_BASE = "/api/admin/backup";
 const CONFIRM_PHRASE = "RESTORE DATABASE";
+const BACKUP_ENDPOINT = `${API_BASE}/api/admin/backup`;
 
 export default function BackupRestore() {
   const { token } = getStoredAdminAuth();
@@ -51,10 +53,8 @@ export default function BackupRestore() {
     setRestoreSuccess("");
 
     try {
-      const res = await fetch(`${API_BASE}/download`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const res = await fetch(`${BACKUP_ENDPOINT}/download`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!res.ok) {
@@ -250,11 +250,9 @@ export default function BackupRestore() {
       formData.append("password", password);
       formData.append("confirmText", confirmText);
 
-      const res = await fetch(`${API_BASE}/restore`, {
+      const res = await fetch(`${BACKUP_ENDPOINT}/restore`, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
 
