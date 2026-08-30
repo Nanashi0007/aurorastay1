@@ -30,37 +30,50 @@ export default function Home() {
 
   useEffect(() => {
     async function fetchHotels() {
-      const { data, error } = await supabase
+      const { data: listings, error } = await supabase
         .from("listings")
-        .select("*, listing_photos(image_url, sort_order)");
+        .select("*");
 
       if (error) {
         console.error(error);
         setHotelsError("Something went wrong loading listings.");
-      } else {
-        const shaped = data.map((row) => {
-          const photos = row.listing_photos || [];
-          const cover =
-            photos.find((p) => p.sort_order === 0)?.image_url ||
-            photos[0]?.image_url ||
-            null;
-
-          return {
-            id: row.id,
-            type: row.accommodation_type,
-            name: row.title,
-            location: `${row.barangay}, ${row.municipality}`,
-            image: cover,
-            amenities: row.amenities || [],
-            price: null, // no rooms joined yet — see note below
-            rating: null,
-            reviews: null,
-            rooms: null,
-          };
-        });
-        setHotels(shaped);
-        setHotelsError(null);
+        setHotelsLoading(false);
+        return;
       }
+
+      const { data: photos } = await supabase
+        .from("listing_photos")
+        .select("*");
+
+      const photosByListing = {};
+      (photos || []).forEach((p) => {
+        if (!photosByListing[p.listing_id]) photosByListing[p.listing_id] = [];
+        photosByListing[p.listing_id].push(p);
+      });
+
+      const shaped = listings.map((row) => {
+        const listingPhotos = photosByListing[row.id] || [];
+        const cover =
+          listingPhotos.find((p) => p.sort_order === 0)?.image_url ||
+          listingPhotos[0]?.image_url ||
+          null;
+
+        return {
+          id: row.id,
+          type: row.accommodation_type,
+          name: row.title,
+          location: `${row.barangay}, ${row.municipality}`,
+          image: cover,
+          amenities: row.amenities || [],
+          price: null,
+          rating: null,
+          reviews: null,
+          rooms: null,
+        };
+      });
+
+      setHotels(shaped);
+      setHotelsError(null);
       setHotelsLoading(false);
     }
     fetchHotels();
