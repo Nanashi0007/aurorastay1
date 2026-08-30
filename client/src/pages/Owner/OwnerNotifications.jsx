@@ -18,6 +18,7 @@ import CompleteProfileModal from "../../components/modals/ProfileModal";
 import "../../styles/Owner/OwnerListings.css";
 import "../../styles/Owner/OwnerNotifications.css";
 import "../../styles/NotificationBell.css";
+import { API_BASE } from "../../config";
 
 const NAV_ITEMS = [
   {
@@ -108,7 +109,9 @@ export default function OwnerNotifications() {
   // thread when it becomes visible).
   useEffect(() => {
     async function load() {
-      await authFetch("/api/notifications/read-all", { method: "PATCH" });
+      await authFetch(`${API_BASE}/api/notifications/read-all`, {
+        method: "PATCH",
+      });
       await fetchNotifications();
     }
     load();

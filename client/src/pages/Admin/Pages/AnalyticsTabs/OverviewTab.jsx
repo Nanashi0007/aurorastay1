@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { getStoredAdminAuth } from "../../../../utils/storage";
 import { useAnalytics } from "./useAnalytics";
+import { API_BASE } from "../../../../config";
 
 const CARD_CONFIGS = {
   totalListings: {
@@ -210,9 +211,12 @@ export default function OverviewTab() {
     try {
       const config = CARD_CONFIGS[cardKey];
       const { token } = getStoredAdminAuth();
-      const res = await fetch(`/api/admin/analytics/${config.endpoint}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(
+        `${API_BASE}/api/admin/analytics/${config.endpoint}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       const body = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(body.message || "Failed to load details.");
       setDetailRows(body[config.listKey] || []);

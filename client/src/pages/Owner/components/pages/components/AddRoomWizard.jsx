@@ -7,6 +7,7 @@ import {
   FaCamera,
   FaTrash,
 } from "react-icons/fa";
+import { API_BASE } from "../../../../../config";
 
 const STEPS = [
   { id: "basics", label: "Basics" },
@@ -149,7 +150,7 @@ export default function AddRoomWizard({
       });
       photos.forEach((photo) => body.append("photos", photo.file));
 
-      const res = await fetch(`/api/listings/${propertyId}/rooms`, {
+      const res = await fetch(`${API_BASE}/api/listings/${propertyId}/rooms`, {
         method: "POST",
         headers: { Authorization: `Bearer ${authToken}` },
         body,

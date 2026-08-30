@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { FaSearch } from "react-icons/fa";
 import { getStoredAdminAuth } from "../../../utils/storage";
+import { API_BASE } from "../../../config";
 
 export default function ManageUsers() {
   const [users, setUsers] = useState([]);
@@ -22,9 +23,12 @@ export default function ManageUsers() {
       if (search) params.set("search", search);
       if (roleFilter) params.set("role", roleFilter);
 
-      const res = await fetch(`/api/admin/users?${params.toString()}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(
+        `${API_BASE}/api/admin/users?${params.toString()}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       const data = await res.json();
 
       if (!res.ok) {
@@ -58,7 +62,7 @@ export default function ManageUsers() {
   async function handleSaveRole(userId) {
     setSavingId(userId);
     try {
-      const res = await fetch(`/api/admin/users/${userId}/role`, {
+      const res = await fetch(`${API_BASE}/api/admin/users/${userId}/role`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

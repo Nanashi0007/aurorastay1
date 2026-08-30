@@ -119,9 +119,12 @@ export default function AdminAnnouncements() {
   async function handleDelete(id) {
     if (!window.confirm("Delete this announcement record?")) return;
     try {
-      const result = await authFetch(`/api/admin/announcements/${id}`, {
-        method: "DELETE",
-      });
+      const result = await authFetch(
+        `${API_BASE}/api/admin/announcements/${id}`,
+        {
+          method: "DELETE",
+        },
+      );
       if (!result.ok) {
         alert("Failed to delete.");
         return;

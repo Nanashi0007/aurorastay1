@@ -161,10 +161,13 @@ export default function OwnerListings() {
     if (!deletingListing) return;
     setDeleting(true);
     try {
-      const res = await fetch(`/api/listings/${deletingListing.id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${authToken}` },
-      });
+      const res = await fetch(
+        `${API_BASE}/api/listings/${deletingListing.id}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${authToken}` },
+        },
+      );
       const data = await res.json();
 
       if (!res.ok) {

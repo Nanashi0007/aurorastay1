@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { addRecentlyViewed } from "../../utils/recentlyViewed";
 import "../../styles/btnsmall.css";
+import { API_BASE } from "../../config";
 
 export default function HotelCard({ hotel, isSaved = false, onToggleSave }) {
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ export default function HotelCard({ hotel, isSaved = false, onToggleSave }) {
     setSaved(next); // optimistic update
 
     try {
-      const res = await fetch(`/api/saved/${hotel.id}`, {
+      const res = await fetch(`${API_BASE}/api/saved/${hotel.id}`, {
         method: next ? "POST" : "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });

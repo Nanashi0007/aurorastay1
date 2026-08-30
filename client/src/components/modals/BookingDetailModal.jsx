@@ -10,6 +10,7 @@ import {
   FaPhone,
 } from "react-icons/fa";
 import "../../styles/BookingDetailModal.css";
+import { API_BASE } from "../../config";
 
 const TYPE_ICONS = {
   Hotel: FaHotel,
@@ -74,7 +75,7 @@ export default function BookingDetailModal({
     setUpdating(true);
     setActionError(null);
     try {
-      const res = await fetch(`/api/bookings/${booking.id}/status`, {
+      const res = await fetch(`${API_BASE}/api/bookings/${booking.id}/status`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

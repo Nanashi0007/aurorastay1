@@ -18,6 +18,7 @@ import CompleteProfileModal from "../../../../../components/modals/ProfileModal"
 import AddRoomWizard from "./AddRoomModal";
 import RoomCard from "../../card/RoomCard";
 import EditRoomModal from "./EditRoomModal"; // adjust path
+import { API_BASE } from "../../../../../config";
 
 const LIBRARIES = ["places"];
 
@@ -68,7 +69,7 @@ export default function AccommodationDetails() {
 
   const fetchRooms = useCallback(async () => {
     try {
-      const res = await fetch(`/api/listings/${id}/rooms`);
+      const res = await fetch(`${API_BASE}/api/listings/${id}/rooms`);
       const data = await res.json();
       if (res.ok) {
         setRooms(data.rooms || []);
@@ -114,7 +115,7 @@ export default function AccommodationDetails() {
       const token = localStorage.getItem("token");
 
       try {
-        const res = await fetch(`/api/listings/${id}`, {
+        const res = await fetch(`${API_BASE}/api/listings/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();

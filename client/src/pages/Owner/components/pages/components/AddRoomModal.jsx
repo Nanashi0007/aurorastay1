@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { FaTimes, FaCamera, FaTrash, FaCheck } from "react-icons/fa";
 import "../../../../../styles/Hotels/AddRoomModal.css";
+import { API_BASE } from "../../../../../config";
 
 const MIN_PHOTOS = 3;
 const MAX_PHOTOS = 20;
@@ -203,7 +204,7 @@ export default function AddRoomModal({
       body.append("amenities", JSON.stringify(amenities));
       photos.forEach((photo) => body.append("photos", photo.file));
 
-      const res = await fetch(`/api/listings/${propertyId}/rooms`, {
+      const res = await fetch(`${API_BASE}/api/listings/${propertyId}/rooms`, {
         method: "POST",
         headers: { Authorization: `Bearer ${authToken}` },
         body,

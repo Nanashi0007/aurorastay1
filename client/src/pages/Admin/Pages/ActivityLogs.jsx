@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { FaSync } from "react-icons/fa";
 import { getStoredAdminAuth } from "../../../utils/storage";
 import "../../../styles/Admin/activityLogs.css";
+import { API_BASE } from "../../../config";
 
 const ACTIONS = [
   { value: "", label: "All actions" },
@@ -41,7 +42,7 @@ export default function ActivityLogs() {
       const { token } = getStoredAdminAuth(); // CHANGED
       const params = new URLSearchParams({ page, limit });
       if (action) params.set("action", action);
-      const res = await fetch(`/api/admin/activity-logs?${params}`, {
+      const res = await fetch(`${API_BASE}/api/admin/activity-logs?${params}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const body = await res.json().catch(() => ({}));

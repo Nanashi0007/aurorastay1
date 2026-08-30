@@ -19,6 +19,7 @@ import {
   FaPhone,
 } from "react-icons/fa";
 import LocationMapPicker from "./LocationMapPicker";
+import { API_BASE } from "../../../../../config";
 
 const MAX_PHOTOS = 5;
 
@@ -157,7 +158,7 @@ export default function EditListingModal({
       );
       newPhotos.forEach((photo) => body.append("photos", photo.file));
 
-      const res = await fetch(`/api/listings/${listing.id}`, {
+      const res = await fetch(`${API_BASE}/api/listings/${listing.id}`, {
         method: "PATCH",
         headers: { Authorization: `Bearer ${authToken}` },
         body,

@@ -9,6 +9,7 @@ import {
 import ConfirmModal from "./ConfirmModal"; // adjust path to wherever you placed it
 import SuccessModal from "./SuccessModal";
 import "../../../../../styles/Hotels/EditRoomModal.css";
+import { API_BASE } from "../../../../../config";
 
 const MIN_PHOTOS = 3;
 const MAX_PHOTOS = 20;
@@ -234,11 +235,14 @@ export default function EditRoomModal({
       );
       newPhotos.forEach((photo) => body.append("photos", photo.file));
 
-      const res = await fetch(`/api/listings/${propertyId}/rooms/${room.id}`, {
-        method: "PATCH",
-        headers: { Authorization: `Bearer ${authToken}` },
-        body,
-      });
+      const res = await fetch(
+        `${API_BASE}/api/listings/${propertyId}/rooms/${room.id}`,
+        {
+          method: "PATCH",
+          headers: { Authorization: `Bearer ${authToken}` },
+          body,
+        },
+      );
 
       const data = await res.json();
 
@@ -269,10 +273,13 @@ export default function EditRoomModal({
   async function handleConfirmDelete() {
     setDeleting(true);
     try {
-      const res = await fetch(`/api/listings/${propertyId}/rooms/${room.id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${authToken}` },
-      });
+      const res = await fetch(
+        `${API_BASE}/api/listings/${propertyId}/rooms/${room.id}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${authToken}` },
+        },
+      );
       const data = await res.json();
 
       if (!res.ok) {

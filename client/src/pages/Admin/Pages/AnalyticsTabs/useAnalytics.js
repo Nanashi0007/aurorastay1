@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getStoredAdminAuth } from "../../../../utils/storage"; // adjust path to match your structure
+import { API_BASE } from "../../../../config";
 
 export function useAnalytics(endpoint) {
   const [data, setData] = useState(null);
@@ -13,7 +14,7 @@ export function useAnalytics(endpoint) {
       setLoading(true);
       setError("");
       try {
-        const res = await fetch(`/api/admin/analytics/${endpoint}`, {
+        const res = await fetch(`${API_BASE}/api/admin/analytics/${endpoint}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const body = await res.json().catch(() => ({}));

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { FaCheck, FaTimes, FaSyncAlt, FaSearch } from "react-icons/fa";
 import { getStoredAdminAuth } from "../../../utils/storage";
 import "../../../styles/Admin/ApplicationsReview.css";
+import { API_BASE } from "../../../config";
 
 function initials(name) {
   if (!name) return "?";
@@ -35,9 +36,12 @@ export default function ApplicationsReview() {
       if (statusFilter) params.set("status", statusFilter);
       if (search) params.set("search", search);
 
-      const res = await fetch(`/api/admin/applications?${params.toString()}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(
+        `${API_BASE}/api/admin/applications?${params.toString()}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       const data = await res.json();
 
       if (!res.ok) {
@@ -61,10 +65,13 @@ export default function ApplicationsReview() {
   async function handleApprove(id) {
     setProcessingId(id);
     try {
-      const res = await fetch(`/api/admin/applications/${id}/approve`, {
-        method: "PATCH",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(
+        `${API_BASE}/api/admin/applications/${id}/approve`,
+        {
+          method: "PATCH",
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       const data = await res.json();
       if (!res.ok) {
         alert(data.message || "Failed to approve.");
@@ -84,14 +91,17 @@ export default function ApplicationsReview() {
     if (!rejectReason.trim()) return;
     setProcessingId(id);
     try {
-      const res = await fetch(`/api/admin/applications/${id}/reject`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+      const res = await fetch(
+        `${API_BASE}/api/admin/applications/${id}/reject`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ reason: rejectReason }),
         },
-        body: JSON.stringify({ reason: rejectReason }),
-      });
+      );
       const data = await res.json();
       if (!res.ok) {
         alert(data.message || "Failed to reject.");

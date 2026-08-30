@@ -149,7 +149,7 @@ export default function HotelDetails() {
   useEffect(() => {
     async function fetchRooms() {
       try {
-        const res = await fetch(`/api/listings/${id}/rooms/public`);
+        const res = await fetch(`${API_BASE}/api/listings/${id}/rooms/public`);
         const data = await res.json();
         if (res.ok) {
           setRooms(data.rooms || []);
@@ -167,7 +167,7 @@ export default function HotelDetails() {
   useEffect(() => {
     async function fetchHotel() {
       try {
-        const res = await fetch(`/api/listings/public/${id}`);
+        const res = await fetch(`${API_BASE}/api/listings/public/${id}`);
         const data = await res.json();
 
         if (!res.ok) {
@@ -275,7 +275,7 @@ export default function HotelDetails() {
     setSaved(next); // optimistic, same as HotelCard
 
     try {
-      const res = await fetch(`/api/saved/${hotel.id}`, {
+      const res = await fetch(`${API_BASE}/api/saved/${hotel.id}`, {
         method: next ? "POST" : "DELETE",
         headers: { Authorization: `Bearer ${authToken}` },
       });
