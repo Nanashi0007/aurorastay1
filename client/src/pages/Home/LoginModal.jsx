@@ -12,27 +12,25 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
   const handleGoogleSuccess = async (credentialResponse) => {
     setError("");
     setSubmitting(true);
-
     try {
-      fetch("https://aurorastay-server.onrender.com/api/auth/google", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          credential: credentialResponse.credential,
-        }),
-      });
-
+      const res = await fetch(
+        "https://aurorastay-server.onrender.com/api/auth/google",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            credential: credentialResponse.credential,
+          }),
+        },
+      );
       const data = await res.json();
-
       if (!res.ok) {
         setError(data.message || "Login failed. Please try again.");
         setSubmitting(false);
         return;
       }
-
       persistAuth(data.token, data.user);
       onLoginSuccess?.(data.user, data.isNewUser, data.token);
-
       await new Promise((resolve) => setTimeout(resolve, 700));
       window.location.replace("/");
     } catch (err) {
@@ -41,7 +39,6 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
       setSubmitting(false);
     }
   };
-
   const handleGoogleError = () => {
     setError("Google sign-in was cancelled or failed. Please try again.");
   };
