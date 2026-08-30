@@ -35,8 +35,20 @@ const upload = multer({
 // Either way, the typed confirmation phrase is always required.
 async function requireReauth(req, res, next) {
   const { password, confirmText } = req.body;
+  console.log(
+    "requireReauth check — confirmText:",
+    confirmText,
+    "| password provided:",
+    !!password,
+  );
 
   if (confirmText !== CONFIRM_PHRASE) {
+    console.log(
+      "Rejected: confirmText mismatch. Expected:",
+      CONFIRM_PHRASE,
+      "Got:",
+      confirmText,
+    );
     return res
       .status(400)
       .json({ message: `Type "${CONFIRM_PHRASE}" exactly to confirm.` });
@@ -50,6 +62,9 @@ async function requireReauth(req, res, next) {
 
     if (adminResult.rows.length > 0) {
       if (!password) {
+        console.log(
+          "Rejected: admin account requires password, none provided.",
+        );
         return res
           .status(400)
           .json({ message: "Password confirmation is required." });
@@ -59,8 +74,10 @@ async function requireReauth(req, res, next) {
         adminResult.rows[0].password_hash,
       );
       if (!valid) {
+        console.log("Rejected: incorrect password.");
         return res.status(401).json({ message: "Incorrect password." });
       }
+      console.log("Passed: admin password verified.");
       return next();
     }
 
@@ -70,9 +87,11 @@ async function requireReauth(req, res, next) {
     );
 
     if (userResult.rows.length > 0) {
+      console.log("Passed: user role is admin, no password needed.");
       return next();
     }
 
+    console.log("Rejected: not found in admins or users-with-admin-role.");
     return res.status(401).json({ message: "Not authorized." });
   } catch (err) {
     console.error("Reauth check failed:", err);
