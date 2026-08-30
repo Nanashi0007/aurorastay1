@@ -4,7 +4,6 @@ import { authFetch } from "../../utils/api";
 import "../../styles/NotificationBell.css";
 import { API_BASE } from "../../config";
 
-const API_BASE = "/api/notifications"; // adjust if you proxy differently
 const DROPDOWN_LIMIT = 4;
 
 function timeAgo(dateString) {
@@ -30,7 +29,9 @@ export default function NotificationBell() {
   const containerRef = useRef(null);
 
   const fetchUnreadCount = useCallback(async () => {
-    const result = await authFetch(`${API_BASE}/unread-count`);
+    const result = await authFetch(
+      `${API_BASE}/api/notifications/unread-count`,
+    );
     if (!result.ok) return;
     setUnreadCount(result.data?.count || 0);
   }, []);
@@ -60,12 +61,16 @@ export default function NotificationBell() {
 
     setLoading(true);
     try {
-      const notificationsResult = await authFetch(API_BASE);
+      const notificationsResult = await authFetch(
+        `${API_BASE}/api/notifications`,
+      );
       if (notificationsResult.ok) {
         setNotifications(notificationsResult.data?.notifications || []);
       }
 
-      await authFetch(`${API_BASE}/read-all`, { method: "PATCH" });
+      await authFetch(`${API_BASE}/api/notifications/read-all`, {
+        method: "PATCH",
+      });
       setUnreadCount(0);
     } catch (err) {
       console.error("Failed to fetch notifications:", err);
@@ -190,7 +195,7 @@ export default function NotificationBell() {
                         setLoadingAnnouncement(true);
                         try {
                           const result = await authFetch(
-                            `/api/announcements/${n.relatedAnnouncementId}`,
+                            `${API_BASE}/api/announcements/${n.relatedAnnouncementId}`,
                           );
                           if (result.ok) {
                             setViewingAnnouncement(result.data?.announcement);
