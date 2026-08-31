@@ -123,7 +123,15 @@ const { Client } = require("pg");
 
 async function runSqlRestore(sqlFilePath) {
   const compressed = fs.readFileSync(sqlFilePath);
-  const sql = zlib.gunzipSync(compressed).toString("utf8");
+  let sql = zlib.gunzipSync(compressed).toString("utf8");
+
+  // Strip psql meta-commands (lines starting with \) — these aren't valid SQL
+  // and only work in the psql CLI, not via a direct pg client query.
+  sql = sql
+    .split("\n")
+    .filter((line) => !line.trim().startsWith("\\"))
+    .join("\n");
+
   const client = new Client({
     host: process.env.DB_DIRECT_HOST || process.env.DB_HOST,
     port: Number(process.env.DB_DIRECT_PORT || 5432),
