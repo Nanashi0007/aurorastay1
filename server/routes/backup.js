@@ -117,9 +117,19 @@ function pgArgs() {
 }
 
 // --- Restore via the pg pool directly (no psql binary required) ---
+const { Client } = require("pg");
+
 async function runSqlRestore(sqlFilePath) {
   const sql = fs.readFileSync(sqlFilePath, "utf8");
-  const client = await pool.connect();
+  const client = new Client({
+    host: process.env.DB_DIRECT_HOST || process.env.DB_HOST,
+    port: Number(process.env.DB_DIRECT_PORT || 5432),
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    ssl: process.env.DB_SSL === "true" ? { rejectUnauthorized: false } : false,
+  });
+  await client.connect();
   try {
     await client.query("BEGIN");
     await client.query(sql);
@@ -128,7 +138,7 @@ async function runSqlRestore(sqlFilePath) {
     await client.query("ROLLBACK");
     throw err;
   } finally {
-    client.release();
+    await client.end();
   }
 }
 
