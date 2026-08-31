@@ -132,6 +132,12 @@ async function runSqlRestore(sqlFilePath) {
     .filter((line) => !line.trim().startsWith("\\"))
     .join("\n");
 
+  console.log("SQL length:", sql.length);
+  console.log(
+    "SQL snippet near position 28143:",
+    JSON.stringify(sql.slice(28000, 28300)),
+  );
+
   const client = new Client({
     host: process.env.DB_DIRECT_HOST || process.env.DB_HOST,
     port: Number(process.env.DB_DIRECT_PORT || 5432),
