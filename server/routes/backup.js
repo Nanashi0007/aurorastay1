@@ -176,6 +176,7 @@ router.get("/download", authenticate, requireAdmin, async (req, res) => {
       "--no-privileges",
       "--clean",
       "--if-exists",
+      "--inserts",
     ],
     { env: pgEnv() },
   );
