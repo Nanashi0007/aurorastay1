@@ -4,6 +4,7 @@ const router = express.Router();
 const path = require("path");
 const fs = require("fs");
 const os = require("os");
+const zlib = require("zlib");
 const { spawn } = require("child_process");
 const multer = require("multer");
 const bcrypt = require("bcrypt");
@@ -17,10 +18,11 @@ const CONFIRM_PHRASE = "RESTORE DATABASE";
 
 const upload = multer({
   dest: os.tmpdir(),
-  limits: { fileSize: 500 * 1024 * 1024 }, // 500MB — adjust to your DB size
+  limits: { fileSize: 500 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
-    if (path.extname(file.originalname).toLowerCase() !== ".sql") {
-      return cb(new Error("Only .sql files are accepted."));
+    const name = file.originalname.toLowerCase();
+    if (!name.endsWith(".sql") && !name.endsWith(".sql.gz")) {
+      return cb(new Error("Only .sql or .sql.gz backup files are accepted."));
     }
     cb(null, true);
   },
@@ -120,7 +122,8 @@ function pgArgs() {
 const { Client } = require("pg");
 
 async function runSqlRestore(sqlFilePath) {
-  const sql = fs.readFileSync(sqlFilePath, "utf8");
+  const compressed = fs.readFileSync(sqlFilePath);
+  const sql = zlib.gunzipSync(compressed).toString("utf8");
   const client = new Client({
     host: process.env.DB_DIRECT_HOST || process.env.DB_HOST,
     port: Number(process.env.DB_DIRECT_PORT || 5432),

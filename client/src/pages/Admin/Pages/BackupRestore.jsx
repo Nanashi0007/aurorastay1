@@ -20,6 +20,14 @@ import { API_BASE } from "../../../config";
 const CONFIRM_PHRASE = "RESTORE DATABASE";
 const BACKUP_ENDPOINT = `${API_BASE}/api/admin/backup`;
 
+async function compressFile(file) {
+  const stream = file.stream().pipeThrough(new CompressionStream("gzip"));
+  const compressedBlob = await new Response(stream).blob();
+  return new File([compressedBlob], file.name + ".gz", {
+    type: "application/gzip",
+  });
+}
+
 export default function BackupRestore() {
   const { token } = getStoredAdminAuth();
 
@@ -243,9 +251,10 @@ export default function BackupRestore() {
     setRestoring(true);
 
     try {
+      const compressedFile = await compressFile(file);
       const formData = new FormData();
 
-      formData.append("backupFile", file);
+      formData.append("backupFile", compressedFile);
       formData.append("password", password);
       formData.append("confirmText", confirmText);
 
