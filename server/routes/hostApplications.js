@@ -24,10 +24,14 @@ const upload = multer({
   },
 });
 
-function uploadToCloudinary(buffer, folder) {
+function uploadToCloudinary(buffer, folder, mimetype) {
   return new Promise((resolve, reject) => {
+    const isPdf = mimetype === "application/pdf";
     const stream = cloudinary.uploader.upload_stream(
-      { folder, resource_type: "auto" },
+      {
+        folder,
+        resource_type: isPdf ? "image" : "auto", // force PDFs through the image pipeline
+      },
       (error, result) => {
         if (error) return reject(error);
         resolve(result);
@@ -108,9 +112,21 @@ router.post(
       }
 
       const [proofUpload, frontUpload, backUpload] = await Promise.all([
-        uploadToCloudinary(proofFile.buffer, "host-applications/proofs"),
-        uploadToCloudinary(govIdFront.buffer, "host-applications/gov-ids"),
-        uploadToCloudinary(govIdBack.buffer, "host-applications/gov-ids"),
+        uploadToCloudinary(
+          proofFile.buffer,
+          "host-applications/proofs",
+          proofFile.mimetype,
+        ),
+        uploadToCloudinary(
+          govIdFront.buffer,
+          "host-applications/gov-ids",
+          govIdFront.mimetype,
+        ),
+        uploadToCloudinary(
+          govIdBack.buffer,
+          "host-applications/gov-ids",
+          govIdBack.mimetype,
+        ),
       ]);
 
       const { rows } = await pool.query(
