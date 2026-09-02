@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
-import { FaCheck, FaTimes, FaSyncAlt, FaSearch } from "react-icons/fa";
+import {
+  FaCheck,
+  FaTimes,
+  FaSyncAlt,
+  FaSearch,
+  FaFilePdf,
+} from "react-icons/fa";
 import { getStoredAdminAuth } from "../../../utils/storage";
 import "../../../styles/Admin/ApplicationsReview.css";
 import { API_BASE } from "../../../config";
@@ -14,6 +20,17 @@ function initials(name) {
     .toUpperCase();
 }
 
+// NEW: detect PDFs from the URL (strip query/hash before checking the extension)
+function isPdfUrl(url) {
+  if (!url) return false;
+  try {
+    const clean = url.split("?")[0].split("#")[0];
+    return clean.toLowerCase().endsWith(".pdf");
+  } catch {
+    return false;
+  }
+}
+
 export default function ApplicationsReview() {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,7 +39,7 @@ export default function ApplicationsReview() {
   const [processingId, setProcessingId] = useState(null);
   const [rejectingId, setRejectingId] = useState(null);
   const [rejectReason, setRejectReason] = useState("");
-  const [viewingImage, setViewingImage] = useState(null);
+  const [viewingImage, setViewingImage] = useState(null); // now can hold { url, isPdf }
   const [search, setSearch] = useState("");
   const [approvingId, setApprovingId] = useState(null);
 
@@ -199,21 +216,32 @@ export default function ApplicationsReview() {
                   { label: "Proof of Ownership", url: app.proofFileUrl },
                   { label: "Gov ID (Front)", url: app.govIdFrontUrl },
                   { label: "Gov ID (Back)", url: app.govIdBackUrl },
-                ].map(
-                  (doc) =>
-                    doc.url && (
-                      <div className="ar-doc" key={doc.label}>
-                        <span className="ar-doc-label">{doc.label}</span>
-                        <button
-                          type="button"
-                          className="ar-doc-thumb"
-                          onClick={() => setViewingImage(doc.url)}
-                        >
+                ].map((doc) => {
+                  if (!doc.url) return null;
+                  const pdf = isPdfUrl(doc.url);
+
+                  return (
+                    <div className="ar-doc" key={doc.label}>
+                      <span className="ar-doc-label">{doc.label}</span>
+                      <button
+                        type="button"
+                        className={`ar-doc-thumb ${pdf ? "ar-doc-thumb-pdf" : ""}`}
+                        onClick={() =>
+                          setViewingImage({ url: doc.url, isPdf: pdf })
+                        }
+                      >
+                        {pdf ? (
+                          <div className="ar-pdf-thumb">
+                            <FaFilePdf size={28} />
+                            <span>View PDF</span>
+                          </div>
+                        ) : (
                           <img src={doc.url} alt={doc.label} />
-                        </button>
-                      </div>
-                    ),
-                )}
+                        )}
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
 
               {app.status === "pending" && (
@@ -274,10 +302,6 @@ export default function ApplicationsReview() {
               )}
 
               {rejectingId === app.id && (
-                <div className="ar-reject-panel">{/* ...unchanged... */}</div>
-              )}
-
-              {rejectingId === app.id && (
                 <div className="ar-reject-panel">
                   <textarea
                     className="ar-reject-textarea"
@@ -323,7 +347,16 @@ export default function ApplicationsReview() {
 
       {viewingImage && (
         <div className="ar-lightbox" onClick={() => setViewingImage(null)}>
-          <img src={viewingImage} alt="Document" />
+          {viewingImage.isPdf ? (
+            <iframe
+              src={viewingImage.url}
+              title="Document preview"
+              className="ar-lightbox-pdf"
+              onClick={(e) => e.stopPropagation()}
+            />
+          ) : (
+            <img src={viewingImage.url} alt="Document" />
+          )}
         </div>
       )}
     </div>
